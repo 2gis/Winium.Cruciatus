@@ -8,11 +8,11 @@ Working prototype.
 
 ## Getting Started
 
-1) Download 'Cruciatus.dll' from 'build' folder (in 'master' brunch).
+1) Download `Cruciatus.dll` from build folder (in master brunch).
 
 2) Open or create CodedUITestProject.
 
-3) Add 'Cruciatus.dll' to references.
+3) Add `Cruciatus.dll` to references.
 
 4) Create a map application
 
