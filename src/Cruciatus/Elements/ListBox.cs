@@ -10,8 +10,11 @@
 namespace Cruciatus.Elements
 {
     using System;
+    using System.Linq;
+    using System.Windows;
     using System.Windows.Automation;
 
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     public class ListBox : BaseElement<ListBox>, ILazyInitialize
@@ -44,8 +47,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                // TODO: а какой он??
-                return ControlType.Custom;
+                return ControlType.List;
             }
         }
 
@@ -67,7 +69,40 @@ namespace Cruciatus.Elements
             var item = new T();
             var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
 
-            var items = this.Element.FindAll(TreeScope.Subtree, condition);
+            AutomationElementCollection items;
+            var scrollPattern = (ScrollPattern)this.Element.GetCurrentPattern(ScrollPattern.Pattern);
+            if (scrollPattern != null)
+            {
+                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
+
+                items = this.Element.FindAll(TreeScope.Subtree, condition);
+                while (items.Count <= number && scrollPattern.Current.VerticalScrollPercent < 100)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+
+                    // TODO: Делать что-нибудь если false?
+                    this.Element.WaitForElementReady();
+
+                    items = this.Element.FindAll(TreeScope.Subtree, condition);
+                }
+
+                if (items.Count > number)
+                {
+                    if (this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty)
+                        && items[(int)number].GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+                    {
+                        while (!this.FirstInsideSecond(items[(int)number], this.Element))
+                        {
+                            scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                items = this.Element.FindAll(TreeScope.Subtree, condition);
+            }
+
             if (items.Count <= number)
             {
                 throw new ArgumentOutOfRangeException("number");
@@ -84,14 +119,47 @@ namespace Cruciatus.Elements
                 new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
                 new PropertyCondition(AutomationElement.NameProperty, name));
 
-            var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
-            if (elem == null)
+            AutomationElement searchElement;
+            var scrollPattern = (ScrollPattern)this.Element.GetCurrentPattern(ScrollPattern.Pattern);
+            if (scrollPattern != null)
+            {
+                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
+
+                searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+                while (searchElement == null && scrollPattern.Current.VerticalScrollPercent < 100)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+
+                    // TODO: Делать что-нибудь если false?
+                    this.Element.WaitForElementReady();
+
+                    searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+                }
+
+                if (searchElement != null)
+                {
+                    if (this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty)
+                        && searchElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+                    {
+                        while (!this.FirstInsideSecond(searchElement, this.Element))
+                        {
+                            scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+            }
+
+            if (searchElement == null)
             {
                 // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
                 throw new Exception("не нашлось элемента в списке");
             }
 
-            item.FromAutomationElement(elem);
+            item.FromAutomationElement(searchElement);
             return item;
         }
 
@@ -129,6 +197,14 @@ namespace Cruciatus.Elements
             }
 
             this.CheckingOfProperties();
+        }
+
+        private bool FirstInsideSecond(AutomationElement first, AutomationElement second)
+        {
+            var firstRect = (Rect)first.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+            var secondRect = (Rect)second.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+
+            return secondRect.Contains(firstRect);
         }
     }
 }
