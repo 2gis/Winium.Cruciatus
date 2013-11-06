@@ -9,7 +9,10 @@
 
 namespace Cruciatus.Extensions
 {
+    using System;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Windows;
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
@@ -64,6 +67,26 @@ namespace Cruciatus.Extensions
             // Иначе используем UITesting
             var control = UITestControlFactory.FromNativeElement(element, "UIA");
             return control.WaitForControlReady(WaitForReadyTimeout);
+        }
+
+        public static bool GeometricallyContains(this AutomationElement externalElement, AutomationElement internaleElement)
+        {
+            if (!externalElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("внешний элемент в GeometricallyContains не поддерживает свойство BoundingRectangle");
+            }
+
+            if (!internaleElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("внутренний элемент в GeometricallyContains не поддерживает свойство BoundingRectangle");
+            }
+
+            var externalRect = (Rect)externalElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+            var internaleRect = (Rect)internaleElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+
+            return externalRect.Contains(internaleRect);
         }
     }
 }

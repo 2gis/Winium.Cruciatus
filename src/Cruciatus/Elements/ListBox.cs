@@ -11,7 +11,6 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
 
     using Cruciatus.Extensions;
@@ -88,13 +87,9 @@ namespace Cruciatus.Elements
 
                 if (items.Count > number)
                 {
-                    if (this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty)
-                        && items[(int)number].GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+                    while (!this.Element.GeometricallyContains(items[(int)number]))
                     {
-                        while (!this.FirstInsideSecond(items[(int)number], this.Element))
-                        {
-                            scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-                        }
+                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
                     }
                 }
             }
@@ -138,13 +133,9 @@ namespace Cruciatus.Elements
 
                 if (searchElement != null)
                 {
-                    if (this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty)
-                        && searchElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+                    while (!this.Element.GeometricallyContains(searchElement))
                     {
-                        while (!this.FirstInsideSecond(searchElement, this.Element))
-                        {
-                            scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-                        }
+                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
                     }
                 }
             }
@@ -197,14 +188,6 @@ namespace Cruciatus.Elements
             }
 
             this.CheckingOfProperties();
-        }
-
-        private bool FirstInsideSecond(AutomationElement first, AutomationElement second)
-        {
-            var firstRect = (Rect)first.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
-            var secondRect = (Rect)second.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
-
-            return secondRect.Contains(firstRect);
         }
     }
 }
