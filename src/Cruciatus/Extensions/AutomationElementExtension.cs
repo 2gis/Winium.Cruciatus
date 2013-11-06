@@ -114,5 +114,47 @@ namespace Cruciatus.Extensions
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
             Mouse.Move(clickablePoint);
         }
+
+        public static AutomationElement SearchSpecificElementConsideringScroll<T>(
+            this AutomationElement element,
+            Func<AutomationElement, T> findFunc,
+            Func<T, bool> compareFunc,
+            Func<T, AutomationElement> getAutomationElementFunc)
+            where T : class
+        {
+            T searchElement;
+            var scrollPattern = (ScrollPattern)element.GetCurrentPattern(ScrollPattern.Pattern);
+            if (scrollPattern != null)
+            {
+                element.MoveMouseToCenter();
+
+                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
+
+                searchElement = findFunc(element);
+                while (compareFunc(searchElement) && scrollPattern.Current.VerticalScrollPercent < 100)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+
+                    // TODO: Делать что-нибудь если false?
+                    element.WaitForElementReady();
+
+                    searchElement = findFunc(element);
+                }
+
+                if (!compareFunc(searchElement))
+                {
+                    while (!element.GeometricallyContains(getAutomationElementFunc(searchElement)))
+                    {
+                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+                    }
+                }
+            }
+            else
+            {
+                searchElement = findFunc(element);
+            }
+
+            return getAutomationElementFunc(searchElement);
+        }
     }
 }

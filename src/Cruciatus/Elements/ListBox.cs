@@ -67,44 +67,18 @@ namespace Cruciatus.Elements
             var item = new T();
             var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
 
-            AutomationElementCollection items;
-            var scrollPattern = (ScrollPattern)this.Element.GetCurrentPattern(ScrollPattern.Pattern);
-            if (scrollPattern != null)
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindAll(TreeScope.Subtree, condition),
+                collection => collection.Count <= number,
+                collection => collection[(int)number]);
+
+            if (searchElement == null)
             {
-                this.Element.MoveMouseToCenter();
-
-                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
-
-                items = this.Element.FindAll(TreeScope.Subtree, condition);
-                while (items.Count <= number && scrollPattern.Current.VerticalScrollPercent < 100)
-                {
-                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-
-                    // TODO: Делать что-нибудь если false?
-                    this.Element.WaitForElementReady();
-
-                    items = this.Element.FindAll(TreeScope.Subtree, condition);
-                }
-
-                if (items.Count > number)
-                {
-                    while (!this.Element.GeometricallyContains(items[(int)number]))
-                    {
-                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-                    }
-                }
-            }
-            else
-            {
-                items = this.Element.FindAll(TreeScope.Subtree, condition);
+                // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
+                throw new Exception("не нашлось элемента в списке");
             }
 
-            if (items.Count <= number)
-            {
-                throw new ArgumentOutOfRangeException("number");
-            }
-
-            item.FromAutomationElement(items[(int)number]);
+            item.FromAutomationElement(searchElement);
             return item;
         }
 
@@ -114,38 +88,11 @@ namespace Cruciatus.Elements
             var condition = new AndCondition(
                 new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
                 new PropertyCondition(AutomationElement.NameProperty, name));
-
-            AutomationElement searchElement;
-            var scrollPattern = (ScrollPattern)this.Element.GetCurrentPattern(ScrollPattern.Pattern);
-            if (scrollPattern != null)
-            {
-                this.Element.MoveMouseToCenter();
-
-                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
-
-                searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
-                while (searchElement == null && scrollPattern.Current.VerticalScrollPercent < 100)
-                {
-                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-
-                    // TODO: Делать что-нибудь если false?
-                    this.Element.WaitForElementReady();
-
-                    searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
-                }
-
-                if (searchElement != null)
-                {
-                    while (!this.Element.GeometricallyContains(searchElement))
-                    {
-                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-                    }
-                }
-            }
-            else
-            {
-                searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
-            }
+            
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindFirst(TreeScope.Subtree, condition),
+                elem => elem == null,
+                elem => elem);
 
             if (searchElement == null)
             {
