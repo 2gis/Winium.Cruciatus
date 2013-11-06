@@ -11,14 +11,20 @@ namespace Cruciatus.Extensions
 {
     using System;
     using System.Diagnostics;
+    using System.Drawing;
     using System.Linq;
     using System.Windows;
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
+    using Point = System.Drawing.Point;
+    using Size = System.Drawing.Size;
+
     public static class AutomationElementExtension
     {
+        private const int MouseMoveSpeed = 2500;
+
         private const int WaitForReadyTimeout = 5000;
 
         public static bool WaitForElementReady(this AutomationElement element)
@@ -87,6 +93,26 @@ namespace Cruciatus.Extensions
             var internaleRect = (Rect)internaleElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
 
             return externalRect.Contains(internaleRect);
+        }
+
+        public static void MoveMouseToCenter(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("элемент в MoveMouseToCenter не поддерживает свойство BoundingRectangle");
+            }
+
+            var rect = (Rect)element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+
+            // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
+            var controlBoundingRect = new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+
+            // TODO Вынести это действие как расширения для типа Rectangle
+            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
+
+            Mouse.MouseMoveSpeed = MouseMoveSpeed;
+            Mouse.Move(clickablePoint);
         }
     }
 }

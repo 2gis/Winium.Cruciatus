@@ -10,7 +10,6 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Extensions;
@@ -72,6 +71,8 @@ namespace Cruciatus.Elements
             var scrollPattern = (ScrollPattern)this.Element.GetCurrentPattern(ScrollPattern.Pattern);
             if (scrollPattern != null)
             {
+                this.Element.MoveMouseToCenter();
+
                 scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
 
                 items = this.Element.FindAll(TreeScope.Subtree, condition);
@@ -118,6 +119,8 @@ namespace Cruciatus.Elements
             var scrollPattern = (ScrollPattern)this.Element.GetCurrentPattern(ScrollPattern.Pattern);
             if (scrollPattern != null)
             {
+                this.Element.MoveMouseToCenter();
+
                 scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
 
                 searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
