@@ -9,13 +9,22 @@
 
 namespace Cruciatus.Extensions
 {
+    using System;
     using System.Diagnostics;
+    using System.Drawing;
+    using System.Linq;
+    using System.Windows;
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
+    using Point = System.Drawing.Point;
+    using Size = System.Drawing.Size;
+
     public static class AutomationElementExtension
     {
+        private const int MouseMoveSpeed = 2500;
+
         private const int WaitForReadyTimeout = 5000;
 
         public static bool WaitForElementReady(this AutomationElement element)
@@ -64,6 +73,88 @@ namespace Cruciatus.Extensions
             // Иначе используем UITesting
             var control = UITestControlFactory.FromNativeElement(element, "UIA");
             return control.WaitForControlReady(WaitForReadyTimeout);
+        }
+
+        public static bool GeometricallyContains(this AutomationElement externalElement, AutomationElement internaleElement)
+        {
+            if (!externalElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("внешний элемент в GeometricallyContains не поддерживает свойство BoundingRectangle");
+            }
+
+            if (!internaleElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("внутренний элемент в GeometricallyContains не поддерживает свойство BoundingRectangle");
+            }
+
+            var externalRect = (Rect)externalElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+            var internaleRect = (Rect)internaleElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+
+            return externalRect.Contains(internaleRect);
+        }
+
+        public static void MoveMouseToCenter(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("элемент в MoveMouseToCenter не поддерживает свойство BoundingRectangle");
+            }
+
+            var rect = (Rect)element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+
+            // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
+            var controlBoundingRect = new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+
+            // TODO Вынести это действие как расширения для типа Rectangle
+            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
+
+            Mouse.MouseMoveSpeed = MouseMoveSpeed;
+            Mouse.Move(clickablePoint);
+        }
+
+        public static AutomationElement SearchSpecificElementConsideringScroll<T>(
+            this AutomationElement element,
+            Func<AutomationElement, T> findFunc,
+            Func<T, bool> compareFunc,
+            Func<T, AutomationElement> getAutomationElementFunc)
+            where T : class
+        {
+            T searchElement;
+            var scrollPattern = element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            if (scrollPattern != null)
+            {
+                element.MoveMouseToCenter();
+
+                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
+
+                searchElement = findFunc(element);
+                while (compareFunc(searchElement) && scrollPattern.Current.VerticalScrollPercent < 100)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+
+                    // TODO: Делать что-нибудь если false?
+                    element.WaitForElementReady();
+
+                    searchElement = findFunc(element);
+                }
+
+                if (!compareFunc(searchElement))
+                {
+                    while (!element.GeometricallyContains(getAutomationElementFunc(searchElement)))
+                    {
+                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+                    }
+                }
+            }
+            else
+            {
+                searchElement = findFunc(element);
+            }
+
+            return getAutomationElementFunc(searchElement);
         }
     }
 }

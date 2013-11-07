@@ -12,6 +12,7 @@ namespace Cruciatus.Elements
     using System;
     using System.Windows.Automation;
 
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     public class ListBox : BaseElement<ListBox>, ILazyInitialize
@@ -44,8 +45,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                // TODO: а какой он??
-                return ControlType.Custom;
+                return ControlType.List;
             }
         }
 
@@ -67,13 +67,18 @@ namespace Cruciatus.Elements
             var item = new T();
             var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
 
-            var items = this.Element.FindAll(TreeScope.Subtree, condition);
-            if (items.Count <= number)
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindAll(TreeScope.Subtree, condition),
+                collection => collection.Count <= number,
+                collection => collection.Count > number ? collection[(int)number] : null);
+
+            if (searchElement == null)
             {
-                throw new ArgumentOutOfRangeException("number");
+                // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
+                throw new Exception("не нашлось элемента в списке");
             }
 
-            item.FromAutomationElement(items[(int)number]);
+            item.FromAutomationElement(searchElement);
             return item;
         }
 
@@ -83,15 +88,19 @@ namespace Cruciatus.Elements
             var condition = new AndCondition(
                 new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
                 new PropertyCondition(AutomationElement.NameProperty, name));
+            
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindFirst(TreeScope.Subtree, condition),
+                elem => elem == null,
+                elem => elem);
 
-            var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
-            if (elem == null)
+            if (searchElement == null)
             {
                 // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
                 throw new Exception("не нашлось элемента в списке");
             }
 
-            item.FromAutomationElement(elem);
+            item.FromAutomationElement(searchElement);
             return item;
         }
 
