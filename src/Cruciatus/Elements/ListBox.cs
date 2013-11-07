@@ -70,7 +70,7 @@ namespace Cruciatus.Elements
             var searchElement = this.Element.SearchSpecificElementConsideringScroll(
                 elem => elem.FindAll(TreeScope.Subtree, condition),
                 collection => collection.Count <= number,
-                collection => collection[(int)number]);
+                collection => collection.Count > number ? collection[(int)number] : null);
 
             if (searchElement == null)
             {

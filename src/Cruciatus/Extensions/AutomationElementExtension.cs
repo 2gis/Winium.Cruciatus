@@ -123,7 +123,7 @@ namespace Cruciatus.Extensions
             where T : class
         {
             T searchElement;
-            var scrollPattern = (ScrollPattern)element.GetCurrentPattern(ScrollPattern.Pattern);
+            var scrollPattern = element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern != null)
             {
                 element.MoveMouseToCenter();
