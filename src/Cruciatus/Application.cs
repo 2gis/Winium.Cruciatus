@@ -12,6 +12,7 @@ namespace Cruciatus
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Threading;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
@@ -28,24 +29,34 @@ namespace Cruciatus
 
         private const int WaitForExitTimeout = 10000;
 
+        private const int WaitPeriod = 500;
+
         private readonly string fullPath;
 
-        private Process process = null;
+        private readonly string mainWindowAutomationId;
+
+        private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
+
+        private Process process;
 
         private T mainWindow;
 
         private AutomationElement mainWindowElement;
 
-        private Dictionary<string, object> objects = new Dictionary<string, object>();
-
-        protected Application(string fullPath)
+        protected Application(string fullPath, string mainWindowAutomationId)
         {
             if (fullPath == null)
             {
                 throw new ArgumentNullException("fullPath");
             }
 
+            if (mainWindowAutomationId == null)
+            {
+                throw new ArgumentNullException("mainWindowAutomationId");
+            }
+
             this.fullPath = fullPath;
+            this.mainWindowAutomationId = mainWindowAutomationId;
         }
 
         public T MainWindow
@@ -59,8 +70,6 @@ namespace Cruciatus
 
                 if (this.mainWindow == null)
                 {
-                    this.mainWindowElement = WindowFactory.GetMainWindowElement(this.process);
-
                     this.mainWindow = new T();
                     this.mainWindow.LazyInitialize(this.mainWindowElement);
                 }
@@ -79,7 +88,7 @@ namespace Cruciatus
                 throw new Exception("Не удалось запустить процесс");
             }
 
-            return this.process.WaitForInputIdle(milliseconds);
+            return this.WaitOpeningMainWindow(milliseconds);
         }
 
         public bool Close()
@@ -114,6 +123,28 @@ namespace Cruciatus
             }
 
             return (TU)this.objects[headerName];
+        }
+
+        private bool WaitOpeningMainWindow(int milliseconds)
+        {
+            var timeIsUp = false;
+            var stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+            this.mainWindowElement = WindowFactory.GetMainWindowElement(this.mainWindowAutomationId);
+            while (this.mainWindowElement == null && !timeIsUp)
+            {
+                Thread.Sleep(WaitPeriod);
+                if (stopwatch.ElapsedMilliseconds > milliseconds)
+                {
+                    timeIsUp = true;
+                }
+
+                this.mainWindowElement = WindowFactory.GetMainWindowElement(this.mainWindowAutomationId);
+            }
+
+            stopwatch.Stop();
+            return this.mainWindowElement != null;
         }
     }
 }

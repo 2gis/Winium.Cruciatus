@@ -9,14 +9,15 @@
 
 namespace Cruciatus
 {
-    using System.Diagnostics;
     using System.Windows.Automation;
 
     public static class WindowFactory
     {
-        public static AutomationElement GetMainWindowElement(Process process)
+        public static AutomationElement GetMainWindowElement(string automationId)
         {
-            return AutomationElement.FromHandle(process.MainWindowHandle);
+            var propertyCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, automationId);
+            var mainWindow = AutomationElement.RootElement.FindFirst(TreeScope.Children, propertyCondition);
+            return mainWindow;
         }
 
         public static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string headerName)
