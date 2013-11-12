@@ -156,5 +156,90 @@ namespace Cruciatus.Extensions
 
             return getAutomationElementFunc(searchElement);
         }
+
+        #region Checking properties
+
+        public static void IsSupportEnabledProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
+            {
+                // TODO: Исключение вида - контрол не поддерживает свойство Enabled
+                throw new Exception("элемент не поддерживает свойство Enabled");
+            }
+        }
+
+        public static void IsSupportBoundingRectangleProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
+                throw new Exception("элемент не поддерживает свойство BoundingRectangle");
+            }
+        }
+
+        public static void IsSupportToggleStateProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(TogglePattern.ToggleStateProperty))
+            {
+                // TODO: Исключение вида - контрол не поддерживает свойство State
+                throw new Exception("элемент не поддерживает свойство ToggleState");
+            }
+        }
+
+        public static void IsSupportExpandCollapseStateProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(ExpandCollapsePattern.ExpandCollapseStateProperty))
+            {
+                // TODO: Исключение вида - контрол не поддерживает свойство ExpandCollapseState
+                throw new Exception("элемент не поддерживает свойство ExpandCollapseState");
+            }
+        }
+
+        public static void IsSupportGridRowCountProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(GridPattern.RowCountProperty))
+            {
+                // TODO: Исключение вида - элемент не поддерживает свойство RowCount
+                throw new Exception("элемент не поддерживает свойство RowCount");
+            }
+        }
+
+        public static void IsSupportRangeValueProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(RangeValuePattern.ValueProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство Value
+                throw new Exception("элемент не поддерживает свойство Value");
+            }
+        }
+
+        public static void IsSupportSelectedProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(SelectionItemPattern.IsSelectedProperty))
+            {
+                // TODO: Исключение вида - контрол не поддерживает свойство Selected
+                throw new Exception("элемент не поддерживает свойство Selected");
+            }
+        }
+
+        public static void IsSupportValueReadOnlyProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(ValuePattern.IsReadOnlyProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство ReadOnly
+                throw new Exception("элемент не поддерживает свойство ReadOnly");
+            }
+        }
+
+        public static void IsSupportValueProperty(this AutomationElement element)
+        {
+            if (!element.GetSupportedProperties().Contains(ValuePattern.ValueProperty))
+            {
+                // TODO Исключение вида - контрол не поддерживает свойство Value
+                throw new Exception("элемент не поддерживает свойство Value");
+            }
+        }
+
+        #endregion
     }
 }
