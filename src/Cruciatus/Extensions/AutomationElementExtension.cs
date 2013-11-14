@@ -11,15 +11,9 @@ namespace Cruciatus.Extensions
 {
     using System;
     using System.Diagnostics;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
-
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
     public static class AutomationElementExtension
     {
@@ -55,17 +49,17 @@ namespace Cruciatus.Extensions
             // ошибка при возврате false точно встречается
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            bool b = windowPattern.WaitForInputIdle(WaitForReadyTimeout);
+            var timeIsNotUp = windowPattern.WaitForInputIdle(WaitForReadyTimeout);
             stopwatch.Stop();
 
             // Если результат true и время таймаута не вышло
-            if (b && stopwatch.ElapsedMilliseconds < WaitForReadyTimeout)
+            if (timeIsNotUp && stopwatch.ElapsedMilliseconds < WaitForReadyTimeout)
             {
                 return true;
             }
 
             // Если результат false и время таймаута вышло
-            if (!b && stopwatch.ElapsedMilliseconds > WaitForReadyTimeout)
+            if (!timeIsNotUp && stopwatch.ElapsedMilliseconds > WaitForReadyTimeout)
             {
                 return false;
             }
@@ -75,44 +69,35 @@ namespace Cruciatus.Extensions
             return control.WaitForControlReady(WaitForReadyTimeout);
         }
 
-        public static bool GeometricallyContains(this AutomationElement externalElement, AutomationElement internaleElement)
+        public static bool GeometricallyContains(this AutomationElement externalElement, AutomationElement internalElement)
         {
-            if (!externalElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            try
             {
-                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("внешний элемент в GeometricallyContains не поддерживает свойство BoundingRectangle");
-            }
+                var externalRect = externalElement.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty);
+                var internaleRect = internalElement.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty);
 
-            if (!internaleElement.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+                return externalRect.Contains(internaleRect);
+            }
+            catch (Exception exc)
             {
-                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("внутренний элемент в GeometricallyContains не поддерживает свойство BoundingRectangle");
+                throw new OperationCanceledException("Не удалось определить вхождение одного элемента в другой.\n", exc);
             }
-
-            var externalRect = (Rect)externalElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
-            var internaleRect = (Rect)internaleElement.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
-
-            return externalRect.Contains(internaleRect);
         }
 
         public static void MoveMouseToCenter(this AutomationElement element)
         {
-            if (!element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            try
             {
-                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("элемент в MoveMouseToCenter не поддерживает свойство BoundingRectangle");
+                var windowsPoint = element.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var clickablePoint = new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+
+                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.Move(clickablePoint);
             }
-
-            var rect = (Rect)element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
-
-            // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-            var controlBoundingRect = new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
-
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
+            catch (Exception exc)
+            {
+                throw new OperationCanceledException("Перемещение курсора мыши не удалось.\n", exc);
+            }
         }
 
         public static AutomationElement SearchSpecificElementConsideringScroll<T>(
@@ -157,89 +142,22 @@ namespace Cruciatus.Extensions
             return getAutomationElementFunc(searchElement);
         }
 
-        #region Checking properties
-
-        public static void IsSupportEnabledProperty(this AutomationElement element)
+        public static TOut GetPropertyValue<TOut>(this AutomationElement element, AutomationProperty property)
         {
-            if (!element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
+            var obj = element.GetCurrentPropertyValue(property, true);
+            if (obj == AutomationElement.NotSupported)
             {
-                // TODO: Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("элемент не поддерживает свойство Enabled");
+                var err = string.Format("Элемент не поддерживает свойство {0}.\n", property.ProgrammaticName);
+                throw new NotSupportedException(err);
             }
-        }
 
-        public static void IsSupportBoundingRectangleProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
+            if ((obj is TOut) == false)
             {
-                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("элемент не поддерживает свойство BoundingRectangle");
+                var err = string.Format("Преобразование {0} к {1} не поддерживается.\n", obj.GetType(), typeof(TOut));
+                throw new InvalidCastException(err);
             }
-        }
 
-        public static void IsSupportToggleStateProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(TogglePattern.ToggleStateProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство State
-                throw new Exception("элемент не поддерживает свойство ToggleState");
-            }
+            return (TOut)obj;
         }
-
-        public static void IsSupportExpandCollapseStateProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(ExpandCollapsePattern.ExpandCollapseStateProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство ExpandCollapseState
-                throw new Exception("элемент не поддерживает свойство ExpandCollapseState");
-            }
-        }
-
-        public static void IsSupportGridRowCountProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(GridPattern.RowCountProperty))
-            {
-                // TODO: Исключение вида - элемент не поддерживает свойство RowCount
-                throw new Exception("элемент не поддерживает свойство RowCount");
-            }
-        }
-
-        public static void IsSupportRangeValueProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(RangeValuePattern.ValueProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Value
-                throw new Exception("элемент не поддерживает свойство Value");
-            }
-        }
-
-        public static void IsSupportSelectedProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(SelectionItemPattern.IsSelectedProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство Selected
-                throw new Exception("элемент не поддерживает свойство Selected");
-            }
-        }
-
-        public static void IsSupportValueReadOnlyProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(ValuePattern.IsReadOnlyProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство ReadOnly
-                throw new Exception("элемент не поддерживает свойство ReadOnly");
-            }
-        }
-
-        public static void IsSupportValueProperty(this AutomationElement element)
-        {
-            if (!element.GetSupportedProperties().Contains(ValuePattern.ValueProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Value
-                throw new Exception("элемент не поддерживает свойство Value");
-            }
-        }
-
-        #endregion
     }
 }

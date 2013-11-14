@@ -11,20 +11,15 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Data;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using PropertyCondition = System.Windows.Automation.PropertyCondition;
-    using Size = System.Drawing.Size;
 
     /// <summary>
     /// Представляет элемент управления текстовое поле.
@@ -32,11 +27,6 @@ namespace Cruciatus.Elements
     public class TextBox : BaseElement<TextBox>, ILazyInitialize
     {
         private const int MouseMoveSpeed = 2500;
-
-        /// <summary>
-        /// Индетификатор элемента.
-        /// </summary>
-        private string automationId;
 
         private AutomationElement parent;
 
@@ -66,7 +56,7 @@ namespace Cruciatus.Elements
             }
 
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         /// <summary>
@@ -76,20 +66,17 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<TextBox, bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
-        /// <summary>
-        /// Возвращает координаты прямоугольника, который полностью охватывает элемент.
-        /// </summary>
-        public Rectangle BoundingRectangle
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<TextBox, System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -97,7 +84,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(ValuePattern.IsReadOnlyProperty);
+                return this.GetPropertyValue<TextBox, bool>(ValuePattern.IsReadOnlyProperty);
             }
         }
 
@@ -116,7 +103,7 @@ namespace Cruciatus.Elements
                 }
 
                 // Иначе текст получается так
-                return (string)this.Element.GetCurrentPropertyValue(ValuePattern.ValueProperty);
+                return this.GetPropertyValue<TextBox, string>(ValuePattern.ValueProperty);
             }
 
             set
@@ -131,18 +118,23 @@ namespace Cruciatus.Elements
                     throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
                 }
 
-                var controlBoundingRect = this.BoundingRectangle;
-
-                // TODO Вынести это действие как расширения для типа Rectangle
-                var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
                 Mouse.MouseMoveSpeed = MouseMoveSpeed;
-                Mouse.Move(clickablePoint);
+                Mouse.Move(this.ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");
                 Keyboard.SendKeys(value);
             }
         }
+
+        internal override string ClassName
+        {
+            get
+            {
+                return "TextBox";
+            }
+        }
+
+        internal override sealed string AutomationId { get; set; }
 
         internal override ControlType GetType
         {
@@ -155,7 +147,7 @@ namespace Cruciatus.Elements
         /// <summary>
         /// Возвращает инициализированный элемент.
         /// </summary>
-        protected override AutomationElement Element
+        internal override AutomationElement Element
         {
             get
             {
@@ -171,7 +163,7 @@ namespace Cruciatus.Elements
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         internal override TextBox FromAutomationElement(AutomationElement element)
@@ -182,36 +174,7 @@ namespace Cruciatus.Elements
             }
 
             this.element = element;
-            this.CheckingOfProperties();
-
             return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("текстовое поле не поддерживает свойство Enabled");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("текстовое поле не поддерживает свойство BoundingRectangle");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(ValuePattern.IsReadOnlyProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство ReadOnly
-                throw new Exception("текстовое поле не поддерживает свойство ReadOnly");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(ValuePattern.ValueProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Value
-                throw new Exception("текстовое поле не поддерживает свойство Value");
-            }
         }
 
         /// <summary>
@@ -221,7 +184,7 @@ namespace Cruciatus.Elements
         {
             this.element = this.parent.FindFirst(
                 TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
+                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
             // Если не нашли, то загрузить элемент не удалось
             if (this.element == null)
@@ -229,8 +192,6 @@ namespace Cruciatus.Elements
                 // TODO: Исключение вида - не найдено контрола с заданным AutomationId
                 throw new Exception("текстовое поле не найдено");
             }
-
-            this.CheckingOfProperties();
         }
     }
 }

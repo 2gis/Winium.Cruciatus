@@ -10,8 +10,6 @@
 namespace Cruciatus.Extensions
 {
     using System;
-    using System.Configuration;
-    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
@@ -20,21 +18,29 @@ namespace Cruciatus.Extensions
     {
         internal static TOut GetPropertyValue<T, TOut>(this BaseElement<T> baseElement, AutomationProperty property)
         {
-            var obj = baseElement.Element.GetCurrentPropertyValue(property, true);
-            if (obj == AutomationElement.NotSupported)
+            try
+            {
+                return baseElement.Element.GetPropertyValue<TOut>(property);
+            }
+            catch (NotSupportedException exc)
             {
                 // TODO: Исключение вида - элемент не поддерживает желаемое свойство
-                throw new Exception(string.Format("Элемент {0} не поддерживает свойство {1}.\n", baseElement.ToString(), property.ProgrammaticName));
-            }
+                var err = string.Format(
+                        "Элемент {0} не поддерживает свойство {1}.\n",
+                        baseElement.ToString(),
+                        property.ProgrammaticName);
 
-            if ((obj is TOut) == false)
-            {
-                var err = string.Format("При получении значения свойства {0} у элемента {1} произошла ошибка: ", property, baseElement.ToString());
-                err += string.Format("тип значения не соответствует ожидаемому.\n");
                 throw new Exception(err);
             }
+            catch (InvalidCastException exc)
+            {
+                var err = string.Format(
+                    "При получении значения свойства {0} у элемента {1} произошла ошибка.\n",
+                    property,
+                    baseElement.ToString());
 
-            return (TOut)obj;
+                throw new Exception(err, exc);
+            }
         }
     }
 }

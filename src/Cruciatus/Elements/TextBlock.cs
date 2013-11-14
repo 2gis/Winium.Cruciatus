@@ -10,32 +10,38 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
+
+    using Cruciatus.Extensions;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
     public class TextBlock : BaseElement<TextBlock>
     {
         private const int MouseMoveSpeed = 2500;
 
-        public Rectangle BoundingRectangle
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<TextBlock, System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
+
+        internal override string ClassName
+        {
+            get
+            {
+                return "TextBlock";
+            }
+        }
+
+        internal override string AutomationId { get; set; }
 
         internal override ControlType GetType
         {
@@ -45,7 +51,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected override AutomationElement Element
+        internal override AutomationElement Element
         {
             get
             {
@@ -55,13 +61,8 @@ namespace Cruciatus.Elements
 
         public void Click(MouseButtons mouseButton = MouseButtons.Left)
         {
-            var controlBoundingRect = this.BoundingRectangle;
-
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
+            Mouse.Move(this.ClickablePoint);
             Mouse.Click(mouseButton);
         }
 
@@ -73,18 +74,7 @@ namespace Cruciatus.Elements
             }
 
             this.element = element;
-            this.CheckingOfProperties();
-
             return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("текстовый блок не поддерживает свойство BoundingRectangle");
-            }
         }
     }
 }
