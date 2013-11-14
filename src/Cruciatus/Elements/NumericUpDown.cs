@@ -13,12 +13,11 @@ namespace Cruciatus.Elements
     using System.Linq;
     using System.Windows.Automation;
 
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     public class NumericUpDown : BaseElement<NumericUpDown>, ILazyInitialize
     {
-        private string automationId;
-
         private AutomationElement parent;
 
         public NumericUpDown()
@@ -38,16 +37,26 @@ namespace Cruciatus.Elements
             }
 
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         public int Value
         {
             get
             {
-                return Convert.ToInt32(this.Element.GetCurrentPropertyValue(RangeValuePattern.ValueProperty));
+                return Convert.ToInt32(this.GetPropertyValue<NumericUpDown, double>(RangeValuePattern.ValueProperty));
             }
         }
+
+        internal override string ClassName
+        {
+            get
+            {
+                return "NumericUpDown";
+            }
+        }
+
+        internal override sealed string AutomationId { get; set; }
 
         internal override ControlType GetType
         {
@@ -58,7 +67,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected override AutomationElement Element
+        internal override AutomationElement Element
         {
             get
             {
@@ -74,31 +83,20 @@ namespace Cruciatus.Elements
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         internal override NumericUpDown FromAutomationElement(AutomationElement element)
         {
             this.element = element;
-            this.CheckingOfProperties();
-
             return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(RangeValuePattern.ValueProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Value
-                throw new Exception("текстовое поле не поддерживает свойство Value");
-            }
         }
 
         private void Find()
         {
             this.element = this.parent.FindFirst(
                 TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
+                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
             // Если не нашли, то загрузить элемент не удалось
             if (this.element == null)
@@ -106,8 +104,6 @@ namespace Cruciatus.Elements
                 // TODO: Исключение вида - не найдено контрола с заданным AutomationId
                 throw new Exception("текстовое поле не найдено");
             }
-
-            this.CheckingOfProperties();
         }
     }
 }

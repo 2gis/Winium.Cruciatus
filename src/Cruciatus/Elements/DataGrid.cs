@@ -10,15 +10,13 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Linq;
     using System.Windows.Automation;
 
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     public class DataGrid : BaseElement<DataGrid>, ILazyInitialize
     {
-        private string automationId;
-
         private AutomationElement parent;
 
         public DataGrid()
@@ -38,16 +36,26 @@ namespace Cruciatus.Elements
             }
 
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         public int RowCount
         {
             get
             {
-                return (int)this.Element.GetCurrentPropertyValue(GridPattern.RowCountProperty);
+                return this.GetPropertyValue<DataGrid, int>(GridPattern.RowCountProperty);
             }
         }
+
+        internal override string ClassName
+        {
+            get
+            {
+                return "DataGrid";
+            }
+        }
+
+        internal override sealed string AutomationId { get; set; }
 
         internal override ControlType GetType
         {
@@ -57,7 +65,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected override AutomationElement Element
+        internal override AutomationElement Element
         {
             get
             {
@@ -73,24 +81,13 @@ namespace Cruciatus.Elements
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         internal override DataGrid FromAutomationElement(AutomationElement element)
         {
             this.element = element;
-            this.CheckingOfProperties();
-
             return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(GridPattern.RowCountProperty))
-            {
-                // TODO: Исключение вида - элемент не поддерживает свойство RowCount
-                throw new Exception("таблица не поддерживает свойство RowCount");
-            }
         }
 
         private void Find()
@@ -98,7 +95,7 @@ namespace Cruciatus.Elements
             // Ищем в нем первый встретившийся контрол с заданным automationId
             this.element = this.parent.FindFirst(
                 TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
+                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
             // Если не нашли, то загрузить кнопку не удалось
             if (this.element == null)
@@ -106,8 +103,6 @@ namespace Cruciatus.Elements
                 // TODO: Исключение вида - не найдено контрола с заданным AutomationId
                 throw new Exception("таблица не найдена");
             }
-
-            this.CheckingOfProperties();
         }
     }
 }

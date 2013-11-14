@@ -17,8 +17,6 @@ namespace Cruciatus.Elements
 
     public class ListBox : BaseElement<ListBox>, ILazyInitialize
     {
-        private string automationId;
-
         private AutomationElement parent;
 
         public ListBox()
@@ -38,8 +36,18 @@ namespace Cruciatus.Elements
             }
 
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
+
+        internal override string ClassName
+        {
+            get
+            {
+                return "ListBox";
+            }
+        }
+
+        internal override sealed string AutomationId { get; set; }
 
         internal override ControlType GetType
         {
@@ -49,7 +57,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected override AutomationElement Element
+        internal override AutomationElement Element
         {
             get
             {
@@ -107,20 +115,13 @@ namespace Cruciatus.Elements
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         internal override ListBox FromAutomationElement(AutomationElement element)
         {
             this.element = element;
-            this.CheckingOfProperties();
-
             return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            // TODO: Какие-то проверки явно должны быть
         }
 
         private void Find()
@@ -128,7 +129,7 @@ namespace Cruciatus.Elements
             // Ищем в нем первый встретившийся контрол с заданным automationId
             this.element = this.parent.FindFirst(
                 TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
+                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
             // Если не нашли, то загрузить выпадающий список не удалось
             if (this.element == null)
@@ -136,8 +137,6 @@ namespace Cruciatus.Elements
                 // TODO: Исключение вида - не найдено контрола с заданным AutomationId
                 throw new Exception("список не найден");
             }
-
-            this.CheckingOfProperties();
         }
     }
 }

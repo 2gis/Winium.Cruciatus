@@ -13,14 +13,21 @@ namespace Cruciatus.Elements
 
     public abstract class BaseElement<T>
     {
-        protected AutomationElement element;
+        internal AutomationElement element;
+
+        internal abstract string ClassName { get; }
+
+        internal abstract string AutomationId { get; set; }
 
         internal new abstract ControlType GetType { get; }
 
-        protected abstract AutomationElement Element { get; }
+        internal abstract AutomationElement Element { get; }
+
+        public new string ToString()
+        {
+            return string.Format("{0} (uid: {1})", this.ClassName, this.AutomationId ?? "nonUid");
+        }
 
         internal abstract T FromAutomationElement(AutomationElement element);
-
-        protected abstract void CheckingOfProperties();
     }
 }

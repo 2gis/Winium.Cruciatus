@@ -10,19 +10,15 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
     /// <summary>
     /// Представляет элемент управления чекбокс.
@@ -30,11 +26,6 @@ namespace Cruciatus.Elements
     public class CheckBox : BaseElement<CheckBox>, ILazyInitialize
     {
         private const int MouseMoveSpeed = 2500;
-
-        /// <summary>
-        /// Индетификатор кнопки.
-        /// </summary>
-        private string automationId;
 
         private AutomationElement parent;
 
@@ -64,7 +55,7 @@ namespace Cruciatus.Elements
             }
 
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         internal CheckBox(AutomationElement element)
@@ -79,21 +70,17 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<CheckBox, bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
-        /// <summary>
-        /// Возвращает координаты прямоугольника, который полностью охватывает элемент.
-        /// </summary>
-        public Rectangle BoundingRectangle
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<CheckBox, System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -104,9 +91,30 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return (CheckState)this.Element.GetCurrentPropertyValue(TogglePattern.ToggleStateProperty);
+                var toggleState = this.GetPropertyValue<CheckBox, ToggleState>(TogglePattern.ToggleStateProperty);
+                switch (toggleState)
+                {
+                    case ToggleState.On:
+                        return CheckState.Checked;
+
+                    case ToggleState.Off:
+                        return CheckState.Unchecked;
+
+                    default:
+                        return CheckState.Indeterminate;
+                }
             }
         }
+
+        internal override string ClassName
+        {
+            get
+            {
+                return "CheckBox";
+            }
+        }
+
+        internal override sealed string AutomationId { get; set; }
 
         internal override ControlType GetType
         {
@@ -119,7 +127,7 @@ namespace Cruciatus.Elements
         /// <summary>
         /// Возвращает инициализированный элемент.
         /// </summary>
-        protected override AutomationElement Element
+        internal override AutomationElement Element
         {
             get
             {
@@ -163,7 +171,7 @@ namespace Cruciatus.Elements
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
             this.parent = parent;
-            this.automationId = automationId;
+            this.AutomationId = automationId;
         }
 
         internal override CheckBox FromAutomationElement(AutomationElement element)
@@ -174,32 +182,9 @@ namespace Cruciatus.Elements
             }
 
             this.element = element;
-            this.CheckingOfProperties();
-
             return this;
         }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("чекбокс не поддерживает свойство Enabled");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("чекбокс не поддерживает свойство BoundingRectangle");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(TogglePattern.ToggleStateProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство State
-                throw new Exception("чекбокс не поддерживает свойство State");
-            }
-        }
-
+        
         /// <summary>
         /// Устанавливает чекбоксу указанное состояние.
         /// </summary>
@@ -213,17 +198,12 @@ namespace Cruciatus.Elements
                 throw new ElementNotEnabledException("Чекбокс отключен, нельзя изменить состояние.");
             }
 
-            var controlBoundingRect = this.BoundingRectangle;
-
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
+            Mouse.Move(this.ClickablePoint);
             int maxClickCount = 4;
             while (this.CheckState != newState && maxClickCount != 0)
             {
-                Mouse.Click(clickablePoint);
+                Mouse.Click(this.ClickablePoint);
                 --maxClickCount;
             }
 
@@ -242,7 +222,7 @@ namespace Cruciatus.Elements
             // Ищем в нем первый встретившийся контрол с заданным automationId
             this.element = this.parent.FindFirst(
                 TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
+                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
             // Если не нашли, то загрузить кнопку не удалось
             if (this.element == null)
@@ -250,8 +230,6 @@ namespace Cruciatus.Elements
                 // TODO: Исключение вида - не найдено контрола с заданным AutomationId
                 throw new Exception("чекбокс не найден");
             }
-
-            this.CheckingOfProperties();
         }
     }
 }
