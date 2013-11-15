@@ -14,6 +14,7 @@ namespace Cruciatus.Elements
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
@@ -189,8 +190,7 @@ namespace Cruciatus.Elements
             // Если не нашли, то загрузить элемент не удалось
             if (this.element == null)
             {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("текстовое поле не найдено");
+                throw new ElementNotFoundException(this.ToString());
             }
         }
     }

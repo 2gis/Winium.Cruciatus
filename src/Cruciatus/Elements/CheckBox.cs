@@ -13,6 +13,7 @@ namespace Cruciatus.Elements
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
@@ -224,11 +225,10 @@ namespace Cruciatus.Elements
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
-            // Если не нашли, то загрузить кнопку не удалось
+            // Если не нашли, то загрузить чекбокс не удалось
             if (this.element == null)
             {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("чекбокс не найден");
+                throw new ElementNotFoundException(this.ToString());
             }
         }
     }
