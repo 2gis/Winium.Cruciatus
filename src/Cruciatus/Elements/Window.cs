@@ -13,6 +13,7 @@ namespace Cruciatus.Elements
     using System.Collections.Generic;
     using System.Windows.Automation;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
@@ -22,8 +23,6 @@ namespace Cruciatus.Elements
     public abstract class Window : ILazyInitialize
     {
         private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
-
-        private string headerName;
 
         private AutomationElement parent;
 
@@ -35,12 +34,14 @@ namespace Cruciatus.Elements
             {
                 if (this.element == null)
                 {
-                    this.element = WindowFactory.GetChildWindowElement(this.parent, this.headerName);
+                    this.element = WindowFactory.GetChildWindowElement(this.parent, this.HeaderName);
                 }
 
                 return this.element;
             }
         }
+
+        private string HeaderName { get; set; }
 
         public bool WaitForReady()
         {
@@ -51,20 +52,18 @@ namespace Cruciatus.Elements
         {
             if (this.element != null || this.parent != null)
             {
-                // TODO: Надо адекватное, понятное исключение
-                throw new Exception("Отложенная инициализация доступна только для пустого элемента");
+                throw new LazyInitializeException("Попытка повторной инициализации дочернего окна " + headerName + ".\n");
             }
 
             this.parent = parent;
-            this.headerName = headerName;
+            this.HeaderName = headerName;
         }
 
         public void LazyInitialize(AutomationElement element)
         {
             if (this.element != null || this.parent != null)
             {
-                // TODO: Надо адекватное, понятное исключение
-                throw new Exception("Отложенная инициализация доступна только для пустого элемента");    
+                throw new LazyInitializeException("Попытка повторной инициализации главного окна.\n");    
             }
 
             this.element = element;
