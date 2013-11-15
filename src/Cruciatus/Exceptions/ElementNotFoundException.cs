@@ -15,6 +15,8 @@ namespace Cruciatus.Exceptions
     [Serializable]
     public class ElementNotFoundException : Exception
     {
+        private string message = "Элемент не найден.\n";
+
         public ElementNotFoundException()
         {
         }
@@ -25,14 +27,16 @@ namespace Cruciatus.Exceptions
         }
 
         public ElementNotFoundException(string element, string message)
-            : base(message)
+            : base(string.Empty)
         {
             this.Element = element;
+            this.message = message;
         }
 
-        public ElementNotFoundException(string message, Exception innerException)
-            : base(message, innerException)
+        public ElementNotFoundException(string element, Exception innerException)
+            : base(string.Empty, innerException)
         {
+            this.Element = element;
         }
 
         protected ElementNotFoundException(SerializationInfo info, StreamingContext context)
@@ -46,10 +50,11 @@ namespace Cruciatus.Exceptions
             {
                 if (this.Element == null)
                 {
-                    return "Элемент не найден.\n";
+                    return this.message;
                 }
 
-                return string.Format("Элемент {0} не найден.\n", this.Element);
+                var str = this.message + string.Format("Подробности: {0}.\n", this.Element);
+                return str;
             }
         }
 
