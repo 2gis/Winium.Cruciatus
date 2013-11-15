@@ -1,0 +1,57 @@
+﻿<Window x:Class="WpfTestApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="290" Width="250"
+        Uid="MainWindow">
+    <Grid>
+        <TabControl>
+            <TabItem Header="TabItem1" Uid="TabItem1">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Uid="SetTextButton" Content="Set 'CARAMBA' to TextBox1" Click="SetTextButtonClick"
+                            Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <TextBox Uid="TextBox1" Name="TextBox1" Text="TextBox1"
+                             Grid.Row="1" HorizontalAlignment="Center" Height="23" Margin="2" TextWrapping="Wrap" Width="200"/>
+                    <ComboBox Uid="TextComboBox" Name="TextComboBox"
+                              Grid.Row="2" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <CheckBox Uid="CheckBox1" Name="CheckBox1" Content="IsEnabledTextListBox"
+                              Grid.Row="3" HorizontalAlignment="Center" Margin="2" Width="200"
+                              Checked="CheckBox1Checked" Unchecked="CheckBox1Unchecked"/>
+                    <ListBox Uid="TextListBox" Name="TextListBox"
+                             Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TabItem2" Uid="TabItem2">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Uid="ChangeEnabledButton" Content="Change enabled to TextBox2" Click="ChangeEnabledButtonClick"
+                            Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <TextBox Uid="TextBox2" Name="TextBox2" Text="TextBox2" IsEnabled="False"
+                             Grid.Row="1" HorizontalAlignment="Center" Height="23" Margin="2" TextWrapping="Wrap" Width="200"/>
+                    <ComboBox Uid="CheckComboBox" Name="CheckComboBox"
+                              Grid.Row="2" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <CheckBox Uid="CheckBox2" Name="CheckBox2" Content="All months"
+                              Grid.Row="3" HorizontalAlignment="Center" Margin="2" Width="200"
+                              Checked="CheckBox2Checked" Unchecked="CheckBox2Unchecked"/>
+                    <ListBox Uid="CheckListBox" Name="CheckListBox"
+                             Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
