@@ -12,6 +12,7 @@ namespace Cruciatus.Elements
     using System;
     using System.Windows.Automation;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
@@ -134,8 +135,7 @@ namespace Cruciatus.Elements
             // Если не нашли, то загрузить выпадающий список не удалось
             if (this.element == null)
             {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("список не найден");
+                throw new ElementNotFoundException(this.ToString());
             }
         }
     }
