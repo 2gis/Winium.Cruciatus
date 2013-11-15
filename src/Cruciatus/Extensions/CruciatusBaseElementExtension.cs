@@ -13,6 +13,7 @@ namespace Cruciatus.Extensions
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
+    using Cruciatus.Exceptions;
 
     public static class CruciatusBaseElementExtension
     {
@@ -22,24 +23,19 @@ namespace Cruciatus.Extensions
             {
                 return baseElement.Element.GetPropertyValue<TOut>(property);
             }
-            catch (NotSupportedException exc)
+            catch (NotSupportedException)
             {
-                // TODO: Исключение вида - элемент не поддерживает желаемое свойство
-                var err = string.Format(
-                        "Элемент {0} не поддерживает свойство {1}.\n",
-                        baseElement.ToString(),
-                        property.ProgrammaticName);
-
-                throw new Exception(err);
+                throw new PropertyNotSupportedException(baseElement.ToString(), property.ProgrammaticName);
             }
             catch (InvalidCastException exc)
             {
                 var err = string.Format(
-                    "При получении значения свойства {0} у элемента {1} произошла ошибка.\n",
+                    "При получении значения свойства {0} у элемента {1} произошла ошибка. ",
                     property,
                     baseElement.ToString());
+                err += exc.Message;
 
-                throw new Exception(err, exc);
+                throw new InvalidCastException(err);
             }
         }
     }
