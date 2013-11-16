@@ -1,14 +1,13 @@
 ﻿
-namespace WpfTestApplication
+namespace WindowsFormsTestApplication
 {
     using System.Collections.Generic;
-    using System.Windows;
-    using System.Windows.Controls;
+    using System.Windows.Forms;
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// The form 1.
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class Form1 : Form
     {
         #region monthsList, timeSizeList
         private readonly List<string> monthsList = new List<string>
@@ -38,71 +37,46 @@ namespace WpfTestApplication
                                                        };
         #endregion
 
-        public MainWindow()
+        public Form1()
         {
             this.InitializeComponent();
 
-            this.CheckBox1.IsChecked = true;
+            this.CheckBox1.Checked = true;
 
             // Fill TextkComboBox
-            foreach (var size in this.timeSizeList)
-            {
-                this.TextComboBox.Items.Add(new TextBlock { Text = size });
-            }
-
-            // Fill CheckComboBox
-            foreach (var size in this.timeSizeList)
-            {
-                this.CheckComboBox.Items.Add(new CheckBox { Content = size });
-            }
+            this.TextComboBox.DataSource = this.timeSizeList;
+            this.TextComboBox.SelectedIndex = -1;
 
             // Fill TextkListBox
-            foreach (var month in this.monthsList)
-            {
-                this.TextListBox.Items.Add(new TextBlock { Text = month });
-            }
+            this.TextListBox.DataSource = this.monthsList;
+            this.TextListBox.SelectedIndex = -1;
 
             // Fill CheckListBox
-            foreach (var month in this.monthsList)
+            this.CheckListBox.DataSource = this.monthsList;
+        }
+
+        private void SetTextButtonClick(object sender, System.EventArgs e)
+        {
+            this.TextBox1.Text = @"CARAMBA";
+        }
+
+        private void CheckBox1CheckedChanged(object sender, System.EventArgs e)
+        {
+            this.TextListBox.Enabled = this.CheckBox1.Checked;
+        }
+
+        private void ChangeEnabledButtonClick(object sender, System.EventArgs e)
+        {
+            this.TextBox2.Enabled = !this.TextBox2.Enabled;
+        }
+
+        private void CheckBox2CheckedChanged(object sender, System.EventArgs e)
+        {
+            var check = this.CheckBox2.Checked;
+            for (int i = 0; i < this.CheckListBox.Items.Count; ++i)
             {
-                this.CheckListBox.Items.Add(new CheckBox { Content = month });
+                this.CheckListBox.SetItemChecked(i, check);
             }
-        }
-
-        private void CheckBox1Checked(object sender, RoutedEventArgs e)
-        {
-            this.TextListBox.IsEnabled = true;
-        }
-
-        private void CheckBox1Unchecked(object sender, RoutedEventArgs e)
-        {
-            this.TextListBox.IsEnabled = false;
-        }
-
-        private void CheckBox2Checked(object sender, RoutedEventArgs e)
-        {
-            foreach (CheckBox checkBox in this.CheckListBox.Items)
-            {
-                checkBox.IsChecked = true;
-            }
-        }
-
-        private void CheckBox2Unchecked(object sender, RoutedEventArgs e)
-        {
-            foreach (CheckBox checkBox in this.CheckListBox.Items)
-            {
-                checkBox.IsChecked = false;
-            }
-        }
-
-        private void SetTextButtonClick(object sender, RoutedEventArgs e)
-        {
-            this.TextBox1.Text = "CARAMBA";
-        }
-
-        private void ChangeEnabledButtonClick(object sender, RoutedEventArgs e)
-        {
-            this.TextBox2.IsEnabled = !this.TextBox2.IsEnabled;
         }
     }
 }
