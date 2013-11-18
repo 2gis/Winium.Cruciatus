@@ -28,6 +28,8 @@ namespace Cruciatus.Elements
     {
         private const int MouseMoveSpeed = 2500;
 
+        private const int MaxClickCount = 10;
+
         private AutomationElement parent;
 
         public CheckBox()
@@ -85,25 +87,29 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает состояние чекбокса.
-        /// </summary>
-        public CheckState CheckState
+        public bool? IsChecked
         {
             get
             {
-                var toggleState = this.GetPropertyValue<CheckBox, ToggleState>(TogglePattern.ToggleStateProperty);
-                switch (toggleState)
+                switch (this.ToggleState)
                 {
                     case ToggleState.On:
-                        return CheckState.Checked;
+                        return true;
 
                     case ToggleState.Off:
-                        return CheckState.Unchecked;
+                        return false;
 
                     default:
-                        return CheckState.Indeterminate;
+                        return null;
                 }
+            }
+        }
+
+        internal ToggleState ToggleState
+        {
+            get
+            {
+                return this.GetPropertyValue<CheckBox, ToggleState>(TogglePattern.ToggleStateProperty);
             }
         }
 
@@ -141,32 +147,26 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Устанавливает чекбоксу состояние сheck.
-        /// </summary>
-        public void Check()
+        public bool Check()
         {
-            var oldState = this.CheckState;
-            if (oldState == CheckState.Checked)
+            var oldState = this.IsChecked;
+            if (oldState != null && oldState.Value)
             {
-                return;
+                return true;
             }
 
-            this.SetState(CheckState.Checked);
+            return this.SetState(ToggleState.On);
         }
 
-        /// <summary>
-        /// Устанавливает чекбоксу состояние uncheck.
-        /// </summary>
-        public void UnCheck()
+        public bool UnCheck()
         {
-            var oldState = this.CheckState;
-            if (oldState == CheckState.Unchecked)
+            var oldState = this.IsChecked;
+            if (oldState != null && !oldState.Value)
             {
-                return;
+                return true;
             }
 
-            this.SetState(CheckState.Unchecked);
+            return this.SetState(ToggleState.Off);
         }
 
         public void LazyInitialize(AutomationElement parent, string automationId)
@@ -186,13 +186,7 @@ namespace Cruciatus.Elements
             return this;
         }
         
-        /// <summary>
-        /// Устанавливает чекбоксу указанное состояние.
-        /// </summary>
-        /// <param name="newState">
-        /// Устанавливаемое состояние.
-        /// </param>
-        private void SetState(CheckState newState)
+        private bool SetState(ToggleState newState)
         {
             if (!this.IsEnabled)
             {
@@ -201,18 +195,15 @@ namespace Cruciatus.Elements
 
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
-            int maxClickCount = 4;
-            while (this.CheckState != newState && maxClickCount != 0)
+
+            int maxClickCount = MaxClickCount;
+            while (this.ToggleState != newState && maxClickCount != 0)
             {
                 Mouse.Click(this.ClickablePoint);
                 --maxClickCount;
             }
 
-            if (maxClickCount == 0)
-            {
-                // TODO: Исключение вида - не удалось установить состояние newState контролу automationId
-                throw new Exception("Не получилось установить состояние чекбоксу.");
-            }
+            return maxClickCount != 0;
         }
 
         /// <summary>
