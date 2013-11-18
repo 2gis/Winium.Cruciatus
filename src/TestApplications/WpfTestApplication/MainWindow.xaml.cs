@@ -67,6 +67,18 @@ namespace WpfTestApplication
             {
                 this.CheckListBox.Items.Add(new CheckBox { Content = month });
             }
+
+            // Fill RibbonTextComboBox
+            foreach (var size in this.timeSizeList)
+            {
+                this.TextRibbonGalleryCategory.Items.Add(new TextBlock { Text = size });
+            }
+
+            // Fill RibbonCheckComboBox
+            foreach (var size in this.timeSizeList)
+            {
+                this.CheckRibbonGalleryCategory.Items.Add(new CheckBox { Content = size });
+            }
         }
 
         private void CheckBox1Checked(object sender, RoutedEventArgs e)
