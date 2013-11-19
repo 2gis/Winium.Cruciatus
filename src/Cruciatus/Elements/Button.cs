@@ -120,22 +120,19 @@ namespace Cruciatus.Elements
             this.AutomationId = automationId;
         }
 
-        /// <summary>
-        /// Эмулирует нажатие кнопки мыши на данном элементе управления.
-        /// </summary>
-        /// <param name="mouseButton">
-        /// Используемая кнопка мыши для нажатия.
-        /// </param>
-        public void Click(MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
             if (!this.IsEnabled)
             {
-                throw new ElementNotEnabledException("Кнопка отключена, нельзя выполнить нажатие.");
+                this.LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", this.ToString());
+                return false;
             }
 
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
             Mouse.Click(mouseButton);
+
+            return true;
         }
 
         internal override Button FromAutomationElement(AutomationElement element)

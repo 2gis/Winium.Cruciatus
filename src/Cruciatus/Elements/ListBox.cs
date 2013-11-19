@@ -71,20 +71,61 @@ namespace Cruciatus.Elements
             }
         }
 
+        public bool Contains<T>(uint number) where T : BaseElement<T>, new()
+        {
+            return this.SearchElement<T>(number) != null;
+        }
+
+        public bool Contains<T>(string name) where T : BaseElement<T>, new()
+        {
+            return this.SearchElement<T>(name) != null;
+        }
+
+        public bool ScrollTo<T>(uint number) where T : BaseElement<T>, new()
+        {
+            var searchElement = this.SearchElement<T>(number);
+            if (searchElement == null)
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0} количество элементов меньше заданного номера ({1}).",
+                    this.ToString(),
+                    number);
+                return false;
+            }
+
+            return this.Scrolling(searchElement);
+        }
+
+        public bool ScrollTo<T>(string name) where T : BaseElement<T>, new()
+        {
+            var searchElement = this.SearchElement<T>(name);
+            if (searchElement == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                return false;
+            }
+
+            return this.Scrolling(searchElement);
+        }
+
         public T Item<T>(uint number) where T : BaseElement<T>, new()
         {
             var item = new T();
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
-
-            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
-                elem => elem.FindAll(TreeScope.Subtree, condition),
-                collection => collection.Count <= number,
-                collection => collection.Count > number ? collection[(int)number] : null);
+            var searchElement = this.SearchElement<T>(number);
 
             if (searchElement == null)
             {
-                // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
-                throw new Exception("не нашлось элемента в списке");
+                this.LastErrorMessage = string.Format(
+                    "В {0} количество элементов меньше заданного номера ({1}).",
+                    this.ToString(),
+                    number);
+                return null;
+            }
+
+            if (!this.Element.GeometricallyContains(searchElement))
+            {
+                this.LastErrorMessage = string.Format("В {0} элемент под номером {1} вне видимости.", this.ToString(), number);
+                return null;
             }
 
             item.FromAutomationElement(searchElement);
@@ -94,19 +135,18 @@ namespace Cruciatus.Elements
         public T Item<T>(string name) where T : BaseElement<T>, new()
         {
             var item = new T();
-            var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
-                new PropertyCondition(AutomationElement.NameProperty, name));
-            
-            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
-                elem => elem.FindFirst(TreeScope.Subtree, condition),
-                elem => elem == null,
-                elem => elem);
+            var searchElement = this.SearchElement<T>(name);
 
             if (searchElement == null)
             {
-                // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
-                throw new Exception("не нашлось элемента в списке");
+                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                return null;
+            }
+
+            if (!this.Element.GeometricallyContains(searchElement))
+            {
+                this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} вне видимости.", this.ToString(), name);
+                return null;
             }
 
             item.FromAutomationElement(searchElement);
@@ -137,6 +177,46 @@ namespace Cruciatus.Elements
             {
                 throw new ElementNotFoundException(this.ToString());
             }
+        }
+
+        private AutomationElement SearchElement<T>(uint number) where T : BaseElement<T>, new()
+        {
+            var item = new T();
+            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
+
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindAll(TreeScope.Subtree, condition),
+                collection => collection.Count <= number,
+                collection => collection.Count > number ? collection[(int)number] : null);
+
+            return searchElement;
+        }
+
+        private AutomationElement SearchElement<T>(string name) where T : BaseElement<T>, new()
+        {
+            var item = new T();
+            var condition = new AndCondition(
+                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                new PropertyCondition(AutomationElement.NameProperty, name));
+
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindFirst(TreeScope.Subtree, condition),
+                elem => elem == null,
+                elem => elem);
+
+            return searchElement;
+        }
+
+        private bool Scrolling(AutomationElement innerElement)
+        {
+            var scrollingResult = this.Element.Scrolling(innerElement);
+            if (!scrollingResult)
+            {
+                this.LastErrorMessage = string.Format("Элемент {0} не поддерживает прокрутку содержимого.", this.ToString());
+                return false;
+            }
+
+            return true;
         }
     }
 }

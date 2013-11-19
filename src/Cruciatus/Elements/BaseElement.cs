@@ -15,6 +15,8 @@ namespace Cruciatus.Elements
     {
         internal AutomationElement element;
 
+        public string LastErrorMessage { get; internal set; }
+
         internal abstract string ClassName { get; }
 
         internal abstract string AutomationId { get; set; }

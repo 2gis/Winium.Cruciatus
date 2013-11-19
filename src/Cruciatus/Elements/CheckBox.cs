@@ -190,7 +190,8 @@ namespace Cruciatus.Elements
         {
             if (!this.IsEnabled)
             {
-                throw new ElementNotEnabledException("Чекбокс отключен, нельзя изменить состояние.");
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя изменить состояние.", this.ToString());
+                return false;
             }
 
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
