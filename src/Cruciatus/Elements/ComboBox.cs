@@ -68,7 +68,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        public ExpandCollapseState State
+        internal ExpandCollapseState ExpandCollapseState
         {
             get
             {
@@ -116,25 +116,33 @@ namespace Cruciatus.Elements
             this.AutomationId = automationId;
         }
 
-        public void Expand()
+        public bool Expand()
         {
-            if (this.State != ExpandCollapseState.Expanded)
+            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
             {
-                this.Click();
+                return this.Click();
             }
+
+            return true;
         }
 
-        public void Collapse()
+        public bool Collapse()
         {
-            if (this.State != ExpandCollapseState.Collapsed)
+            if (this.ExpandCollapseState != ExpandCollapseState.Collapsed)
             {
-                this.Click();
+                return this.Click();
             }
+
+            return true;
         }
 
         public T Item<T>(uint number) where T : BaseElement<T>, new()
         {
-            this.Expand();
+            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            {
+                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                return null;
+            }
 
             var item = new T();
             var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
@@ -142,7 +150,13 @@ namespace Cruciatus.Elements
             var items = this.Element.FindAll(TreeScope.Subtree, condition);
             if (items.Count <= number)
             {
-                throw new ArgumentOutOfRangeException("number");
+                this.LastErrorMessage =
+                    string.Format(
+                        "Номер запрошенного элемента ({0}) превышает количество элементов ({1}) в {2}.",
+                        number,
+                        items.Count,
+                        this.ToString());
+                return null;
             }
 
             item.FromAutomationElement(items[(int)number]);
@@ -151,7 +165,11 @@ namespace Cruciatus.Elements
 
         public T Item<T>(string name) where T : BaseElement<T>, new()
         {
-            this.Expand();
+            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            {
+                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                return null;
+            }
 
             var item = new T();
             var condition = new AndCondition(
@@ -161,8 +179,8 @@ namespace Cruciatus.Elements
             var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
             if (elem == null)
             {
-                // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
-                throw new Exception("не нашлось элемента в списке комбобокса");
+                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                return null;
             }
 
             item.FromAutomationElement(elem);
@@ -181,11 +199,12 @@ namespace Cruciatus.Elements
             return this;
         }
 
-        private void Click(MouseButtons mouseButton = MouseButtons.Left)
+        private bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
             if (!this.IsEnabled)
             {
-                throw new ElementNotEnabledException("Выпадающий список отключен, нельзя выполнить нажатие.");
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
+                return false;
             }
 
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
@@ -194,9 +213,11 @@ namespace Cruciatus.Elements
 
             if (!this.Element.WaitForElementReady())
             {
-                // TODO: Стопить ли все исключением, если время ожидания готовности истекло
-                throw new Exception("Время ожидания готовности для выпадающего списка истекло!");
+                this.LastErrorMessage = string.Format("Время ожидания готовности для {0} истекло.", this.ToString());
+                return false;
             }
+
+            return true;
         }
 
         /// <summary>

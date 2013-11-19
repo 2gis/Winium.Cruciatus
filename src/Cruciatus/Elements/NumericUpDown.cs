@@ -10,7 +10,6 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;

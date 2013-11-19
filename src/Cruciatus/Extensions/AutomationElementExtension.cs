@@ -111,6 +111,9 @@ namespace Cruciatus.Extensions
             var scrollPattern = element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern != null)
             {
+                // Запоминаем начальное состояние прокрутки
+                var startVerticalScrollPercent = scrollPattern.Current.VerticalScrollPercent;
+
                 element.MoveMouseToCenter();
 
                 scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
@@ -126,13 +129,8 @@ namespace Cruciatus.Extensions
                     searchElement = findFunc(element);
                 }
 
-                if (!compareFunc(searchElement))
-                {
-                    while (!element.GeometricallyContains(getAutomationElementFunc(searchElement)))
-                    {
-                        scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-                    }
-                }
+                // Возвращаем начальное состояние прокрутки
+                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, startVerticalScrollPercent);
             }
             else
             {
@@ -158,6 +156,28 @@ namespace Cruciatus.Extensions
             }
 
             return (TOut)obj;
+        }
+
+        public static bool Scrolling(this AutomationElement externalElement, AutomationElement internalElement)
+        {
+            if (externalElement.GeometricallyContains(internalElement))
+            {
+                return true;
+            }
+
+            var scrollPattern = externalElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            if (scrollPattern == null)
+            {
+                return false;
+            }
+
+            do
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+            }
+            while (!externalElement.GeometricallyContains(internalElement));
+
+            return true;
         }
     }
 }
