@@ -16,14 +16,30 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
+    /// <summary>
+    /// Представляет элемент управления таблица.
+    /// </summary>
     public class DataGrid : BaseElement<DataGrid>, ILazyInitialize
     {
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
+        /// </summary>
         public DataGrid()
         {
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для таблицы.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор таблицы.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public DataGrid(AutomationElement parent, string automationId)
         {
             if (parent == null)
@@ -36,10 +52,19 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
+        /// <summary>
+        /// Возвращает количество строк в таблице.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Таблица не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public int RowCount
         {
             get
@@ -48,6 +73,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
         internal override string ClassName
         {
             get
@@ -56,7 +84,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает уникальный идентификатор выпадающего списка.
+        /// </summary>
         internal override sealed string AutomationId { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем выпадающего списка.
+        /// </summary>
+        internal AutomationElement Parent { get; set; }
 
         internal override ControlType GetType
         {
@@ -66,6 +102,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает инициализированный элемент таблицы.
+        /// </summary>
         internal override AutomationElement Element
         {
             get
@@ -81,7 +120,7 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
@@ -91,10 +130,13 @@ namespace Cruciatus.Elements
             return this;
         }
 
+        /// <summary>
+        /// Поиск таблицы в родительском элементе.
+        /// </summary>
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
+            this.element = this.Parent.FindFirst(
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 

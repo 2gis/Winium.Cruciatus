@@ -21,16 +21,32 @@ namespace Cruciatus.Elements
 
     using ControlType = System.Windows.Automation.ControlType;
 
+    /// <summary>
+    /// Представляет элемент управления выпадающий список.
+    /// </summary>
     public class ComboBox : BaseElement<ComboBox>, ILazyInitialize
     {
         private const int MouseMoveSpeed = 2500;
 
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
+        /// </summary>
         public ComboBox()
         {
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для выпадающего списка.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор выпадающего списка.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public ComboBox(AutomationElement parent, string automationId)
         {
             if (parent == null)
@@ -43,13 +59,19 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли данный элемент управления.
+        /// Возвращает значение, указывающее, включен ли выпадающий список.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Выпадающий список не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
@@ -58,6 +80,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает координаты точки, внутри выпадающего списка, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Выпадающий список не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public System.Drawing.Point ClickablePoint
         {
             get
@@ -68,6 +99,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает состояние раскрытости выпадающего списка.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Выпадающий список не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         internal ExpandCollapseState ExpandCollapseState
         {
             get
@@ -76,6 +116,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
         internal override string ClassName
         {
             get
@@ -84,7 +127,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает уникальный идентификатор выпадающего списка.
+        /// </summary>
         internal override sealed string AutomationId { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем выпадающего списка.
+        /// </summary>
+        internal AutomationElement Parent { get; set; }
 
         internal override ControlType GetType
         {
@@ -95,7 +146,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент.
+        /// Возвращает инициализированный элемент выпадающего списка.
         /// </summary>
         internal override AutomationElement Element
         {
@@ -112,79 +163,147 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
+        /// <summary>
+        /// Раскрывает выпадающий список.
+        /// </summary>
+        /// <returns>
+        /// Значение true если удалось раскрыть либо если уже раскрыт; в противном случае значение - false.
+        /// </returns>
         public bool Expand()
         {
-            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            try
             {
-                return this.Click();
-            }
+                if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+                {
+                    return this.Click();
+                }
 
-            return true;
+                return true;
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
         }
 
+        /// <summary>
+        /// Сворачивает выпадающий список.
+        /// </summary>
+        /// <returns>
+        /// Значение true если удалось свернуть либо если уже свернут; в противном случае значение - false.
+        /// </returns>
         public bool Collapse()
         {
-            if (this.ExpandCollapseState != ExpandCollapseState.Collapsed)
+            try
             {
-                return this.Click();
-            }
+                if (this.ExpandCollapseState != ExpandCollapseState.Collapsed)
+                {
+                    return this.Click();
+                }
 
-            return true;
+                return true;
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
         }
 
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
         public T Item<T>(uint number) where T : BaseElement<T>, new()
         {
-            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            try
             {
-                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+                {
+                    this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                    return null;
+                }
+
+                var item = new T();
+                var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
+
+                var items = this.Element.FindAll(TreeScope.Subtree, condition);
+                if (items.Count <= number)
+                {
+                    this.LastErrorMessage =
+                        string.Format(
+                            "Номер запрошенного элемента ({0}) превышает количество элементов ({1}) в {2}.",
+                            number,
+                            items.Count,
+                            this.ToString());
+                    return null;
+                }
+
+                item.FromAutomationElement(items[(int)number]);
+                return item;
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
                 return null;
             }
-
-            var item = new T();
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
-
-            var items = this.Element.FindAll(TreeScope.Subtree, condition);
-            if (items.Count <= number)
-            {
-                this.LastErrorMessage =
-                    string.Format(
-                        "Номер запрошенного элемента ({0}) превышает количество элементов ({1}) в {2}.",
-                        number,
-                        items.Count,
-                        this.ToString());
-                return null;
-            }
-
-            item.FromAutomationElement(items[(int)number]);
-            return item;
         }
 
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
         public T Item<T>(string name) where T : BaseElement<T>, new()
         {
-            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            try
             {
-                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
-                return null;
-            }
+                if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+                {
+                    this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                    return null;
+                }
 
-            var item = new T();
-            var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
-                new PropertyCondition(AutomationElement.NameProperty, name));
+                var item = new T();
+                var condition = new AndCondition(
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
             
-            var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
-            if (elem == null)
+                var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
+                if (elem == null)
+                {
+                    this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                    return null;
+                }
+
+                item.FromAutomationElement(elem);
+                return item;
+            }
+            catch (Exception exc)
             {
-                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                this.LastErrorMessage = exc.Message;
                 return null;
             }
-
-            item.FromAutomationElement(elem);
-            return item;
         }
 
         internal override ComboBox FromAutomationElement(AutomationElement element)
@@ -199,34 +318,51 @@ namespace Cruciatus.Elements
             return this;
         }
 
+        /// <summary>
+        /// Выполняет нажатие по выпадающему списку.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на выпадающий список удалось; в противном случае значение - false.
+        /// </returns>
         private bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
-            if (!this.IsEnabled)
+            try
             {
-                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
+                if (!this.IsEnabled)
+                {
+                    this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
+                    return false;
+                }
+
+                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.Move(this.ClickablePoint);
+                Mouse.Click(mouseButton);
+
+                if (!this.Element.WaitForElementReady())
+                {
+                    this.LastErrorMessage = string.Format("Время ожидания готовности для {0} истекло.", this.ToString());
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
                 return false;
             }
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(this.ClickablePoint);
-            Mouse.Click(mouseButton);
-
-            if (!this.Element.WaitForElementReady())
-            {
-                this.LastErrorMessage = string.Format("Время ожидания готовности для {0} истекло.", this.ToString());
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>
-        /// Поиск текущего элемента в родительском
+        /// Поиск выпадающего списка в родительском элементе.
         /// </summary>
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
+            this.element = this.Parent.FindFirst(
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 

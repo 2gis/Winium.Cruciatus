@@ -10,20 +10,37 @@
 namespace Cruciatus.Elements
 {
     using System;
+    using System.Runtime.InteropServices;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
+    /// <summary>
+    /// Представляет элемент управления список.
+    /// </summary>
     public class ListBox : BaseElement<ListBox>, ILazyInitialize
     {
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
+        /// </summary>
         public ListBox()
         {
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для списка.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор списка.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public ListBox(AutomationElement parent, string automationId)
         {
             if (parent == null)
@@ -36,10 +53,13 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
         internal override string ClassName
         {
             get
@@ -48,7 +68,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает уникальный идентификатор списка.
+        /// </summary>
         internal override sealed string AutomationId { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем списка.
+        /// </summary>
+        internal AutomationElement Parent { get; set; }
 
         internal override ControlType GetType
         {
@@ -58,6 +86,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает инициализированный элемент списка.
+        /// </summary>
         internal override AutomationElement Element
         {
             get
@@ -71,19 +102,55 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Проверяет, если ли в списке элемент заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
         public bool Contains<T>(uint number) where T : BaseElement<T>, new()
         {
-            return this.SearchElement<T>(number) != null;
+            return this.SearchElement(number, new T().GetType) != null;
         }
 
+        /// <summary>
+        /// Проверяет, если ли в списке элемент заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
         public bool Contains<T>(string name) where T : BaseElement<T>, new()
         {
-            return this.SearchElement<T>(name) != null;
+            return this.SearchElement(name, new T().GetType) != null;
         }
 
+        /// <summary>
+        /// Прокручивает список до элемента заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
         public bool ScrollTo<T>(uint number) where T : BaseElement<T>, new()
         {
-            var searchElement = this.SearchElement<T>(number);
+            var searchElement = this.SearchElement(number, new T().GetType);
             if (searchElement == null)
             {
                 this.LastErrorMessage = string.Format(
@@ -96,9 +163,21 @@ namespace Cruciatus.Elements
             return this.Scrolling(searchElement);
         }
 
+        /// <summary>
+        /// Прокручивает список до элемента заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
         public bool ScrollTo<T>(string name) where T : BaseElement<T>, new()
         {
-            var searchElement = this.SearchElement<T>(name);
+            var searchElement = this.SearchElement(name, new T().GetType);
             if (searchElement == null)
             {
                 this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
@@ -108,10 +187,22 @@ namespace Cruciatus.Elements
             return this.Scrolling(searchElement);
         }
 
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
         public T Item<T>(uint number) where T : BaseElement<T>, new()
         {
             var item = new T();
-            var searchElement = this.SearchElement<T>(number);
+            var searchElement = this.SearchElement(number, item.GetType);
 
             if (searchElement == null)
             {
@@ -132,10 +223,22 @@ namespace Cruciatus.Elements
             return item;
         }
 
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
         public T Item<T>(string name) where T : BaseElement<T>, new()
         {
             var item = new T();
-            var searchElement = this.SearchElement<T>(name);
+            var searchElement = this.SearchElement(name, item.GetType);
 
             if (searchElement == null)
             {
@@ -155,7 +258,7 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
@@ -165,10 +268,13 @@ namespace Cruciatus.Elements
             return this;
         }
 
+        /// <summary>
+        /// Поиск списка в родительском элементе.
+        /// </summary>
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
+            this.element = this.Parent.FindFirst(
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 
@@ -179,10 +285,21 @@ namespace Cruciatus.Elements
             }
         }
 
-        private AutomationElement SearchElement<T>(uint number) where T : BaseElement<T>, new()
+        /// <summary>
+        /// Непосредственный поиск AutomationElement с заданными параметрами.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <param name="type">
+        /// Тип элемента.
+        /// </param>
+        /// <returns>
+        /// Элемент если найден; в противном случае - null.
+        /// </returns>
+        private AutomationElement SearchElement(uint number, ControlType type)
         {
-            var item = new T();
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
+            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, type);
 
             var searchElement = this.Element.SearchSpecificElementConsideringScroll(
                 elem => elem.FindAll(TreeScope.Subtree, condition),
@@ -192,11 +309,22 @@ namespace Cruciatus.Elements
             return searchElement;
         }
 
-        private AutomationElement SearchElement<T>(string name) where T : BaseElement<T>, new()
+        /// <summary>
+        /// Непосредственный поиск AutomationElement с заданными параметрами.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <param name="type">
+        /// Тип элемента.
+        /// </param>
+        /// <returns>
+        /// Элемент если найден; в противном случае - null.
+        /// </returns>
+        private AutomationElement SearchElement(string name, ControlType type)
         {
-            var item = new T();
             var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                new PropertyCondition(AutomationElement.ControlTypeProperty, type),
                 new PropertyCondition(AutomationElement.NameProperty, name));
 
             var searchElement = this.Element.SearchSpecificElementConsideringScroll(
@@ -207,6 +335,15 @@ namespace Cruciatus.Elements
             return searchElement;
         }
 
+        /// <summary>
+        /// Непосредственная прокрутка до заданного AutomationElement.
+        /// </summary>
+        /// <param name="innerElement">
+        /// Элемент до которого надо прокрутить.
+        /// </param>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
         private bool Scrolling(AutomationElement innerElement)
         {
             var scrollingResult = this.Element.Scrolling(innerElement);

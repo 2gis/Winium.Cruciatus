@@ -3,7 +3,7 @@
 //   Cruciatus
 // </copyright>
 // <summary>
-//   Представляет элемент окно.
+//   Представляет элемент управления вкладка.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ namespace Cruciatus.Elements
     using ControlType = System.Windows.Automation.ControlType;
 
     /// <summary>
-    /// Представляет элемент вкладка.
+    /// Представляет элемент управления вкладка.
     /// </summary>
     public abstract class TabItem : BaseElement<TabItem>, ILazyInitialize
     {
@@ -31,12 +31,25 @@ namespace Cruciatus.Elements
 
         private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
 
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
+        /// </summary>
         protected TabItem()
         {
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для вкладки.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор вкладки.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         protected TabItem(AutomationElement parent, string automationId)
         {
             if (parent == null)
@@ -49,10 +62,19 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
+        /// <summary>
+        /// Возвращает значение, указывающее, включена ли вкладка.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Вкладка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
@@ -61,6 +83,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает значение, указывающее, выбрана ли вкладка.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Вкладка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsSelection
         {
             get
@@ -69,6 +100,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает координаты точки, внутри вкладки, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Вкладка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public System.Drawing.Point ClickablePoint
         {
             get
@@ -79,6 +119,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
         internal override string ClassName
         {
             get
@@ -87,7 +130,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает уникальный идентификатор кнопки.
+        /// </summary>
         internal override sealed string AutomationId { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем кнопки.
+        /// </summary>
+        internal AutomationElement Parent { get; set; }
 
         internal override ControlType GetType
         {
@@ -97,6 +148,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает инициализированный элемент вкладки.
+        /// </summary>
         internal override AutomationElement Element
         {
             get
@@ -112,8 +166,37 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
+        }
+
+        /// <summary>
+        /// Выбирает вкладку текущей.
+        /// </summary>
+        /// <returns>
+        /// Значение true если удалось выбрать либо уже выбрана; в противном случае значение - false.
+        /// </returns>
+        public bool Select()
+        {
+            try
+            {
+                if (!this.IsSelection)
+                {
+                    this.Click();
+                    if (!this.Element.WaitForElementReady())
+                    {
+                        this.LastErrorMessage = "Время ожидания готовности вкладки истекло.";
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
         }
 
         internal override TabItem FromAutomationElement(AutomationElement element)
@@ -127,28 +210,50 @@ namespace Cruciatus.Elements
             return this;
         }
 
-        protected T GetElement<T>(string automationId) where T : ILazyInitialize, new()
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным уникальным идентификатором.
+        /// </summary>
+        /// <param name="automationId">
+        /// Уникальный идентификатор элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        protected T GetElement<T>(string automationId) where T : class, ILazyInitialize, new()
         {
-            if (!this.objects.ContainsKey(automationId))
+            try
             {
-                var item = new T();
-                item.LazyInitialize(this.Element, automationId);
-                this.objects.Add(automationId, item);
-            }
-
-            if (!this.IsSelection)
-            {
-                this.Click();
-                if (!this.Element.WaitForElementReady())
+                if (!this.IsSelection)
                 {
-                    // TODO: Стопить ли все исключением, если время ожидания готовности истекло
-                    throw new Exception("Время ожидания готовности вкладки истекло!");
+                    this.LastErrorMessage = "Вкладка не выбрана.";
+                    return null;
                 }
-            }
 
-            return (T)this.objects[automationId];
+                if (!this.objects.ContainsKey(automationId))
+                {
+                    var item = new T();
+                    item.LazyInitialize(this.Element, automationId);
+                    this.objects.Add(automationId, item);
+                }
+
+                return (T)this.objects[automationId];
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return null;
+            }
         }
 
+        /// <summary>
+        /// Выполняет нажатие по вкладке.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// </param>
         private void Click(MouseButtons mouseButton = MouseButtons.Left)
         {
             if (!this.IsEnabled)
@@ -162,12 +267,12 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Поиск текущего элемента в родительском
+        /// Поиск вкладки в родительском элементе.
         /// </summary>
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
+            this.element = this.Parent.FindFirst(
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 

@@ -17,6 +17,30 @@ namespace Cruciatus.Extensions
 
     public static class CruciatusBaseElementExtension
     {
+        /// <summary>
+        /// Возвращает значение заданного свойства, приведенное к указанному типу.
+        /// </summary>
+        /// <param name="baseElement">
+        /// Текущий элемент, свойство которого необходимо получить.
+        /// </param>
+        /// <param name="property">
+        /// Свойство, которое необходимо получить.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента Круциатуса.
+        /// </typeparam>
+        /// <typeparam name="TOut">
+        /// Тип значения получаемого свойства.
+        /// </typeparam>
+        /// <returns>
+        /// Значение заданного свойства, приведенное к указанному типу.
+        /// </returns>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Элемент не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// Нельзя привести значение свойства к указанному типу.
+        /// </exception>
         internal static TOut GetPropertyValue<T, TOut>(this BaseElement<T> baseElement, AutomationProperty property)
         {
             try

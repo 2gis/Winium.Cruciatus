@@ -28,8 +28,9 @@ namespace Cruciatus.Elements
     {
         private const int MouseMoveSpeed = 2500;
 
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="Button"/>.
+        /// </summary>
         public Button()
         {
         }
@@ -43,6 +44,9 @@ namespace Cruciatus.Elements
         /// <param name="automationId">
         /// Уникальный идентификатор кнопки.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public Button(AutomationElement parent, string automationId)
         {
             if (parent == null)
@@ -55,13 +59,19 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли данный элемент управления.
+        /// Возвращает значение, указывающее, включена ли кнопка.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Кнопка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
@@ -70,6 +80,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает координаты точки, внутри кнопки, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Кнопка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public System.Drawing.Point ClickablePoint
         {
             get
@@ -80,6 +99,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
         internal override string ClassName
         {
             get
@@ -88,7 +110,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает уникальный идентификатор кнопки.
+        /// </summary>
         internal override sealed string AutomationId { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем кнопки.
+        /// </summary>
+        internal AutomationElement Parent { get; set; }
 
         internal override ControlType GetType
         {
@@ -99,7 +129,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент.
+        /// Возвращает инициализированный элемент кнопки.
         /// </summary>
         internal override AutomationElement Element
         {
@@ -116,21 +146,38 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
+        /// <summary>
+        /// Выполняет нажатие по кнопке.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
+        /// </returns>
         public bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
-            if (!this.IsEnabled)
+            try
             {
-                this.LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", this.ToString());
+                if (!this.IsEnabled)
+                {
+                    this.LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", this.ToString());
+                    return false;
+                }
+
+                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.Move(this.ClickablePoint);
+                Mouse.Click(mouseButton);
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
                 return false;
             }
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(this.ClickablePoint);
-            Mouse.Click(mouseButton);
 
             return true;
         }
@@ -147,12 +194,12 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Поиск текущего элемента в родительском
+        /// Поиск кнопки в родительском элементе.
         /// </summary>
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
+            this.element = this.Parent.FindFirst(
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 

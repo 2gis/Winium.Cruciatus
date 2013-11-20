@@ -29,8 +29,9 @@ namespace Cruciatus.Elements
     {
         private const int MouseMoveSpeed = 2500;
 
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TextBox"/>.
+        /// </summary>
         public TextBox()
         {
         }
@@ -42,8 +43,11 @@ namespace Cruciatus.Elements
         /// Элемент, являющийся родителем для текстового поля.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор элемента.
+        /// Уникальный идентификатор текстового поля.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public TextBox(AutomationElement parent, string automationId)
         {
             if (parent == null)
@@ -56,13 +60,19 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли данный элемент управления.
+        /// Возвращает значение, указывающее, включено ли текстовое поле.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
@@ -71,6 +81,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает координаты точки, внутри текстового поля, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public System.Drawing.Point ClickablePoint
         {
             get
@@ -81,6 +100,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает значение, указывающее, доступно ли текстовое поле только для чтения.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsReadOnly
         {
             get
@@ -92,6 +120,18 @@ namespace Cruciatus.Elements
         /// <summary>
         /// Возвращает или задает текст в данном элементе управления.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        /// <exception cref="ElementNotEnabledException">
+        /// Текстовое поле не включено.
+        /// </exception>
+        /// <exception cref="ReadOnlyException">
+        /// Текстовое поле доступно только для чтения.
+        /// </exception>
         public string Text
         {
             get
@@ -127,6 +167,9 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
         internal override string ClassName
         {
             get
@@ -135,7 +178,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает уникальный идентификатор кнопки.
+        /// </summary>
         internal override sealed string AutomationId { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем кнопки.
+        /// </summary>
+        internal AutomationElement Parent { get; set; }
 
         internal override ControlType GetType
         {
@@ -146,7 +197,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент.
+        /// Возвращает инициализированный элемент текстового поля.
         /// </summary>
         internal override AutomationElement Element
         {
@@ -163,7 +214,7 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
+            this.Parent = parent;
             this.AutomationId = automationId;
         }
 
@@ -179,11 +230,11 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Поиск элемента управления в указанном процессе.
+        /// Поиск текстового поля в родительском элементе.
         /// </summary>
         private void Find()
         {
-            this.element = this.parent.FindFirst(
+            this.element = this.Parent.FindFirst(
                 TreeScope.Subtree,
                 new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
 

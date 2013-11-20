@@ -21,7 +21,19 @@ namespace Cruciatus.Extensions
 
         private const int WaitForReadyTimeout = 5000;
 
-        public static bool WaitForElementReady(this AutomationElement element)
+        /// <summary>
+        /// Ожидать готовности элемента заданное время или время по умолчанию.
+        /// </summary>
+        /// <param name="element">
+        /// Текущий элемент, у которого ожидаем готовность.
+        /// </param>
+        /// <param name="milliseconds">
+        /// Сколько времени ждать.
+        /// </param>
+        /// <returns>
+        /// Значение true если элемент оказался готов до истечения времени ожидания; в противном случае значение - false.
+        /// </returns>
+        public static bool WaitForElementReady(this AutomationElement element, int milliseconds = WaitForReadyTimeout)
         {
             var walker = new TreeWalker(Condition.TrueCondition);
             AutomationElement parent = element;
@@ -49,26 +61,41 @@ namespace Cruciatus.Extensions
             // ошибка при возврате false точно встречается
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var timeIsNotUp = windowPattern.WaitForInputIdle(WaitForReadyTimeout);
+            var timeIsNotUp = windowPattern.WaitForInputIdle(milliseconds);
             stopwatch.Stop();
 
             // Если результат true и время таймаута не вышло
-            if (timeIsNotUp && stopwatch.ElapsedMilliseconds < WaitForReadyTimeout)
+            if (timeIsNotUp && stopwatch.ElapsedMilliseconds < milliseconds)
             {
                 return true;
             }
 
             // Если результат false и время таймаута вышло
-            if (!timeIsNotUp && stopwatch.ElapsedMilliseconds > WaitForReadyTimeout)
+            if (!timeIsNotUp && stopwatch.ElapsedMilliseconds > milliseconds)
             {
                 return false;
             }
 
             // Иначе используем UITesting
             var control = UITestControlFactory.FromNativeElement(element, "UIA");
-            return control.WaitForControlReady(WaitForReadyTimeout);
+            return control.WaitForControlReady(milliseconds);
         }
 
+        /// <summary>
+        /// Проверка предположения, что заданный элемент геометрически внутри текущего.
+        /// </summary>
+        /// <param name="externalElement">
+        /// Текущий элемент.
+        /// </param>
+        /// <param name="internalElement">
+        /// Проверяемый элемент.
+        /// </param>
+        /// <returns>
+        /// Значение true если предположение верно; в противном случае значение - false.
+        /// </returns>
+        /// <exception cref="OperationCanceledException">
+        /// Операция прервана из-за ошибки.
+        /// </exception>
         public static bool GeometricallyContains(this AutomationElement externalElement, AutomationElement internalElement)
         {
             try
@@ -84,6 +111,15 @@ namespace Cruciatus.Extensions
             }
         }
 
+        /// <summary>
+        /// Перемещение курсора мыши в центр элемента.
+        /// </summary>
+        /// <param name="element">
+        /// Элемент, в центр которого перемещается курсор мыши.
+        /// </param>
+        /// <exception cref="OperationCanceledException">
+        /// Операция прервана из-за ошибки.
+        /// </exception>
         public static void MoveMouseToCenter(this AutomationElement element)
         {
             try
@@ -140,6 +176,27 @@ namespace Cruciatus.Extensions
             return getAutomationElementFunc(searchElement);
         }
 
+        /// <summary>
+        /// Возвращает значение заданного свойства, приведенное к указанному типу.
+        /// </summary>
+        /// <param name="element">
+        /// Текущий элемент, свойство которого необходимо получить.
+        /// </param>
+        /// <param name="property">
+        /// Свойство, которое необходимо получить.
+        /// </param>
+        /// <typeparam name="TOut">
+        /// Тип значения получаемого свойства.
+        /// </typeparam>
+        /// <returns>
+        /// Значение заданного свойства, приведенное к указанному типу.
+        /// </returns>
+        /// <exception cref="NotSupportedException">
+        /// Элемент не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// Нельзя привести значение свойства к указанному типу.
+        /// </exception>
         public static TOut GetPropertyValue<TOut>(this AutomationElement element, AutomationProperty property)
         {
             var obj = element.GetCurrentPropertyValue(property, true);
@@ -158,6 +215,18 @@ namespace Cruciatus.Extensions
             return (TOut)obj;
         }
 
+        /// <summary>
+        /// Прокручивает содержимое до заданного элемента.
+        /// </summary>
+        /// <param name="externalElement">
+        /// Текущий элемент, содержимое которого будет прокручивать.
+        /// </param>
+        /// <param name="internalElement">
+        /// Элемент до которого прокурчиваем.
+        /// </param>
+        /// <returns>
+        /// Значение true если прокрутили либо в этом не было необходимости; иначе прокрутка не поддерживается, значение - false.
+        /// </returns>
         public static bool Scrolling(this AutomationElement externalElement, AutomationElement internalElement)
         {
             if (externalElement.GeometricallyContains(internalElement))

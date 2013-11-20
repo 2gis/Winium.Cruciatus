@@ -24,17 +24,18 @@ namespace Cruciatus.Elements
     {
         private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
 
-        private AutomationElement parent;
-
         private AutomationElement element;
 
+        /// <summary>
+        /// Возвращает инициализированный элемент окна.
+        /// </summary>
         protected AutomationElement Element
         {
             get
             {
                 if (this.element == null)
                 {
-                    this.element = WindowFactory.GetChildWindowElement(this.parent, this.HeaderName);
+                    this.element = WindowFactory.GetChildWindowElement(this.Parent, this.HeaderName);
 
                     // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
                     object objectPattern;
@@ -52,7 +53,15 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Возвращает или задает имя заголовка окна.
+        /// </summary>
         private string HeaderName { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает элемент, который является родителем окна.
+        /// </summary>
+        private AutomationElement Parent { get; set; }
 
         public bool WaitForReady()
         {
@@ -61,18 +70,18 @@ namespace Cruciatus.Elements
 
         public void LazyInitialize(AutomationElement parent, string headerName)
         {
-            if (this.element != null || this.parent != null)
+            if (this.element != null || this.Parent != null)
             {
                 throw new LazyInitializeException("Попытка повторной инициализации дочернего окна " + headerName + ".\n");
             }
 
-            this.parent = parent;
+            this.Parent = parent;
             this.HeaderName = headerName;
         }
 
         public void LazyInitialize(AutomationElement element)
         {
-            if (this.element != null || this.parent != null)
+            if (this.element != null || this.Parent != null)
             {
                 throw new LazyInitializeException("Попытка повторной инициализации главного окна.\n");    
             }
