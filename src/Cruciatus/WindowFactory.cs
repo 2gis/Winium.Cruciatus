@@ -20,10 +20,10 @@ namespace Cruciatus
             return mainWindow;
         }
 
-        public static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string headerName)
+        public static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string automationId)
         {
-            var propertyCondition = new PropertyCondition(AutomationElement.NameProperty, headerName);
-            var window = mainWindow.FindFirst(TreeScope.Children, propertyCondition);
+            var propertyCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, automationId);
+            var window = mainWindow.FindFirst(TreeScope.Subtree, propertyCondition);
             return window;
         }
     }

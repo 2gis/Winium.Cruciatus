@@ -35,7 +35,7 @@ namespace Cruciatus.Elements
             {
                 if (this.element == null)
                 {
-                    this.element = WindowFactory.GetChildWindowElement(this.Parent, this.HeaderName);
+                    this.element = WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId);
 
                     // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
                     object objectPattern;
@@ -54,9 +54,9 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает или задает имя заголовка окна.
+        /// Возвращает или задает уникальный идентификатор окна.
         /// </summary>
-        private string HeaderName { get; set; }
+        private string AutomationId { get; set; }
 
         /// <summary>
         /// Возвращает или задает элемент, который является родителем окна.
@@ -68,15 +68,15 @@ namespace Cruciatus.Elements
             return this.Element.WaitForElementReady();
         }
 
-        public void LazyInitialize(AutomationElement parent, string headerName)
+        public void LazyInitialize(AutomationElement parent, string automationId)
         {
             if (this.element != null || this.Parent != null)
             {
-                throw new LazyInitializeException("Попытка повторной инициализации дочернего окна " + headerName + ".\n");
+                throw new LazyInitializeException("Попытка повторной инициализации дочернего окна " + automationId + ".\n");
             }
 
             this.Parent = parent;
-            this.HeaderName = headerName;
+            this.AutomationId = automationId;
         }
 
         public void LazyInitialize(AutomationElement element)
