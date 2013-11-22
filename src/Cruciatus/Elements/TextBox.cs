@@ -118,7 +118,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает или задает текст в данном элементе управления.
+        /// Возвращает текст из текстового поля.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
         /// Текстовое поле не поддерживает данное свойство.
@@ -126,44 +126,27 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        /// <exception cref="ElementNotEnabledException">
-        /// Текстовое поле не включено.
-        /// </exception>
-        /// <exception cref="ReadOnlyException">
-        /// Текстовое поле доступно только для чтения.
-        /// </exception>
         public string Text
         {
             get
             {
-                object pattern;
-                if (this.Element.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
+                try
                 {
-                    // Если текстовый шаблон поддерживается, то вернее получить текст так
-                    return ((TextPattern)pattern).DocumentRange.GetText(-1);
+                    object pattern;
+                    if (this.Element.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
+                    {
+                        // Если текстовый шаблон поддерживается, то вернее получить текст так
+                        return ((TextPattern)pattern).DocumentRange.GetText(-1);
+                    }
+
+                    // Иначе текст получается так
+                    return this.GetPropertyValue<TextBox, string>(ValuePattern.ValueProperty);
                 }
-
-                // Иначе текст получается так
-                return this.GetPropertyValue<TextBox, string>(ValuePattern.ValueProperty);
-            }
-
-            set
-            {
-                if (!this.IsEnabled)
+                catch (Exception exc)
                 {
-                    throw new ElementNotEnabledException("Текстовое поле отключено, нельзя заполнить текстом.");
+                    this.LastErrorMessage = exc.Message;
+                    return null;
                 }
-
-                if (this.IsReadOnly)
-                {
-                    throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
-                }
-
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(MouseButtons.Left);
-                Keyboard.SendKeys("^a");
-                Keyboard.SendKeys(value);
             }
         }
 
@@ -210,6 +193,50 @@ namespace Cruciatus.Elements
 
                 return this.element;
             }
+        }
+
+        /// <summary>
+        /// Устанавливает текст в текстовое поле.
+        /// </summary>
+        /// <param name="text">
+        /// Устанавливаемый текст.
+        /// </param>
+        /// <exception cref="ElementNotEnabledException">
+        /// Текстовое поле не включено.
+        /// </exception>
+        /// <exception cref="ReadOnlyException">
+        /// Текстовое поле доступно только для чтения.
+        /// </exception>
+        /// <returns>
+        /// Значение true если установить текст удалось; в противном случае значение - false.
+        /// </returns>
+        public bool SetText(string text)
+        {
+            try
+            {
+                if (!this.IsEnabled)
+                {
+                    throw new ElementNotEnabledException("Текстовое поле отключено, нельзя заполнить текстом.");
+                }
+
+                if (this.IsReadOnly)
+                {
+                    throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
+                }
+
+                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.Move(this.ClickablePoint);
+                Mouse.Click(MouseButtons.Left);
+                Keyboard.SendKeys("^a");
+                Keyboard.SendKeys(text);
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
         public void LazyInitialize(AutomationElement parent, string automationId)
