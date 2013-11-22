@@ -9,6 +9,7 @@
 
 namespace Cruciatus.Elements
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Windows.Automation;
@@ -26,6 +27,19 @@ namespace Cruciatus.Elements
 
         private AutomationElement element;
 
+        public string LastErrorMessage { get; internal set; }
+
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal string ClassName
+        {
+            get
+            {
+                return "Window";
+            }
+        }
+
         /// <summary>
         /// Возвращает инициализированный элемент окна.
         /// </summary>
@@ -36,6 +50,11 @@ namespace Cruciatus.Elements
                 if (this.element == null)
                 {
                     this.element = WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId);
+
+                    if (this.element == null)
+                    {
+                        throw new ElementNotFoundException(this.ToString());
+                    }
 
                     // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
                     object objectPattern;
@@ -89,16 +108,29 @@ namespace Cruciatus.Elements
             this.element = element;
         }
 
-        protected T GetElement<T>(string automationId) where T : ILazyInitialize, new()
+        public new string ToString()
         {
-            if (!this.objects.ContainsKey(automationId))
-            {
-                var item = new T();
-                item.LazyInitialize(this.Element, automationId);
-                this.objects.Add(automationId, item);
-            }
+            return string.Format("{0} (uid: {1})", this.ClassName, this.AutomationId ?? "nonUid");
+        }
 
-            return (T)this.objects[automationId];
+        protected virtual T GetElement<T>(string automationId) where T : class, ILazyInitialize, new()
+        {
+            try
+            {
+                if (!this.objects.ContainsKey(automationId))
+                {
+                    var item = new T();
+                    item.LazyInitialize(this.Element, automationId);
+                    this.objects.Add(automationId, item);
+                }
+
+                return (T)this.objects[automationId];
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return null;
+            }
         }
     }
 }
