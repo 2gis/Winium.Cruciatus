@@ -59,11 +59,21 @@ namespace Cruciatus.Elements
             }
         }
 
-        public void Click(MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(this.ClickablePoint);
-            Mouse.Click(mouseButton);
+            try
+            {
+                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.Move(this.ClickablePoint);
+                Mouse.Click(mouseButton);
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
         internal override TextBlock FromAutomationElement(AutomationElement element)
