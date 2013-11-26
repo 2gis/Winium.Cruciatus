@@ -156,14 +156,23 @@ namespace Cruciatus.Elements
         /// <param name="mouseButton">
         /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
         /// </param>
+        /// <param name="waitingTime">
+        /// Задает время ожидания на выполнение действия (миллисекунды).
+        /// </param>
         /// <returns>
         /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
         /// </returns>
-        public bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(MouseButtons mouseButton = MouseButtons.Left, int waitingTime = 5000)
         {
             try
             {
-                if (!this.IsEnabled)
+                var isEnabled = CruciatusFactory.WaitingValues(
+                    this,
+                    button => button.IsEnabled,
+                    value => value != true,
+                    waitingTime);
+
+                if (!isEnabled)
                 {
                     this.LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", this.ToString());
                     return false;
@@ -199,9 +208,11 @@ namespace Cruciatus.Elements
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.Parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            this.element = CruciatusFactory.WaitingValues(
+                this.Parent,
+                parent => parent.FindFirst(TreeScope.Subtree, condition),
+                value => value == null);
 
             // Если не нашли, то загрузить кнопку не удалось
             if (this.element == null)
