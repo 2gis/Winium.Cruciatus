@@ -167,8 +167,7 @@ namespace Cruciatus.Elements
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    this,
-                    button => button.IsEnabled,
+                    () => this.IsEnabled,
                     value => value != true,
                     waitingTime);
 
@@ -210,8 +209,7 @@ namespace Cruciatus.Elements
             // Ищем в нем первый встретившийся контрол с заданным automationId
             var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
             this.element = CruciatusFactory.WaitingValues(
-                this.Parent,
-                parent => parent.FindFirst(TreeScope.Subtree, condition),
+                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
                 value => value == null);
 
             // Если не нашли, то загрузить кнопку не удалось

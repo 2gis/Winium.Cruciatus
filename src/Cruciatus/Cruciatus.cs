@@ -13,15 +13,14 @@ namespace Cruciatus
 
         private const int WaitingTime = 5000;
 
-        public static TOut WaitingValues<T, TOut>(
-            T variable,
-            Func<T, TOut> getValueFunc,
+        public static TOut WaitingValues<TOut>(
+            Func<TOut> getValueFunc,
             Func<TOut, bool> compareFunc,
             int waitingTime = WaitingTime)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var value = getValueFunc(variable);
+            var value = getValueFunc();
             while (compareFunc(value))
             {
                 Thread.Sleep(WaitPeriod);
@@ -30,7 +29,7 @@ namespace Cruciatus
                     break;
                 }
 
-                value = getValueFunc(variable);
+                value = getValueFunc();
             }
 
             stopwatch.Stop();
