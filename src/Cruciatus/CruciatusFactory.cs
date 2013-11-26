@@ -9,9 +9,9 @@ namespace Cruciatus
     {
         private const int MouseMoveSpeed = 2500;
 
-        private const int WaitPeriod = 100;
+        private const int WaitPeriod = 25;
 
-        private const int WaitingTime = 5000;
+        private const int WaitingTime = 7500;
 
         public static TOut WaitingValues<TOut>(
             Func<TOut> getValueFunc,

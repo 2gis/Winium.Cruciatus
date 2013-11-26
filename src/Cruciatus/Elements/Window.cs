@@ -49,12 +49,7 @@ namespace Cruciatus.Elements
             {
                 if (this.element == null)
                 {
-                    this.element = WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId);
-
-                    if (this.element == null)
-                    {
-                        throw new ElementNotFoundException(this.ToString());
-                    }
+                    this.Find();
 
                     // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
                     object objectPattern;
@@ -130,6 +125,23 @@ namespace Cruciatus.Elements
             {
                 this.LastErrorMessage = exc.Message;
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Поиск окна внутри родительского элемента.
+        /// </summary>
+        private void Find()
+        {
+            // Ищем в нем первый встретившийся контрол с заданным automationId
+            this.element = CruciatusFactory.WaitingValues(
+                () => WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId),
+                value => value == null);
+
+            // Если не нашли, то загрузить окно не удалось
+            if (this.element == null)
+            {
+                throw new ElementNotFoundException(this.ToString());
             }
         }
     }
