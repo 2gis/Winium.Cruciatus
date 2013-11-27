@@ -331,7 +331,11 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (!this.IsEnabled)
+                var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+                if (!isEnabled)
                 {
                     this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
                     return false;
@@ -362,9 +366,10 @@ namespace Cruciatus.Elements
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.Parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            this.element = CruciatusFactory.WaitingValues(
+                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
+                value => value == null);
 
             // Если не нашли, то загрузить выпадающий список не удалось
             if (this.element == null)
