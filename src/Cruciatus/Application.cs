@@ -93,7 +93,11 @@ namespace Cruciatus
 
         public bool Close()
         {
-            if (!this.process.CloseMainWindow())
+            var isClosed = CruciatusFactory.WaitingValues(
+                    () => this.process.CloseMainWindow(),
+                    value => value == false);
+
+            if (!isClosed)
             {
                 return false;
             }
