@@ -71,7 +71,7 @@ namespace Cruciatus
                 if (this.mainWindow == null)
                 {
                     this.mainWindow = new T();
-                    this.mainWindow.LazyInitialize(this.mainWindowElement);
+                    this.mainWindow.LazyInitialize(this.mainWindowElement, this.mainWindowAutomationId);
                 }
 
                 return this.mainWindow;
