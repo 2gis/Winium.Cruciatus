@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="CruciatusFactory.cs" />
     <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Button.cs" />
     <Compile Include="Elements\CheckBox.cs" />

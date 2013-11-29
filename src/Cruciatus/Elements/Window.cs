@@ -11,7 +11,6 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
@@ -49,23 +48,18 @@ namespace Cruciatus.Elements
             {
                 if (this.element == null)
                 {
-                    this.element = WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId);
+                    this.Find();
 
-                    if (this.element == null)
-                    {
-                        throw new ElementNotFoundException(this.ToString());
-                    }
-
-                    // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
-                    object objectPattern;
-                    if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
-                    {
-                        ((WindowPattern)objectPattern).WaitForInputIdle(1500);
-                    }
-                    else
-                    {
-                        Thread.Sleep(500);
-                    }
+                    //// TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
+                    //object objectPattern;
+                    //if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
+                    //{
+                    //    ((WindowPattern)objectPattern).WaitForInputIdle(1500);
+                    //}
+                    //else
+                    //{
+                    //    Thread.Sleep(500);
+                    //}
                 }
 
                 return this.element;
@@ -130,6 +124,23 @@ namespace Cruciatus.Elements
             {
                 this.LastErrorMessage = exc.Message;
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Поиск окна внутри родительского элемента.
+        /// </summary>
+        private void Find()
+        {
+            // Ищем в нем первый встретившийся контрол с заданным automationId
+            this.element = CruciatusFactory.WaitingValues(
+                () => WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId),
+                value => value == null);
+
+            // Если не нашли, то загрузить окно не удалось
+            if (this.element == null)
+            {
+                throw new ElementNotFoundException(this.ToString());
             }
         }
     }

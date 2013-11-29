@@ -71,7 +71,7 @@ namespace Cruciatus
                 if (this.mainWindow == null)
                 {
                     this.mainWindow = new T();
-                    this.mainWindow.LazyInitialize(this.mainWindowElement);
+                    this.mainWindow.LazyInitialize(this.mainWindowElement, this.mainWindowAutomationId);
                 }
 
                 return this.mainWindow;
@@ -93,7 +93,11 @@ namespace Cruciatus
 
         public bool Close()
         {
-            if (!this.process.CloseMainWindow())
+            var isClosed = CruciatusFactory.WaitingValues(
+                    () => this.process.CloseMainWindow(),
+                    value => value == false);
+
+            if (!isClosed)
             {
                 return false;
             }
@@ -127,23 +131,10 @@ namespace Cruciatus
 
         private bool WaitOpeningMainWindow(int milliseconds)
         {
-            var timeIsUp = false;
-            var stopwatch = new Stopwatch();
-
-            stopwatch.Start();
-            this.mainWindowElement = WindowFactory.GetMainWindowElement(this.mainWindowAutomationId);
-            while (this.mainWindowElement == null && !timeIsUp)
-            {
-                Thread.Sleep(WaitPeriod);
-                if (stopwatch.ElapsedMilliseconds > milliseconds)
-                {
-                    timeIsUp = true;
-                }
-
-                this.mainWindowElement = WindowFactory.GetMainWindowElement(this.mainWindowAutomationId);
-            }
-
-            stopwatch.Stop();
+            this.mainWindowElement = CruciatusFactory.WaitingValues(
+                    () => WindowFactory.GetMainWindowElement(this.mainWindowAutomationId),
+                    value => value == null,
+                    milliseconds);
             return this.mainWindowElement != null;
         }
     }
