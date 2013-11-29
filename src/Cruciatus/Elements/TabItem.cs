@@ -185,7 +185,9 @@ namespace Cruciatus.Elements
                     this.Click();
                     if (!this.Element.WaitForElementReady())
                     {
-                        this.LastErrorMessage = "Время ожидания готовности вкладки истекло.";
+                        this.LastErrorMessage = string.Format(
+                            "Время ожидания готовности вкладки {0} истекло.",
+                            this.ToString());
                         return false;
                     }
                 }
@@ -222,13 +224,13 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        protected T GetElement<T>(string automationId) where T : class, ILazyInitialize, new()
+        protected virtual T GetElement<T>(string automationId) where T : class, ILazyInitialize, new()
         {
             try
             {
                 if (!this.IsSelection)
                 {
-                    this.LastErrorMessage = "Вкладка не выбрана.";
+                    this.LastErrorMessage = string.Format("Вкладка {0} не выбрана.", this.ToString());
                     return null;
                 }
 
@@ -258,7 +260,8 @@ namespace Cruciatus.Elements
         {
             if (!this.IsEnabled)
             {
-                throw new ElementNotEnabledException("Вкладка отключена, нельзя выполнить переход.");
+                throw new ElementNotEnabledException(
+                    string.Format("Вкладка {0} отключена, нельзя выполнить переход.", this.ToString()));
             }
 
             Mouse.MouseMoveSpeed = MouseMoveSpeed;
