@@ -261,9 +261,10 @@ namespace Cruciatus.Elements
         /// </summary>
         private void Find()
         {
-            this.element = this.Parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            this.element = CruciatusFactory.WaitingValues(
+                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
+                value => value == null);
 
             // Если не нашли, то загрузить элемент не удалось
             if (this.element == null)

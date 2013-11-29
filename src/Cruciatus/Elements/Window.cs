@@ -11,7 +11,6 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
@@ -51,16 +50,16 @@ namespace Cruciatus.Elements
                 {
                     this.Find();
 
-                    // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
-                    object objectPattern;
-                    if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
-                    {
-                        ((WindowPattern)objectPattern).WaitForInputIdle(1500);
-                    }
-                    else
-                    {
-                        Thread.Sleep(500);
-                    }
+                    //// TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
+                    //object objectPattern;
+                    //if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
+                    //{
+                    //    ((WindowPattern)objectPattern).WaitForInputIdle(1500);
+                    //}
+                    //else
+                    //{
+                    //    Thread.Sleep(500);
+                    //}
                 }
 
                 return this.element;
