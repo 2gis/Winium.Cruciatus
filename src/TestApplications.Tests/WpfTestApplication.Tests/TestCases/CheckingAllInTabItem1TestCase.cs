@@ -61,16 +61,14 @@ namespace WpfTestApplication.Tests.TestCases
         public void CheckingCheckBox1()
         {
             Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
-            Assert.IsNotNull(this.tab.CheckBox1.IsChecked, "Чекбокс в неопределенном состоянии после uncheck.");
-            Assert.IsFalse(this.tab.CheckBox1.IsChecked.Value, "Чекбокс в check состоянии после uncheck.");
+            Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsTrue(this.tab.CheckBox1.Check(), this.tab.CheckBox1.LastErrorMessage);
-            Assert.IsNotNull(this.tab.CheckBox1.IsChecked, "Чекбокс в неопределенном состоянии после check.");
-            Assert.IsTrue(this.tab.CheckBox1.IsChecked.Value, "Чекбокс в uncheck состоянии после check.");
+            Assert.IsTrue(this.tab.CheckBox1.IsChecked, "Чекбокс в uncheck состоянии после check.");
         }
 
         [TestMethod]
-        public void TextListBox()
+        public void CheckingTextListBox()
         {
             Assert.IsTrue(this.tab.TextListBox.ScrollTo<TextBlock>("December"), this.tab.TextListBox.LastErrorMessage);
             var month = this.tab.TextListBox.Item<TextBlock>("December");
@@ -104,8 +102,7 @@ namespace WpfTestApplication.Tests.TestCases
             //Assert.IsTrue(this.tab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
 
             Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
-            Assert.IsNotNull(this.tab.CheckBox1.IsChecked, "Чекбокс в неопределенном состоянии после uncheck.");
-            Assert.IsFalse(this.tab.CheckBox1.IsChecked.Value, "Чекбокс в check состоянии после uncheck.");
+            Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             //Assert.IsFalse(this.tab.TextListBox.IsEnabled, "TextListBox не стал включенным.");
         }
