@@ -61,7 +61,7 @@
     <Compile Include="Map\SecondRibbonTab.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WpfTestApplicationApp.cs" />
-    <Compile Include="TestCases\CheckingAllElementsTestCase.cs" />
+    <Compile Include="TestCases\CheckingAllInTabItem1TestCase.cs" />
     <Compile Include="WpfTestApplicationTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
