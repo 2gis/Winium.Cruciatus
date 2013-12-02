@@ -1,33 +1,25 @@
 ﻿
-namespace WpfTestApplication.Map
+namespace WpfTestApplication.Tests.Map
 {
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    public class FirstRibbonTab : TabItem
+    public class SecondRibbonTab : TabItem
     {
-        public Button RibbonButton
+        public CheckBox RibbonCheckBox
         {
             get
             {
-                return this.GetElement<Button>("RibbonButton");
+                return this.GetElement<CheckBox>("RibbonCheckBox");
             }
         }
 
-        public ComboBox RibbonTextComboBox
+        public CheckBox RibbonToggleButton
         {
             get
             {
-                return this.GetElement<ComboBox>("RibbonTextComboBox");
-            }
-        }
-
-        public ComboBox RibbonCheckComboBox
-        {
-            get
-            {
-                return this.GetElement<ComboBox>("RibbonCheckComboBox");
+                return this.GetElement<CheckBox>("RibbonToggleButton");
             }
         }
 

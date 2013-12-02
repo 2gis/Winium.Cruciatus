@@ -9,8 +9,8 @@
     <ProjectGuid>{0AAE03EC-8253-4B23-8423-038B89A76ABC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WpfTestApplication</RootNamespace>
-    <AssemblyName>WpfTestApplication</AssemblyName>
+    <RootNamespace>WpfTestApplication.Tests</RootNamespace>
+    <AssemblyName>WpfTestApplication.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -61,7 +61,7 @@
     <Compile Include="Map\SecondRibbonTab.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WpfTestApplicationApp.cs" />
-    <Compile Include="Tests\CheckingAllElementsTestCase.cs" />
+    <Compile Include="TestCases\CheckingAllElementsTestCase.cs" />
     <Compile Include="WpfTestApplicationTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

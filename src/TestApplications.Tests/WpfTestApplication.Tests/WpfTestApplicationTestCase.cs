@@ -1,10 +1,10 @@
 ﻿
-namespace WpfTestApplication
+namespace WpfTestApplication.Tests
 {
     using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using WpfTestApplication.Map;
+    using WpfTestApplication.Tests.Map;
 
     /// <summary>
     /// Summary desсription for WpfTestApplicationTestCase

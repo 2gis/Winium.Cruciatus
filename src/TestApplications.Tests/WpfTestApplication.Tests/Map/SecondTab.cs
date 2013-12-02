@@ -1,5 +1,5 @@
 ﻿
-namespace WpfTestApplication.Map
+namespace WpfTestApplication.Tests.Map
 {
     using Cruciatus.Elements;
 
