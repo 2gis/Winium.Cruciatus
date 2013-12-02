@@ -26,7 +26,7 @@ namespace Cruciatus.Elements
     /// </summary>
     public class ComboBox : BaseElement<ComboBox>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
+        protected const int MouseMoveSpeed = 2500;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
@@ -327,7 +327,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если нажать на выпадающий список удалось; в противном случае значение - false.
         /// </returns>
-        private bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        protected virtual bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
             try
             {
