@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="WpfTestApplication.MainWindow"
         Title="MainWindow" Height="410" Width="375" WindowStartupLocation="CenterScreen"
-        Uid="MainWindow">
+        Uid="WpfTestApplicationMainWindow">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
