@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
         
         <custom:Ribbon Grid.Row="0">
-            <custom:RibbonTab Uid="RibbonTabItem" Header="RibbonTabItem">
+            <custom:RibbonTab Uid="RibbonTabItem1" Header="RibbonTabItem1">
                 <custom:RibbonGroup Header="Group1">
                     <custom:RibbonButton Uid="RibbonButton" Label="RibbonButton" Margin="2"/>
                 </custom:RibbonGroup>
