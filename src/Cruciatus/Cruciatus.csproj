@@ -53,6 +53,7 @@
     <Compile Include="Elements\ComboBox.cs" />
     <Compile Include="Elements\DataGrid.cs" />
     <Compile Include="Elements\DateTimePicker.cs" />
+    <Compile Include="Elements\EditableComboBox.cs" />
     <Compile Include="Elements\ListBox.cs" />
     <Compile Include="Elements\NumericUpDown.cs" />
     <Compile Include="Elements\TabItem.cs" />
