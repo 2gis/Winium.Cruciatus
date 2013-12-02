@@ -76,6 +76,15 @@ namespace Cruciatus.Elements
         /// </summary>
         private AutomationElement Parent { get; set; }
 
+        /// <summary>
+        /// Делает пометку, что окно закрыто (удаляет ссылки на дочерние элементы окна).
+        /// </summary>
+        public void Closed()
+        {
+            this.element = null;
+            this.objects.Clear();
+        }
+
         public bool WaitForReady()
         {
             return this.Element.WaitForElementReady();
