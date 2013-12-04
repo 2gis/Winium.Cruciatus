@@ -23,7 +23,7 @@ namespace WpfTestApplication.Tests.TestCases
         }
 
         [TestMethod]
-        public void CheckingTabItem1()
+        public void CheckingRibbonTabItem1()
         {
             Assert.Fail("Ручная остановка. В мелкософтной вкладке риббона точка клика находится не на заголовке.");
             Assert.IsTrue(Application.MainWindow.TabItem1.Select(), Application.MainWindow.TabItem1.LastErrorMessage);

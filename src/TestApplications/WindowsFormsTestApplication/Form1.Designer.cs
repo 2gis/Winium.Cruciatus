@@ -164,7 +164,6 @@
             // 
             // TextBox2
             // 
-            this.TextBox2.Enabled = false;
             this.TextBox2.Location = new System.Drawing.Point(8, 35);
             this.TextBox2.Name = "TextBox2";
             this.TextBox2.Size = new System.Drawing.Size(200, 20);
