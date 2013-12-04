@@ -307,6 +307,11 @@ namespace Cruciatus.Elements
                 collection => collection.Count <= number,
                 collection => collection.Count > number ? collection[(int)number] : null);
 
+            if (searchElement == null && !type.Equals(ControlType.ListItem))
+            {
+                searchElement = this.SearchElement(number, ControlType.ListItem);
+            }
+
             return searchElement;
         }
 
@@ -325,13 +330,18 @@ namespace Cruciatus.Elements
         private AutomationElement SearchElement(string name, ControlType type)
         {
             var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ControlTypeProperty, type),
-                new PropertyCondition(AutomationElement.NameProperty, name));
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, type),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
 
             var searchElement = this.Element.SearchSpecificElementConsideringScroll(
                 elem => elem.FindFirst(TreeScope.Subtree, condition),
                 elem => elem == null,
                 elem => elem);
+
+            if (searchElement == null && !type.Equals(ControlType.ListItem))
+            {
+                searchElement = this.SearchElement(name, ControlType.ListItem);
+            }
 
             return searchElement;
         }

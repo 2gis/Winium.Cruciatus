@@ -241,6 +241,13 @@ namespace Cruciatus.Elements
                 var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
 
                 var items = this.Element.FindAll(TreeScope.Subtree, condition);
+
+                if (items.Count <= number)
+                {
+                    condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem);
+                    items = this.Element.FindAll(TreeScope.Subtree, condition);
+                }
+
                 if (items.Count <= number)
                 {
                     this.LastErrorMessage =
@@ -290,6 +297,15 @@ namespace Cruciatus.Elements
                     new PropertyCondition(AutomationElement.NameProperty, name));
             
                 var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
+
+                if (elem == null)
+                {
+                    condition = new AndCondition(
+                        new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem),
+                        new PropertyCondition(AutomationElement.NameProperty, name));
+                    elem = this.Element.FindFirst(TreeScope.Subtree, condition);
+                }
+
                 if (elem == null)
                 {
                     this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);

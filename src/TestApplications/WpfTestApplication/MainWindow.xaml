@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="WpfTestApplication.MainWindow"
         Title="MainWindow" Height="410" Width="375" WindowStartupLocation="CenterScreen"
-        Uid="MainWindow">
+        Uid="WpfTestApplicationMainWindow">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
         
         <custom:Ribbon Grid.Row="0">
-            <custom:RibbonTab Uid="RibbonTabItem" Header="RibbonTabItem">
+            <custom:RibbonTab Uid="RibbonTabItem1" Header="RibbonTabItem1">
                 <custom:RibbonGroup Header="Group1">
                     <custom:RibbonButton Uid="RibbonButton" Label="RibbonButton" Margin="2"/>
                 </custom:RibbonGroup>
@@ -77,7 +77,7 @@
                     </Grid.RowDefinitions>
                     <Button Uid="ChangeEnabledButton" Content="Change enabled to TextBox2" Click="ChangeEnabledButtonClick"
 						Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
-                    <TextBox Uid="TextBox2" x:Name="TextBox2" Text="TextBox2" IsEnabled="False"
+                    <TextBox Uid="TextBox2" x:Name="TextBox2" Text="TextBox2"
 						Grid.Row="1" HorizontalAlignment="Center" Height="23" Margin="2" TextWrapping="Wrap" Width="200"/>
                     <ComboBox Uid="CheckComboBox" x:Name="CheckComboBox"
 						Grid.Row="2" HorizontalAlignment="Center" Margin="2" Width="200"/>

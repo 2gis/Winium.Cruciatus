@@ -101,7 +101,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, чекнут ли чекбокс (null - неопределенное состояние).
+        /// Возвращает значение, указывающее, чекнут ли чекбокс.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
         /// Чекбокс не поддерживает данное свойство.
@@ -109,7 +109,7 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public bool? IsChecked
+        public bool IsChecked
         {
             get
             {
@@ -122,7 +122,7 @@ namespace Cruciatus.Elements
                         return false;
 
                     default:
-                        return null;
+                        return false;
                 }
             }
         }
@@ -199,8 +199,7 @@ namespace Cruciatus.Elements
         {
             try
             {
-                var oldState = this.IsChecked;
-                if (oldState != null && oldState.Value)
+                if (this.IsChecked)
                 {
                     return true;
                 }
@@ -224,8 +223,7 @@ namespace Cruciatus.Elements
         {
             try
             {
-                var oldState = this.IsChecked;
-                if (oldState != null && !oldState.Value)
+                if (!this.IsChecked)
                 {
                     return true;
                 }
