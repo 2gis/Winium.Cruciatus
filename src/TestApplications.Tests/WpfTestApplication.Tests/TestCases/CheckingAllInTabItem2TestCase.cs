@@ -118,6 +118,7 @@ namespace WpfTestApplication.Tests.TestCases
             Assert.IsTrue(this.tab.CheckBox2.Check(), this.tab.CheckBox2.LastErrorMessage);
             Assert.IsTrue(this.tab.CheckBox2.IsChecked, "Чекбокс в uncheck состоянии после check.");
 
+            Assert.Fail("Ручная остановка. Не работает скролл, когда начальное состояние внизу, а интересуемое вверху.");
             Assert.IsTrue(this.tab.CheckListBox.ScrollTo<CheckBox>("March"), this.tab.CheckListBox.LastErrorMessage);
             Assert.IsTrue(monthMarch.IsChecked, "Чекбокс March остался в uncheck состоянии.");
 
