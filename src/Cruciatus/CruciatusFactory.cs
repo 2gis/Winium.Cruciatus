@@ -1,4 +1,12 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CruciatusFactory.cs" company="2GIS">
+//   Cruciatus
+// </copyright>
+// <summary>
+//   Представляет фабрику Cruciatus.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Cruciatus
 {
     using System;
@@ -7,13 +15,21 @@ namespace Cruciatus
 
     public static class CruciatusFactory
     {
-        private const int MouseMoveSpeed = 2500;
-
         private const int WaitPeriod = 25;
 
         private const int WaitingTime = 7500;
 
-        public static TOut WaitingValues<TOut>(
+        private static readonly CruciatusSettings CruciatusSettings = new CruciatusSettings();
+
+        public static CruciatusSettings Settings
+        {
+            get
+            {
+                return CruciatusSettings;
+            }
+        }
+
+        internal static TOut WaitingValues<TOut>(
             Func<TOut> getValueFunc,
             Func<TOut, bool> compareFunc,
             int waitingTime = WaitingTime)
