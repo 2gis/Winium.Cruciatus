@@ -25,8 +25,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class CheckBox : BaseElement<CheckBox>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         private const int MaxClickCount = 10;
 
         /// <summary>
@@ -277,7 +275,6 @@ namespace Cruciatus.Elements
                 return false;
             }
 
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
 
             int maxClickCount = MaxClickCount;

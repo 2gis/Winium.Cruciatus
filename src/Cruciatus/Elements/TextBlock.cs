@@ -26,8 +26,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class TextBlock : BaseElement<TextBlock>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
         /// </summary>
@@ -165,7 +163,6 @@ namespace Cruciatus.Elements
         {
             try
             {
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(mouseButton);
             }

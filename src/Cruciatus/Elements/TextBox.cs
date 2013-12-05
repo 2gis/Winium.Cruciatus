@@ -27,8 +27,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class TextBox : BaseElement<TextBox>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBox"/>.
         /// </summary>
@@ -224,7 +222,6 @@ namespace Cruciatus.Elements
                     throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
                 }
 
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");

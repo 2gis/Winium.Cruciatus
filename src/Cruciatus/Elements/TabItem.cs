@@ -27,8 +27,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public abstract class TabItem : BaseElement<TabItem>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
 
         /// <summary>
@@ -264,7 +262,6 @@ namespace Cruciatus.Elements
                     string.Format("Вкладка {0} отключена, нельзя выполнить переход.", this.ToString()));
             }
 
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
             Mouse.Click(mouseButton);
         }

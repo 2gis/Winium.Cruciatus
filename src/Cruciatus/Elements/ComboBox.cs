@@ -26,8 +26,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class ComboBox : BaseElement<ComboBox>, ILazyInitialize
     {
-        protected const int MouseMoveSpeed = 2500;
-
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
         /// </summary>
@@ -357,7 +355,6 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(mouseButton);
 
