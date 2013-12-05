@@ -27,7 +27,7 @@ namespace Cruciatus
             Func<TOut> getValueFunc,
             Func<TOut, bool> compareFunc)
         {
-            return WaitingValues(getValueFunc, compareFunc, Settings.WaitTimeout);
+            return WaitingValues(getValueFunc, compareFunc, Settings.WaitForGetValueTimeout);
         }
 
         internal static TOut WaitingValues<TOut>(
