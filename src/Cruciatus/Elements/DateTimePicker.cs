@@ -23,8 +23,6 @@ namespace Cruciatus.Elements
 
     public class DateTimePicker : BaseElement<DateTimePicker>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         private AutomationElement parent;
 
         public DateTimePicker()
@@ -91,7 +89,7 @@ namespace Cruciatus.Elements
 
         public void SetDateTime(string value)
         {
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
+            Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
             Mouse.Click(MouseButtons.Left);
             Keyboard.SendKeys("^a");

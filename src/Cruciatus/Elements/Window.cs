@@ -144,7 +144,8 @@ namespace Cruciatus.Elements
             // Ищем в нем первый встретившийся контрол с заданным automationId
             this.element = CruciatusFactory.WaitingValues(
                 () => WindowFactory.GetChildWindowElement(this.Parent, this.AutomationId),
-                value => value == null);
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли, то загрузить окно не удалось
             if (this.element == null)

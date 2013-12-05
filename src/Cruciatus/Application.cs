@@ -25,12 +25,6 @@ namespace Cruciatus
     /// </typeparam>
     public abstract class Application<T> where T : Window, new()
     {
-        private const int WaitForInputIdleTimeout = 10000;
-
-        private const int WaitForExitTimeout = 10000;
-
-        private const int WaitPeriod = 500;
-
         private readonly string fullPath;
 
         private readonly string mainWindowAutomationId;
@@ -78,7 +72,12 @@ namespace Cruciatus
             }
         }
 
-        public bool Start(int milliseconds = WaitForInputIdleTimeout)
+        public bool Start()
+        {
+            return this.Start(CruciatusFactory.Settings.SearchTimeout);
+        }
+
+        public bool Start(int milliseconds)
         {
             this.process = Process.Start(this.fullPath);
 
@@ -88,7 +87,11 @@ namespace Cruciatus
                 throw new Exception("Не удалось запустить процесс");
             }
 
-            return this.WaitOpeningMainWindow(milliseconds);
+            this.mainWindowElement = CruciatusFactory.WaitingValues(
+                    () => WindowFactory.GetMainWindowElement(this.mainWindowAutomationId),
+                    value => value == null,
+                    milliseconds);
+            return this.mainWindowElement != null;
         }
 
         public bool Close()
@@ -102,7 +105,7 @@ namespace Cruciatus
                 return false;
             }
 
-            if (!this.process.WaitForExit(WaitForExitTimeout))
+            if (!this.process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout))
             {
                 return false;
             }
@@ -114,7 +117,7 @@ namespace Cruciatus
         public bool Kill()
         {
             this.process.Kill();
-            return this.process.WaitForExit(WaitForExitTimeout);
+            return this.process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout);
         }
 
         protected TU GetElement<TU>(string headerName) where TU : Window, new()
@@ -127,15 +130,6 @@ namespace Cruciatus
             }
 
             return (TU)this.objects[headerName];
-        }
-
-        private bool WaitOpeningMainWindow(int milliseconds)
-        {
-            this.mainWindowElement = CruciatusFactory.WaitingValues(
-                    () => WindowFactory.GetMainWindowElement(this.mainWindowAutomationId),
-                    value => value == null,
-                    milliseconds);
-            return this.mainWindowElement != null;
         }
     }
 }

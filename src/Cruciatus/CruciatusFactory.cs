@@ -1,4 +1,12 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CruciatusFactory.cs" company="2GIS">
+//   Cruciatus
+// </copyright>
+// <summary>
+//   Представляет фабрику Cruciatus.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Cruciatus
 {
     using System;
@@ -7,23 +15,32 @@ namespace Cruciatus
 
     public static class CruciatusFactory
     {
-        private const int MouseMoveSpeed = 2500;
+        public static CruciatusSettings Settings
+        {
+            get
+            {
+                return CruciatusSettings.Instance;
+            }
+        }
 
-        private const int WaitPeriod = 25;
+        internal static TOut WaitingValues<TOut>(
+            Func<TOut> getValueFunc,
+            Func<TOut, bool> compareFunc)
+        {
+            return WaitingValues(getValueFunc, compareFunc, Settings.WaitForGetValueTimeout);
+        }
 
-        private const int WaitingTime = 7500;
-
-        public static TOut WaitingValues<TOut>(
+        internal static TOut WaitingValues<TOut>(
             Func<TOut> getValueFunc,
             Func<TOut, bool> compareFunc,
-            int waitingTime = WaitingTime)
+            int waitingTime)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var value = getValueFunc();
             while (compareFunc(value))
             {
-                Thread.Sleep(WaitPeriod);
+                Thread.Sleep(Settings.WaitingPeriod);
                 if (stopwatch.ElapsedMilliseconds > waitingTime)
                 {
                     break;

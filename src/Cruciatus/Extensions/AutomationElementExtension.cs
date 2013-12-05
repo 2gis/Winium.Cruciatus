@@ -17,12 +17,22 @@ namespace Cruciatus.Extensions
 
     public static class AutomationElementExtension
     {
-        private const int MouseMoveSpeed = 2500;
-
-        private const int WaitForReadyTimeout = 5000;
+        /// <summary>
+        /// Ожидать готовности элемента в течении времени по умолчанию.
+        /// </summary>
+        /// <param name="element">
+        /// Текущий элемент, у которого ожидаем готовность.
+        /// </param>
+        /// <returns>
+        /// Значение true если элемент оказался готов до истечения времени ожидания; в противном случае значение - false.
+        /// </returns>
+        public static bool WaitForElementReady(this AutomationElement element)
+        {
+            return element.WaitForElementReady(CruciatusFactory.Settings.WaitForReadyTimeout);
+        }
 
         /// <summary>
-        /// Ожидать готовности элемента заданное время или время по умолчанию.
+        /// Ожидать готовности элемента заданное время.
         /// </summary>
         /// <param name="element">
         /// Текущий элемент, у которого ожидаем готовность.
@@ -33,7 +43,7 @@ namespace Cruciatus.Extensions
         /// <returns>
         /// Значение true если элемент оказался готов до истечения времени ожидания; в противном случае значение - false.
         /// </returns>
-        public static bool WaitForElementReady(this AutomationElement element, int milliseconds = WaitForReadyTimeout)
+        public static bool WaitForElementReady(this AutomationElement element, int milliseconds)
         {
             var walker = new TreeWalker(Condition.TrueCondition);
             AutomationElement parent = element;
@@ -127,7 +137,7 @@ namespace Cruciatus.Extensions
                 var windowsPoint = element.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
                 var clickablePoint = new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
 
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
                 Mouse.Move(clickablePoint);
             }
             catch (Exception exc)

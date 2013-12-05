@@ -26,8 +26,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class TextBlock : BaseElement<TextBlock>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
         /// </summary>
@@ -165,7 +163,7 @@ namespace Cruciatus.Elements
         {
             try
             {
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(mouseButton);
             }
@@ -203,7 +201,8 @@ namespace Cruciatus.Elements
             var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
             this.element = CruciatusFactory.WaitingValues(
                 () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null);
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли, то загрузить текстовый блок не удалось
             if (this.element == null)

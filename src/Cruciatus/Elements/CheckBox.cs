@@ -25,8 +25,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class CheckBox : BaseElement<CheckBox>, ILazyInitialize
     {
-        private const int MouseMoveSpeed = 2500;
-
         private const int MaxClickCount = 10;
 
         /// <summary>
@@ -277,7 +275,7 @@ namespace Cruciatus.Elements
                 return false;
             }
 
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
+            Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
 
             int maxClickCount = MaxClickCount;
@@ -299,7 +297,8 @@ namespace Cruciatus.Elements
             var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
             this.element = CruciatusFactory.WaitingValues(
                 () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null);
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли, то загрузить чекбокс не удалось
             if (this.element == null)
