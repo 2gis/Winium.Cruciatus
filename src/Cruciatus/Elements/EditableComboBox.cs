@@ -48,6 +48,7 @@ namespace Cruciatus.Elements
                     throw new ElementNotEnabledException(string.Format("{0} отключен, нельзя установить текст.", this.ToString()));
                 }
 
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");
@@ -79,6 +80,7 @@ namespace Cruciatus.Elements
                 var topRightPoint = this.GetPropertyValue<ComboBox, System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
                 var clickablePoint = new Point((int)topRightPoint.X - 5, (int)topRightPoint.Y + 5);
 
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
                 Mouse.Move(clickablePoint);
                 Mouse.Click(mouseButton);
 

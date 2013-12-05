@@ -355,6 +355,7 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(mouseButton);
 
@@ -382,7 +383,8 @@ namespace Cruciatus.Elements
             var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
             this.element = CruciatusFactory.WaitingValues(
                 () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null);
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли, то загрузить выпадающий список не удалось
             if (this.element == null)

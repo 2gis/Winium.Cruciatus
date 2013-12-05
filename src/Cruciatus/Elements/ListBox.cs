@@ -10,7 +10,6 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Runtime.InteropServices;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
@@ -269,24 +268,6 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Поиск списка в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null);
-
-            // Если не нашли, то загрузить выпадающий список не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
-        }
-
-        /// <summary>
         /// Непосредственный поиск AutomationElement с заданными параметрами.
         /// </summary>
         /// <param name="number">
@@ -365,6 +346,25 @@ namespace Cruciatus.Elements
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Поиск списка в родительском элементе.
+        /// </summary>
+        private void Find()
+        {
+            // Ищем в нем первый встретившийся контрол с заданным automationId
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            this.element = CruciatusFactory.WaitingValues(
+                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
+
+            // Если не нашли, то загрузить выпадающий список не удалось
+            if (this.element == null)
+            {
+                throw new ElementNotFoundException(this.ToString());
+            }
         }
     }
 }

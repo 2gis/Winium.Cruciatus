@@ -9,30 +9,44 @@
 
 namespace Cruciatus
 {
-    using Microsoft.VisualStudio.TestTools.UITesting;
-
     public class CruciatusSettings
     {
+        private const int DefaultWaitTimeout = 7500;
+
+        private const int DefaultWaitingPeriod = 25;
+
+        private const int DefaultSearchTimeout = 10000;
+
+        private const int DefaultWaitForExitTimeout = 10000;
+
+        private const int DefaultWaitForReadyTimeout = 5000;
+
         private const int DefaultMouseMoveSpeed = 2500;
 
-        private int mouseMoveSpeed;
+        private static CruciatusSettings instance;
 
-        internal CruciatusSettings()
+        private CruciatusSettings()
         {
             this.ResetToDefault();
         }
 
-        public int MouseMoveSpeed
+        public int WaitTimeout { get; set; }
+
+        public int WaitingPeriod { get; set; }
+
+        public int SearchTimeout { get; set; }
+
+        public int WaitForExitTimeout { get; set; }
+
+        public int WaitForReadyTimeout { get; set; }
+
+        public int MouseMoveSpeed { get; set; }
+
+        internal static CruciatusSettings Instance
         {
             get
             {
-                return this.mouseMoveSpeed;
-            }
-
-            set
-            {
-                this.mouseMoveSpeed = value;
-                Mouse.MouseMoveSpeed = value;
+                return instance ?? (instance = new CruciatusSettings());
             }
         }
 
@@ -41,6 +55,11 @@ namespace Cruciatus
         /// </summary>
         public void ResetToDefault()
         {
+            this.WaitTimeout = DefaultWaitTimeout;
+            this.WaitingPeriod = DefaultWaitingPeriod;
+            this.SearchTimeout = DefaultSearchTimeout;
+            this.WaitForExitTimeout = DefaultWaitForExitTimeout;
+            this.WaitForReadyTimeout = DefaultWaitForReadyTimeout;
             this.MouseMoveSpeed = DefaultMouseMoveSpeed;
         }
     }

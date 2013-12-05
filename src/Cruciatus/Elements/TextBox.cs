@@ -222,6 +222,7 @@ namespace Cruciatus.Elements
                     throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
                 }
 
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");
@@ -261,7 +262,8 @@ namespace Cruciatus.Elements
             var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
             this.element = CruciatusFactory.WaitingValues(
                 () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null);
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли, то загрузить элемент не удалось
             if (this.element == null)

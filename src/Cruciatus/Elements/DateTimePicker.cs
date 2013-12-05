@@ -89,6 +89,7 @@ namespace Cruciatus.Elements
 
         public void SetDateTime(string value)
         {
+            Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
             Mouse.Click(MouseButtons.Left);
             Keyboard.SendKeys("^a");
