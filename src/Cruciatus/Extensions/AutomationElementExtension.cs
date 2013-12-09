@@ -250,6 +250,7 @@ namespace Cruciatus.Extensions
                 return false;
             }
 
+            scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
             do
             {
                 scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
