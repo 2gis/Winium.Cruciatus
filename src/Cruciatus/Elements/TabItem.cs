@@ -11,6 +11,7 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -264,6 +265,10 @@ namespace Cruciatus.Elements
 
             Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
             Mouse.Move(this.ClickablePoint);
+
+            // Костыльное дело, но без этой строки не работает на "чистой" Telerek-вкладке 
+            Mouse.Move(new Point(Mouse.Location.X + 1, Mouse.Location.Y));
+
             Mouse.Click(mouseButton);
         }
 
