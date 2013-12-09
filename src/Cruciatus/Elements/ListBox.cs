@@ -57,6 +57,23 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает значение, указывающее, включена ли список.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Список не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public bool IsEnabled
+        {
+            get
+            {
+                return this.GetPropertyValue<ListBox, bool>(AutomationElement.IsEnabledProperty);
+            }
+        }
+
+        /// <summary>
         /// Возвращает текстовое представление имени класса.
         /// </summary>
         internal override string ClassName
@@ -115,6 +132,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Contains<T>(uint number) where T : BaseElement<T>, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return false;
+            }
+
             return this.SearchElement(number, new T().GetType) != null;
         }
 
@@ -132,6 +159,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Contains<T>(string name) where T : BaseElement<T>, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return false;
+            }
+
             return this.SearchElement(name, new T().GetType) != null;
         }
 
@@ -149,6 +186,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool ScrollTo<T>(uint number) where T : BaseElement<T>, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
+                return false;
+            }
+
             var searchElement = this.SearchElement(number, new T().GetType);
             if (searchElement == null)
             {
@@ -176,6 +223,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool ScrollTo<T>(string name) where T : BaseElement<T>, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
+                return false;
+            }
+
             var searchElement = this.SearchElement(name, new T().GetType);
             if (searchElement == null)
             {
@@ -200,6 +257,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public T Item<T>(uint number) where T : BaseElement<T>, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return null;
+            }
+
             var item = new T();
             var searchElement = this.SearchElement(number, item.GetType);
 
@@ -236,6 +303,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public T Item<T>(string name) where T : BaseElement<T>, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return null;
+            }
+
             var item = new T();
             var searchElement = this.SearchElement(name, item.GetType);
 

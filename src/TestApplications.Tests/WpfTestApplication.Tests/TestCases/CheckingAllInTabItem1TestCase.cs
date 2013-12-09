@@ -98,13 +98,12 @@ namespace WpfTestApplication.Tests.TestCases
         [TestMethod]
         public void CheckingChangeEnabledTextListBox()
         {
-            Assert.Fail("Ручная остановка. В ListBox нет проверки на включенность.");
-            //Assert.IsTrue(this.tab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
+            Assert.IsTrue(this.tab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
 
             Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
-            //Assert.IsFalse(this.tab.TextListBox.IsEnabled, "TextListBox не стал включенным.");
+            Assert.IsFalse(this.tab.TextListBox.IsEnabled, "TextListBox не стал включенным.");
         }
     }
 }
