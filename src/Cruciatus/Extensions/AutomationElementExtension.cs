@@ -157,14 +157,19 @@ namespace Cruciatus.Extensions
             var scrollPattern = element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern != null)
             {
-                // Запоминаем начальное состояние прокрутки
-                var startVerticalScrollPercent = scrollPattern.Current.VerticalScrollPercent;
-
                 element.MoveMouseToCenter();
 
-                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
-
                 searchElement = findFunc(element);
+                if (compareFunc(searchElement))
+                {
+                    while (scrollPattern.Current.VerticalScrollPercent > 0)
+                    {
+                        scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
+                    }
+
+                    searchElement = findFunc(element);
+                }
+
                 while (compareFunc(searchElement) && scrollPattern.Current.VerticalScrollPercent < 100)
                 {
                     scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
@@ -174,9 +179,6 @@ namespace Cruciatus.Extensions
 
                     searchElement = findFunc(element);
                 }
-
-                // Возвращаем начальное состояние прокрутки
-                scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, startVerticalScrollPercent);
             }
             else
             {
@@ -250,7 +252,11 @@ namespace Cruciatus.Extensions
                 return false;
             }
 
-            scrollPattern.SetScrollPercent(scrollPattern.Current.HorizontalScrollPercent, 0);
+            while (scrollPattern.Current.VerticalScrollPercent > 0)
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
+            }
+
             do
             {
                 scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
