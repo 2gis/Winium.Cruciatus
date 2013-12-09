@@ -9,14 +9,42 @@
 
 namespace Cruciatus
 {
+    using System;
     using System.Windows.Automation;
 
     public static class WindowFactory
     {
-        public static AutomationElement GetMainWindowElement(string automationId)
+        /// <summary>
+        /// Возвращает главное окно по соответствию processId и automationId.
+        /// </summary>
+        /// <param name="processId">
+        /// Уникальный идентификатор процесса.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор окна.
+        /// </param>
+        /// <returns>
+        /// Найденное окно либо null.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми
+        /// </exception>
+        public static AutomationElement GetMainWindowElement(int processId, string automationId)
         {
-            var propertyCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, automationId);
-            var mainWindow = AutomationElement.RootElement.FindFirst(TreeScope.Children, propertyCondition);
+            if (processId <= 0)
+            {
+                throw new ArgumentException("processId");
+            }
+
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
+            var condition = new AndCondition(
+                new PropertyCondition(AutomationElement.ProcessIdProperty, processId),
+                new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
+            var mainWindow = AutomationElement.RootElement.FindFirst(TreeScope.Children, condition);
             return mainWindow;
         }
 

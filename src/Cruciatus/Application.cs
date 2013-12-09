@@ -88,7 +88,7 @@ namespace Cruciatus
             }
 
             this.mainWindowElement = CruciatusFactory.WaitingValues(
-                    () => WindowFactory.GetMainWindowElement(this.mainWindowAutomationId),
+                    () => WindowFactory.GetMainWindowElement(this.process.Id, this.mainWindowAutomationId),
                     value => value == null,
                     milliseconds);
             return this.mainWindowElement != null;
