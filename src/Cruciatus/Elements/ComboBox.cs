@@ -320,6 +320,46 @@ namespace Cruciatus.Elements
             }
         }
 
+        /// <summary>
+        /// Прокручивает список до элемента заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
+        public bool ScrollTo<T>(string name) where T : BaseElement<T>, new()
+        {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
+                return false;
+            }
+
+            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            {
+                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                return false;
+            }
+
+            var searchElement = this.SearchElement(name, new T().GetType);
+            if (searchElement == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                return false;
+            }
+
+            return this.Scrolling(searchElement);
+        }
+
         internal override ComboBox FromAutomationElement(AutomationElement element)
         {
             if (element == null)
@@ -372,6 +412,48 @@ namespace Cruciatus.Elements
                 this.LastErrorMessage = exc.Message;
                 return false;
             }
+        }
+
+        private AutomationElement SearchElement(string name, ControlType type)
+        {
+            var condition = new AndCondition(
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, type),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
+
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindFirst(TreeScope.Subtree, condition),
+                elem => elem == null,
+                elem => elem);
+
+            if (searchElement == null && !type.Equals(ControlType.ListItem))
+            {
+                searchElement = this.SearchElement(name, ControlType.ListItem);
+            }
+
+            return searchElement;
+        }
+
+        private bool Scrolling(AutomationElement innerElement)
+        {
+            var condition = new AndCondition(
+                new PropertyCondition(AutomationElement.ClassNameProperty, "Popup"),
+                new PropertyCondition(AutomationElement.ProcessIdProperty, this.Element.Current.ProcessId));
+            var popupWindow = AutomationElement.RootElement.FindFirst(TreeScope.Subtree, condition);
+
+            if (popupWindow == null)
+            {
+                this.LastErrorMessage = string.Format("Попытка прокрутки у элемента {0}, но нет popup окна.", this.ToString());
+                return false;
+            }
+
+            var scrollingResult = this.Element.ScrollingForComboBox(innerElement, popupWindow);
+            if (!scrollingResult)
+            {
+                this.LastErrorMessage = string.Format("Элемент {0} не поддерживает прокрутку содержимого.", this.ToString());
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

@@ -14,6 +14,7 @@ namespace Cruciatus.Extensions
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
+    using Microsoft.VisualStudio.TestTools.UITesting.WpfControls;
 
     public static class AutomationElementExtension
     {
@@ -112,6 +113,11 @@ namespace Cruciatus.Extensions
             {
                 var externalRect = externalElement.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty);
                 var internaleRect = internalElement.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty);
+
+                if (externalRect.Width < internaleRect.Width)
+                {
+                    internaleRect.Width = externalRect.Width - (internaleRect.X - externalRect.X);
+                }
 
                 return externalRect.Contains(internaleRect);
             }
@@ -262,6 +268,48 @@ namespace Cruciatus.Extensions
                 scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
             }
             while (!externalElement.GeometricallyContains(internalElement));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Прокручивает содержимое до заданного элемента.
+        /// </summary>
+        /// <param name="externalElement">
+        /// Текущий элемент, содержимое которого будет прокручивать.
+        /// </param>
+        /// <param name="internalElement">
+        /// Элемент до которого прокурчиваем.
+        /// </param>
+        /// <param name="popupWindow">
+        /// sf
+        /// </param>
+        /// <returns>
+        /// Значение true если прокрутили либо в этом не было необходимости; иначе прокрутка не поддерживается, значение - false.
+        /// </returns>
+        public static bool ScrollingForComboBox(this AutomationElement externalElement, AutomationElement internalElement, AutomationElement popupWindow)
+        {
+            if (popupWindow.GeometricallyContains(internalElement))
+            {
+                return true;
+            }
+
+            var scrollPattern = externalElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            if (scrollPattern == null)
+            {
+                return false;
+            }
+
+            while (scrollPattern.Current.VerticalScrollPercent > 0)
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
+            }
+
+            do
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+            }
+            while (!popupWindow.GeometricallyContains(internalElement));
 
             return true;
         }
