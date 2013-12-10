@@ -17,16 +17,13 @@ namespace WpfTestApplication.Tests.TestCases
         public void MyInitialize()
         {
             this.tab = Application.MainWindow.RibbonTabItem1;
-
-            //Это пока не работает
-            //Assert.IsTrue(this.tab.Select(), this.tab.LastErrorMessage);
+            Assert.IsTrue(this.tab.Select(), this.tab.LastErrorMessage);
         }
 
         [TestMethod]
         public void CheckingRibbonTabItem1()
         {
-            Assert.Fail("Ручная остановка. В мелкософтной вкладке риббона точка клика находится не на заголовке.");
-            Assert.IsTrue(Application.MainWindow.RibbonTabItem1.Select(), Application.MainWindow.RibbonTabItem1.LastErrorMessage);
+            Assert.IsTrue(this.tab.Select(), this.tab.LastErrorMessage);
         }
 
         [TestMethod]

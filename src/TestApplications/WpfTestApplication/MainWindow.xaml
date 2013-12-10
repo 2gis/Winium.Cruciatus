@@ -1,7 +1,8 @@
-﻿<Window
+﻿<Window x:Class="WpfTestApplication.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="WpfTestApplication.MainWindow"
+        xmlns:custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon"
+        xmlns:local="clr-namespace:WpfTestApplication"
         Title="MainWindow" Height="410" Width="375" WindowStartupLocation="CenterScreen"
         Uid="WpfTestApplicationMainWindow">
     <Grid>
@@ -10,9 +11,9 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <custom:Ribbon Grid.Row="0">
-            <custom:RibbonTab Uid="RibbonTabItem1" Header="RibbonTabItem1">
+            <local:RibbonTabExt Uid="RibbonTabItem1" Header="RibbonTabItem1">
                 <custom:RibbonGroup Header="Group1">
                     <custom:RibbonButton Uid="RibbonButton" Label="RibbonButton" Margin="2"/>
                 </custom:RibbonGroup>
@@ -30,15 +31,15 @@
                         </custom:RibbonGallery>
                     </custom:RibbonComboBox>
                 </custom:RibbonGroup>
-            </custom:RibbonTab>
-            <custom:RibbonTab Uid="RibbonTabItem2" Header="RibbonTabItem2">
+            </local:RibbonTabExt>
+            <local:RibbonTabExt Uid="RibbonTabItem2" Header="RibbonTabItem2">
                 <custom:RibbonGroup Header="Group1">
                     <custom:RibbonCheckBox Uid="RibbonCheckBox" Label="RibbonCheckBox" Margin="2"/>
                 </custom:RibbonGroup>
                 <custom:RibbonGroup Header="Group2">
                     <custom:RibbonToggleButton Uid="RibbonToggleButton" Label="RibbonToggleButton" Margin="2"/>
                 </custom:RibbonGroup>
-            </custom:RibbonTab>
+            </local:RibbonTabExt>
         </custom:Ribbon>
 
         <TabControl Grid.Row="1">
