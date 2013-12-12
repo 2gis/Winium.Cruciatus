@@ -4,11 +4,12 @@ namespace WpfTestApplication
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Controls.Ribbon;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : RibbonWindow
     {
         #region monthsList, timeSizeList
         private readonly List<string> monthsList = new List<string>

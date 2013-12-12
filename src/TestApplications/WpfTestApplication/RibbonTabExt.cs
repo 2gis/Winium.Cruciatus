@@ -2,36 +2,43 @@
 namespace WpfTestApplication
 {
     using System.Linq;
-    using System.Windows;
     using System.Windows.Automation.Peers;
-
-    using Microsoft.Windows.Controls.Ribbon;
+    using System.Windows.Controls.Ribbon;
 
     public class RibbonTabExt : RibbonTab
     {
         protected override AutomationPeer OnCreateAutomationPeer()
         {
-            return new RibbonTabAutomationPeer(this);
+            return new RibbonTabAutomationPeerExt(this);
         }
 
-        private class RibbonTabAutomationPeer : Microsoft.Windows.Automation.Peers.RibbonTabAutomationPeer
+        // Класс наследуется от стандартного Peer для RibbonTab
+        private class RibbonTabAutomationPeerExt : RibbonTabAutomationPeer
         {
-            public RibbonTabAutomationPeer(RibbonTab owner)
+            public RibbonTabAutomationPeerExt(RibbonTab owner)
                 : base(owner)
             {
             }
 
-            protected override Point GetClickablePointCore()
+            // Меняем только возврат точки клика
+            protected override System.Windows.Point GetClickablePointCore()
             {
+                // Получаем детей элемента
                 var childs = this.GetChildrenCore();
+
                 if (childs != null)
                 {
-                    foreach (var peer in childs.Where(peer => peer.GetAutomationControlType() == AutomationControlType.Header))
+                    // В детях ищем заголовок
+                    var header = childs.FirstOrDefault(peer => peer.GetAutomationControlType() == AutomationControlType.Header);
+
+                    // Если заголовок нашелся (а теоретически он должен быть всегда), возвращаем его точку клика
+                    if (header != null)
                     {
-                        return peer.GetClickablePoint();
+                        return header.GetClickablePoint();
                     }
                 }
                 
+                // Если с заголовком что-то пошло не так, то...по дефолту
                 return base.GetClickablePointCore();
             }
         }
