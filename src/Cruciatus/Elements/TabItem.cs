@@ -11,7 +11,6 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -250,6 +249,25 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Поиск вкладки в родительском элементе.
+        /// </summary>
+        protected virtual void Find()
+        {
+            // Ищем в нем первый встретившийся контрол с заданным automationId
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            this.element = CruciatusFactory.WaitingValues(
+                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
+
+            // Если не нашли, то загрузить вкладку не удалось
+            if (this.element == null)
+            {
+                throw new ElementNotFoundException(this.ToString());
+            }
+        }
+
+        /// <summary>
         /// Выполняет нажатие по вкладке.
         /// </summary>
         /// <param name="mouseButton">
@@ -267,28 +285,9 @@ namespace Cruciatus.Elements
             Mouse.Move(this.ClickablePoint);
 
             // Костыльное дело, но без этой строки не работает на "чистой" Telerek-вкладке 
-            Mouse.Move(new Point(Mouse.Location.X + 1, Mouse.Location.Y));
+            Mouse.Move(new System.Drawing.Point(Mouse.Location.X + 1, Mouse.Location.Y));
 
             Mouse.Click(mouseButton);
-        }
-
-        /// <summary>
-        /// Поиск вкладки в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить вкладку не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
         }
     }
 }
