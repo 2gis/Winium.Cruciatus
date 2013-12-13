@@ -24,7 +24,42 @@ namespace Cruciatus.Elements
     public class EditableComboBox : ComboBox
     {
         /// <summary>
-        /// Устанавливает текст в текстовое поле выпадающего списка.
+        /// Инициализирует новый экземпляр класса <see cref="EditableComboBox"/>.
+        /// </summary>
+        public EditableComboBox()
+        {
+        }
+
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="EditableComboBox"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для редактируемого выпадающего списка.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор редактируемого выпадающего списка.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        public EditableComboBox(AutomationElement parent, string automationId)
+            : base(parent, automationId)
+        {
+        }
+
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
+            {
+                return "EditableComboBox";
+            }
+        }
+
+        /// <summary>
+        /// Устанавливает текст в текстовое поле редактируемого выпадающего списка.
         /// </summary>
         /// <param name="text">
         /// Устанавливаемый текст.
