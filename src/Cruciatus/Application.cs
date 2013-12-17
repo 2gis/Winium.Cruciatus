@@ -13,8 +13,6 @@ namespace Cruciatus
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Linq;
-    using System.Threading;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
@@ -27,7 +25,13 @@ namespace Cruciatus
     /// </typeparam>
     public abstract class Application<T> where T : Window, new()
     {
-        private readonly string fullPath;
+        private readonly bool isClickOnceApplication;
+
+        private readonly string exeFileName;
+
+        private readonly string clickOnceFileName;
+
+        private readonly string pidFileName;
 
         private readonly string mainWindowAutomationId;
 
@@ -42,8 +46,8 @@ namespace Cruciatus
         /// <summary>
         /// Инициализирует новый экземпляр приложения.
         /// </summary>
-        /// <param name="fullPath">
-        /// Полный путь к исполняемому файлу *.exe (к *.appref-ms в случае ClickOnce приложения).
+        /// <param name="exeFileName">
+        /// Полный путь к исполняемому файлу приложения.
         /// </param>
         /// <param name="mainWindowAutomationId">
         /// Уникальный идентификатор главного окна приложения.
@@ -51,11 +55,11 @@ namespace Cruciatus
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        protected Application(string fullPath, string mainWindowAutomationId)
+        protected Application(string exeFileName, string mainWindowAutomationId)
         {
-            if (fullPath == null)
+            if (exeFileName == null)
             {
-                throw new ArgumentNullException("fullPath");
+                throw new ArgumentNullException("exeFileName");
             }
 
             if (mainWindowAutomationId == null)
@@ -63,8 +67,46 @@ namespace Cruciatus
                 throw new ArgumentNullException("mainWindowAutomationId");
             }
 
-            this.fullPath = fullPath;
+            this.exeFileName = exeFileName;
             this.mainWindowAutomationId = mainWindowAutomationId;
+        }
+
+        /// <summary>
+        /// Инициализирует новый экземпляр ClickOnce приложения.
+        /// </summary>
+        /// <param name="clickOnceFileName">
+        /// Полный путь к ярлыку *.appref-ms.
+        /// </param>
+        /// <param name="pidFileName">
+        /// Полный путь к файлу с PID запущенного приложения.
+        /// </param>
+        /// <param name="mainWindowAutomationId">
+        /// Уникальный идентификатор главного окна ClickOnce приложения.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        protected Application(string clickOnceFileName, string pidFileName, string mainWindowAutomationId)
+        {
+            if (clickOnceFileName == null)
+            {
+                throw new ArgumentNullException("clickOnceFileName");
+            }
+
+            if (pidFileName == null)
+            {
+                throw new ArgumentNullException("pidFileName");
+            }
+
+            if (mainWindowAutomationId == null)
+            {
+                throw new ArgumentNullException("mainWindowAutomationId");
+            }
+
+            this.clickOnceFileName = clickOnceFileName;
+            this.pidFileName = pidFileName;
+            this.mainWindowAutomationId = mainWindowAutomationId;
+            this.isClickOnceApplication = true;
         }
 
         public T MainWindow
@@ -114,90 +156,100 @@ namespace Cruciatus
         /// </exception>
         public bool Start(int milliseconds)
         {
-            this.process = Process.Start(this.fullPath);
-
-            if (this.process == null)
+            if (this.isClickOnceApplication)
             {
-                // TODO: Непонятная ситуация, когда она вообще возможна и что это значит
-                throw new Exception("Не удалось запустить процесс");
-            }
+                int pid;
 
-            this.mainWindowElement = CruciatusFactory.WaitingValues(
-                    () => WindowFactory.GetMainWindowElement(this.process.Id, this.mainWindowAutomationId),
-                    value => value == null,
-                    milliseconds);
-            return this.mainWindowElement != null;
-        }
-
-        /// <summary>
-        /// Запуск ClickOnce приложения с временем ожидания по умолчанию (необходимо указать имя процесса приложения).
-        /// </summary>
-        /// <param name="processName">
-        /// Имя процесса.
-        /// </param>
-        /// <returns>
-        /// Значение true если запуск ClickOnce приложения удался; в противном случае значение - false.
-        /// </returns>
-        /// <exception cref="Exception">
-        /// Произвести процесс запуска ClickOnce приложения не удалось.
-        /// </exception>
-        public bool StartClickOnce(string processName)
-        {
-            return this.StartClickOnce(processName, CruciatusFactory.Settings.SearchTimeout);
-        }
-
-        /// <summary>
-        /// Запуск ClickOnce приложения с заданным временем ожидания (необходимо указать имя процесса приложения).
-        /// </summary>
-        /// <param name="processName">
-        /// Имя процесса.
-        /// </param>
-        /// <param name="milliseconds">
-        /// Задает время ожидания запуска ClickOnce приложения.
-        /// </param>
-        /// <returns>
-        /// Значение true если запуск ClickOnce приложения удался; в противном случае значение - false.
-        /// </returns>
-        /// <exception cref="Exception">
-        /// Произвести процесс запуска ClickOnce приложения не удалось.
-        /// </exception>
-        public bool StartClickOnce(string processName, int milliseconds)
-        {
-            // Условие для искомого процесса
-            var func = new Func<Process, bool>(p => p.ProcessName == processName);
-            
-            // Получаем существующие процессы с полученным именем и убиваем их
-            var processes = Process.GetProcesses().ToList().Where(func);
-            foreach (var proc in processes)
-            {
-                proc.Kill();
-                if (!proc.WaitForExit(milliseconds))
+                // Если файл с PID есть, то приложение запущено и его надо завершить
+                if (File.Exists(this.pidFileName))
                 {
-                    throw new Exception("Не удалось убить старые экземпляры приложений.");
+                    // Считывание PID
+                    if (!this.GetPid(out pid))
+                    {
+                        throw new Exception("Не удалось прочитать PID приложения.");
+                    }
+
+                    // Завершение процесса
+                    bool isExit;
+                    try
+                    {
+                        var proc = Process.GetProcessById(pid);
+                        proc.CloseMainWindow();
+                        isExit = proc.WaitForExit(milliseconds);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Системная ошибка при завершении старого экземпляра приложения.", e);
+                    }
+
+                    if (!isExit)
+                    {
+                        throw new Exception("Не удалось завершить старый экземпляр приложения.");
+                    }
+
+                    // Ожидание удаления файла с информацией о PID (что так же говорит о завершении приложения)
+                    var isNotClose = CruciatusFactory.WaitingValues(
+                                       () => File.Exists(this.pidFileName),
+                                       value => value,
+                                       milliseconds);
+                    if (isNotClose)
+                    {
+                        throw new Exception("Не удалось завершить старый экземпляр приложения (файл с PID не удален).");
+                    }
+                }
+
+                // Запуск ClickOnce сервиса
+                var clickOnceApp = Process.Start(this.clickOnceFileName);
+                if (clickOnceApp == null)
+                {
+                    throw new Exception("Не удалось запустить ClickOnce сервис.");
+                }
+
+                // Ожидание завершения ClickOnce сервиса
+                if (!clickOnceApp.WaitForExit(milliseconds))
+                {
+                    throw new Exception("Не удалось завершить ClickOnce сервис.");
+                }
+
+                // Ожидание создания файла с информацией о PID (что так же говорит о запуске приложения)
+                var isStart = CruciatusFactory.WaitingValues(
+                                   () => File.Exists(this.pidFileName),
+                                   value => value == false,
+                                   milliseconds);
+                if (isStart == false)
+                {
+                    throw new Exception("Не удалось запустить приложение (файл с PID не создан).");
+                }
+
+                // Считывание PID
+                if (!this.GetPid(out pid))
+                {
+                    throw new Exception("Не удалось прочитать PID приложения.");
+                }
+
+                // Получение процесса приложения по его PID
+                try
+                {
+                    this.process = Process.GetProcessById(pid);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Системная ошибка при связывании с экземпляром приложения.", e);
                 }
             }
-
-            // Запуск ClickOnce приложения
-            var clickOnceApp = Process.Start(this.fullPath);
-            if (clickOnceApp == null)
+            else
             {
-                throw new Exception("Не удалось запустить ClickOnce приложение.");
+                // Запуск приложения через исполняемый файл
+                this.process = Process.Start(this.exeFileName);
             }
 
-            // Ожидание завершения ClickOnce приложения
-            clickOnceApp.WaitForExit();
-
-            // Ожидаем появление подходящего процесса
-            this.process = CruciatusFactory.WaitingValues(
-                               () => Process.GetProcesses().ToList().FirstOrDefault(func),
-                               value => value == null,
-                               milliseconds);
+            // Проверка, что имеем процесс приложения
             if (this.process == null)
             {
                 throw new Exception("Не удалось запустить приложение.");
             }
 
-            // Ожидаем открытие главного окна
+            // Ожидание открытия главного окна
             this.mainWindowElement = CruciatusFactory.WaitingValues(
                     () => WindowFactory.GetMainWindowElement(this.process.Id, this.mainWindowAutomationId),
                     value => value == null,
@@ -241,6 +293,26 @@ namespace Cruciatus
             }
 
             return (TU)this.objects[headerName];
+        }
+
+        private bool GetPid(out int pid)
+        {
+            using (var sr = new StreamReader(File.Open(this.pidFileName, FileMode.Open)))
+            {
+                if (sr.EndOfStream)
+                {
+                    pid = 0;
+                    return false;
+                }
+
+                var strPid = sr.ReadLine();
+                if (!int.TryParse(strPid, out pid))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
