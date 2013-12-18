@@ -57,6 +57,23 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает количество столбцов в таблице.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Таблица не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public int ColumnCount
+        {
+            get
+            {
+                return this.GetPropertyValue<DataGrid, int>(GridPattern.ColumnCountProperty);
+            }
+        }
+
+        /// <summary>
         /// Возвращает количество строк в таблице.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
