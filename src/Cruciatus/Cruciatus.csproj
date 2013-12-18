@@ -52,6 +52,7 @@
     <Compile Include="Elements\BaseElement.cs" />
     <Compile Include="Elements\Button.cs" />
     <Compile Include="Elements\CheckBox.cs" />
+    <Compile Include="Elements\ClickableElement.cs" />
     <Compile Include="Elements\ComboBox.cs" />
     <Compile Include="Elements\DataGrid.cs" />
     <Compile Include="Elements\DateTimePicker.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Exceptions\PropertyNotSupportedException.cs" />
     <Compile Include="Extensions\AutomationElementExtension.cs" />
     <Compile Include="Extensions\CruciatusBaseElementExtension.cs" />
+    <Compile Include="Interfaces\IClickable.cs" />
     <Compile Include="Interfaces\ILazyInitialize.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowFactory.cs" />
