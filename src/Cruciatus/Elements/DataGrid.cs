@@ -162,7 +162,8 @@ namespace Cruciatus.Elements
         /// Номер колонки.
         /// </param>
         /// <returns>
-        /// Значение true, если ячейка существует; false - в противном случае.
+        /// Значение true, если ячейка существует;
+        /// false, если ячейка не существует или находится вне видимости.
         /// </returns>
         public bool CellExists(int row, int column)
         {
@@ -206,7 +207,7 @@ namespace Cruciatus.Elements
             if (!this.CellExists(row, column))
             {
                 this.LastErrorMessage = string.Format(
-                    "В {0} не существует ячейки [{1}, {2}].",
+                    "В {0} ячейка [{1}, {2}] не существует или находится вне видимости.",
                     this.ToString(),
                     row,
                     column);
