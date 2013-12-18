@@ -135,7 +135,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если нажать на элемент удалось; в противном случае значение - false.
         /// </returns>
-        public bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public virtual bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
             try
             {

@@ -15,16 +15,13 @@ namespace Cruciatus.Elements
 
     using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
-    using Cruciatus.Interfaces;
-
-    using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
 
     /// <summary>
     /// Представляет элемент управления кнопка.
     /// </summary>
-    public class Button : BaseElement<Button>, ILazyInitialize
+    public class Button : ClickableElement
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="Button"/>.
@@ -46,19 +43,8 @@ namespace Cruciatus.Elements
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
         public Button(AutomationElement parent, string automationId)
+            : base(parent, automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
         }
 
         /// <summary>
@@ -74,7 +60,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<Button, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<ClickableElement, bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -87,13 +73,11 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public System.Drawing.Point ClickablePoint
+        public new System.Drawing.Point ClickablePoint
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<Button, System.Windows.Point>(AutomationElement.ClickablePointProperty);
-
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                return base.ClickablePoint;
             }
         }
 
@@ -108,16 +92,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор кнопки.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем кнопки.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
@@ -127,40 +101,32 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент кнопки.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
-            }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
-        }
-
-        /// <summary>
-        /// Выполняет нажатие по кнопке.
+        /// Выполняет нажатие по кнопке за время ожидания по умолчанию.
         /// </summary>
         /// <param name="mouseButton">
         /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
         /// </param>
+        /// <returns>
+        /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
+        /// </returns>
+        public override bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        {
+            return this.Click(CruciatusFactory.Settings.WaitForGetValueTimeout, mouseButton);
+        }
+
+        /// <summary>
+        /// Выполняет нажатие по кнопке за заданное время ожидания.
+        /// </summary>
         /// <param name="waitingTime">
         /// Задает время ожидания на выполнение действия (миллисекунды).
+        /// </param>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
         /// </param>
         /// <returns>
         /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
         /// </returns>
-        public bool Click(MouseButtons mouseButton = MouseButtons.Left, int waitingTime = 5000)
+        public bool Click(int waitingTime, MouseButtons mouseButton = MouseButtons.Left)
         {
             try
             {
@@ -175,46 +141,12 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(mouseButton);
+                return base.Click(mouseButton);
             }
             catch (Exception exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
-            }
-
-            return true;
-        }
-
-        internal override Button FromAutomationElement(AutomationElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            return this;
-        }
-
-        /// <summary>
-        /// Поиск кнопки в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить кнопку не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
             }
         }
     }
