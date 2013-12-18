@@ -57,7 +57,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает количество столбцов в таблице.
+        /// Возвращает значение, указывающее, включена ли таблица.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
         /// Таблица не поддерживает данное свойство.
@@ -65,11 +65,11 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public int ColumnCount
+        public bool IsEnabled
         {
             get
             {
-                return this.GetPropertyValue<DataGrid, int>(GridPattern.ColumnCountProperty);
+                return this.GetPropertyValue<DataGrid, bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -87,6 +87,23 @@ namespace Cruciatus.Elements
             get
             {
                 return this.GetPropertyValue<DataGrid, int>(GridPattern.RowCountProperty);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает количество столбцов в таблице.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Таблица не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public int ColumnCount
+        {
+            get
+            {
+                return this.GetPropertyValue<DataGrid, int>(GridPattern.ColumnCountProperty);
             }
         }
 
@@ -130,15 +147,105 @@ namespace Cruciatus.Elements
                 {
                     this.Find();
                 }
-
+                
                 return this.element;
             }
+        }
+
+        /// <summary>
+        /// Определяет, существует ли ячейка с указанным номером строки и ячейки.
+        /// </summary>
+        /// <param name="row">
+        /// Номер строки.
+        /// </param>
+        /// <param name="column">
+        /// Номер колонки.
+        /// </param>
+        /// <returns>
+        /// Значение true, если ячейка существует; false - в противном случае.
+        /// </returns>
+        public bool CellExists(int row, int column)
+        {
+            return row >= 0 && row < this.RowCount && column >= 0 && column <= this.RowCount;
         }
 
         public void LazyInitialize(AutomationElement parent, string automationId)
         {
             this.Parent = parent;
             this.AutomationId = automationId;
+        }
+
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным номером строки и колонки.
+        /// </summary>
+        /// <param name="row">
+        /// Номер строки.
+        /// </param>
+        /// <param name="column">
+        /// Номер колонки.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        public T Item<T>(int row, int column) where T : BaseElement<T>, new()
+        {
+            // Проверка, что таблица включена
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключена.", this.ToString());
+                return null;
+            }
+
+            // Проверка валидности номера строки и столбца
+            if (!this.CellExists(row, column))
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0} не существует ячейки [{1}, {2}].",
+                    this.ToString(),
+                    row,
+                    column);
+                return null;
+            }
+            
+            // Получение ячейки
+            var gridPattern = this.Element.GetCurrentPattern(GridPattern.Pattern) as GridPattern;
+            if (gridPattern == null)
+            {
+                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон таблицы.", this.ToString());
+                return null;
+            }
+
+            var cell = gridPattern.GetItem(row, column);
+
+            // Проверка, что ячейку видно
+            if (cell == null || !this.Element.GeometricallyContains(cell))
+            {
+                this.LastErrorMessage = string.Format("В {0} ячейка [{1}, {2}] вне видимости.", this.ToString(), row, column);
+                return null;
+            }
+
+            // Поиск подходящего элемента в ячейке
+            var item = new T();
+            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
+            var elem = cell.FindFirst(TreeScope.Subtree, condition);
+            if (elem == null)
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0}, ячейка [{1}, {2}], нет элемента желаемого типа.",
+                    this.ToString(),
+                    row,
+                    column);
+                return null;
+            }
+
+            item.FromAutomationElement(elem);
+            return item;
         }
 
         internal override DataGrid FromAutomationElement(AutomationElement element)
@@ -153,9 +260,11 @@ namespace Cruciatus.Elements
         private void Find()
         {
             // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.Parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            this.element = CruciatusFactory.WaitingValues(
+                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
+                value => value == null,
+                CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли, то загрузить кнопку не удалось
             if (this.element == null)
