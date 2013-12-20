@@ -152,8 +152,14 @@ namespace Cruciatus.Elements
             }
         }
 
+        public void LazyInitialize(AutomationElement parent, string automationId)
+        {
+            this.Parent = parent;
+            this.AutomationId = automationId;
+        }
+
         /// <summary>
-        /// Определяет, существует ли ячейка с указанным номером строки и ячейки.
+        /// Выполняет прокрутку до ячейки с указанным номером строки и колонки.
         /// </summary>
         /// <param name="row">
         /// Номер строки.
@@ -162,18 +168,96 @@ namespace Cruciatus.Elements
         /// Номер колонки.
         /// </param>
         /// <returns>
-        /// Значение true, если ячейка существует;
-        /// false, если ячейка не существует или находится вне видимости.
+        /// Значение true если прокрутить удалось либо в этом нет необходимости;
+        /// в противном случае значение - false.
         /// </returns>
-        public bool CellExists(int row, int column)
+        public bool ScrollTo(int row, int column)
         {
-            return row >= 0 && row < this.RowCount && column >= 0 && column <= this.RowCount;
-        }
+            // Проверка на дурака
+            if (row < 0 || column < 0)
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.",
+                    this.ToString(),
+                    row,
+                    column);
+                return false;
+            }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            // Получение шаблона прокрутки у таблицы
+            var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            if (scrollPattern == null)
+            {
+                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                return false;
+            }
+
+            // Условие для вертикального поиска ячейки [row, 0] (через строку)
+            var cellCondition = new AndCondition(
+                new PropertyCondition(AutomationElement.IsGridItemPatternAvailableProperty, true),
+                new PropertyCondition(GridItemPattern.RowProperty, row));
+
+            // Стартовый поиск ячейки
+            var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+
+            // Основная вертикальная прокрутка (при необходимости и возможности)
+            if (cell == null && scrollPattern.Current.VerticallyScrollable)
+            {
+                while (cell == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+                    cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+                }
+            }
+
+            // Если прокрутив до конца ячейка не найдена, то номер строки не действительный
+            if (cell == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет строки с номером {1}.", this.ToString(), row);
+                return false;
+            }
+
+            // Докручиваем по вертикали, пока ячейку [row, 0] не станет видно
+            while (!this.Element.GeometricallyContains(cell))
+            {
+                cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+            }
+
+            // Условие для горизонтального поиска ячейки [row, column]
+            cellCondition = new AndCondition(
+                new PropertyCondition(AutomationElement.IsGridItemPatternAvailableProperty, true),
+                new PropertyCondition(GridItemPattern.RowProperty, row),
+                new PropertyCondition(GridItemPattern.ColumnProperty, column));
+
+            // Стартовый поиск ячейки
+            cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+
+            // Основная горизонтальная прокрутка (при необходимости и возможности)
+            if (cell == null && scrollPattern.Current.HorizontallyScrollable)
+            {
+                while (cell == null && scrollPattern.Current.HorizontalScrollPercent < 99.9)
+                {
+                    scrollPattern.ScrollHorizontal(ScrollAmount.LargeIncrement);
+                    cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+                }
+            }
+
+            // Если прокрутив до конца ячейка не найдена, то номер колонки не действительный
+            if (cell == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет колонки с номером {1}.", this.ToString(), column);
+                return false;
+            }
+
+            // Докручиваем по горизонтали, пока ячейку [row, column] не станет видно
+            while (!this.Element.GeometricallyContains(cell))
+            {
+                cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+                scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -203,31 +287,32 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            // Проверка валидности номера строки и столбца
-            if (!this.CellExists(row, column))
+            // Проверка на дурака
+            if (row < 0 || column < 0)
             {
                 this.LastErrorMessage = string.Format(
-                    "В {0} ячейка [{1}, {2}] не существует или находится вне видимости.",
+                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.",
                     this.ToString(),
                     row,
                     column);
                 return null;
             }
-            
-            // Получение ячейки
-            var gridPattern = this.Element.GetCurrentPattern(GridPattern.Pattern) as GridPattern;
-            if (gridPattern == null)
-            {
-                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон таблицы.", this.ToString());
-                return null;
-            }
 
-            var cell = gridPattern.GetItem(row, column);
+            // Условие для поиска ячейки [row, column]
+            var cellCondition = new AndCondition(
+                new PropertyCondition(AutomationElement.IsGridItemPatternAvailableProperty, true),
+                new PropertyCondition(GridItemPattern.RowProperty, row),
+                new PropertyCondition(GridItemPattern.ColumnProperty, column));
+            var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
 
             // Проверка, что ячейку видно
             if (cell == null || !this.Element.GeometricallyContains(cell))
             {
-                this.LastErrorMessage = string.Format("В {0} ячейка [{1}, {2}] вне видимости.", this.ToString(), row, column);
+                this.LastErrorMessage = string.Format(
+                    "В {0} ячейка [{1}, {2}] вне видимости или не существует.",
+                    this.ToString(),
+                    row,
+                    column);
                 return null;
             }
 

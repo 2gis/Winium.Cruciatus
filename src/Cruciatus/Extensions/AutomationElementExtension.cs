@@ -14,7 +14,6 @@ namespace Cruciatus.Extensions
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
-    using Microsoft.VisualStudio.TestTools.UITesting.WpfControls;
 
     public static class AutomationElementExtension
     {
