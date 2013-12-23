@@ -79,6 +79,23 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает значение, указывающее, раскрыт ли выпадающий список.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Выпадающий список не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public bool IsExpanded
+        {
+            get
+            {
+                return this.ExpandCollapseState == ExpandCollapseState.Expanded;
+            }
+        }
+
+        /// <summary>
         /// Возвращает координаты точки, внутри выпадающего списка, которые можно использовать для нажатия.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
