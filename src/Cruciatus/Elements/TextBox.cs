@@ -11,35 +11,25 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Data;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using PropertyCondition = System.Windows.Automation.PropertyCondition;
-    using Size = System.Drawing.Size;
 
     /// <summary>
     /// Представляет элемент управления текстовое поле.
     /// </summary>
-    public class TextBox : BaseElement<TextBox>, ILazyInitialize
+    public class TextBox : CruciatusElement, IContainerElement, IListElement
     {
-        private const int MouseMoveSpeed = 2500;
-
         /// <summary>
-        /// Индетификатор элемента.
+        /// Инициализирует новый экземпляр класса <see cref="TextBox"/>.
         /// </summary>
-        private string automationId;
-
-        private AutomationElement parent;
-
         public TextBox()
         {
         }
@@ -51,96 +41,110 @@ namespace Cruciatus.Elements
         /// Элемент, являющийся родителем для текстового поля.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор элемента.
+        /// Уникальный идентификатор текстового поля.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public TextBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.parent = parent;
-            this.automationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли данный элемент управления.
+        /// Возвращает значение, указывающее, включено ли текстовое поле.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
         /// <summary>
-        /// Возвращает координаты прямоугольника, который полностью охватывает элемент.
+        /// Возвращает координаты точки, внутри текстового поля, которые можно использовать для нажатия.
         /// </summary>
-        public Rectangle BoundingRectangle
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
+        /// <summary>
+        /// Возвращает значение, указывающее, доступно ли текстовое поле только для чтения.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsReadOnly
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(ValuePattern.IsReadOnlyProperty);
+                return this.GetPropertyValue<bool>(ValuePattern.IsReadOnlyProperty);
             }
         }
 
         /// <summary>
-        /// Возвращает или задает текст в данном элементе управления.
+        /// Возвращает текст из текстового поля.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовое поле не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public string Text
         {
             get
             {
-                object pattern;
-                if (this.Element.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
+                try
                 {
-                    // Если текстовый шаблон поддерживается, то вернее получить текст так
-                    return ((TextPattern)pattern).DocumentRange.GetText(-1);
-                }
+                    object pattern;
+                    if (this.Element.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
+                    {
+                        // Если текстовый шаблон поддерживается, то вернее получить текст так
+                        return ((TextPattern)pattern).DocumentRange.GetText(-1);
+                    }
 
-                // Иначе текст получается так
-                return (string)this.Element.GetCurrentPropertyValue(ValuePattern.ValueProperty);
+                    // Иначе текст получается так
+                    return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
+                }
+                catch (Exception exc)
+                {
+                    this.LastErrorMessage = exc.Message;
+                    return null;
+                }
             }
+        }
 
-            set
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
             {
-                if (!this.IsEnabled)
-                {
-                    throw new ElementNotEnabledException("Текстовое поле отключено, нельзя заполнить текстом.");
-                }
-
-                if (this.IsReadOnly)
-                {
-                    throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
-                }
-
-                var controlBoundingRect = this.BoundingRectangle;
-
-                // TODO Вынести это действие как расширения для типа Rectangle
-                var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
-                Mouse.MouseMoveSpeed = MouseMoveSpeed;
-                Mouse.Move(clickablePoint);
-                Mouse.Click(MouseButtons.Left);
-                Keyboard.SendKeys("^a");
-                Keyboard.SendKeys(value);
+                return "TextBox";
             }
         }
 
@@ -153,84 +157,61 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент.
+        /// Устанавливает текст в текстовое поле.
         /// </summary>
-        protected override AutomationElement Element
+        /// <param name="text">
+        /// Устанавливаемый текст.
+        /// </param>
+        /// <exception cref="ElementNotEnabledException">
+        /// Текстовое поле не включено.
+        /// </exception>
+        /// <exception cref="ReadOnlyException">
+        /// Текстовое поле доступно только для чтения.
+        /// </exception>
+        /// <returns>
+        /// Значение true если установить текст удалось; в противном случае значение - false.
+        /// </returns>
+        public bool SetText(string text)
         {
-            get
+            try
             {
-                if (this.element == null)
+                if (!this.IsEnabled)
                 {
-                    this.Find();
+                    this.LastErrorMessage = string.Format("{0} отключен, нельзя заполнить текстом.", this.ToString());
+                    return false;
                 }
 
-                return this.element;
+                if (this.IsReadOnly)
+                {
+                    this.LastErrorMessage = string.Format("{0} доступен только для чтения.", this.ToString());
+                    return false;
+                }
+
+                if (!CruciatusCommand.Click(this.ClickablePoint, MouseButtons.Left, out this.LastErrorMessageInstance))
+                {
+                    return false;
+                }
+
+                Keyboard.SendKeys("^a");
+                Keyboard.SendKeys(text);
             }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.parent = parent;
-            this.automationId = automationId;
+            Initialize(parent, automationId);
         }
 
-        internal override TextBox FromAutomationElement(AutomationElement element)
+        void IListElement.Initialize(AutomationElement element)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            this.CheckingOfProperties();
-
-            return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("текстовое поле не поддерживает свойство Enabled");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("текстовое поле не поддерживает свойство BoundingRectangle");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(ValuePattern.IsReadOnlyProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство ReadOnly
-                throw new Exception("текстовое поле не поддерживает свойство ReadOnly");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(ValuePattern.ValueProperty))
-            {
-                // TODO Исключение вида - контрол не поддерживает свойство Value
-                throw new Exception("текстовое поле не поддерживает свойство Value");
-            }
-        }
-
-        /// <summary>
-        /// Поиск элемента управления в указанном процессе.
-        /// </summary>
-        private void Find()
-        {
-            this.element = this.parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
-
-            // Если не нашли, то загрузить элемент не удалось
-            if (this.element == null)
-            {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("текстовое поле не найдено");
-            }
-
-            this.CheckingOfProperties();
+            Initialize(element);
         }
     }
 }

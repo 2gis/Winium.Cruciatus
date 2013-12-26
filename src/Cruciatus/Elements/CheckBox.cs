@@ -10,34 +10,26 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
-    using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
     /// <summary>
     /// Представляет элемент управления чекбокс.
     /// </summary>
-    public class CheckBox : BaseElement<CheckBox>, ILazyInitialize
+    public class CheckBox : CruciatusElement, IContainerElement, IListElement
     {
-        private const int MouseMoveSpeed = 2500;
+        private const int MaxClickCount = 10;
 
         /// <summary>
-        /// Индетификатор кнопки.
+        /// Инициализирует новый экземпляр класса <see cref="CheckBox"/>.
         /// </summary>
-        private string automationId;
-
-        private AutomationElement parent;
-
         public CheckBox()
         {
         }
@@ -51,60 +43,102 @@ namespace Cruciatus.Elements
         /// <param name="automationId">
         /// Уникальный идентификатор чекбокса.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public CheckBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.parent = parent;
-            this.automationId = automationId;
-        }
-
-        internal CheckBox(AutomationElement element)
-        {
-            this.element = element;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли данный элемент управления.
+        /// Возвращает значение, указывающее, включен ли чекбокс.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Чекбокс не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
         /// <summary>
-        /// Возвращает координаты прямоугольника, который полностью охватывает элемент.
+        /// Возвращает координаты точки, внутри чекбокса, которые можно использовать для нажатия.
         /// </summary>
-        public Rectangle BoundingRectangle
+        /// <exception cref="PropertyNotSupportedException">
+        /// Чекбокс не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
         /// <summary>
-        /// Возвращает состояние чекбокса.
+        /// Возвращает значение, указывающее, чекнут ли чекбокс.
         /// </summary>
-        public CheckState CheckState
+        /// <exception cref="PropertyNotSupportedException">
+        /// Чекбокс не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public bool IsChecked
         {
             get
             {
-                return (CheckState)this.Element.GetCurrentPropertyValue(TogglePattern.ToggleStateProperty);
+                switch (this.ToggleState)
+                {
+                    case ToggleState.On:
+                        return true;
+
+                    case ToggleState.Off:
+                        return false;
+
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает состояние чекнутости чекбокса.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Чекбокс не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        internal ToggleState ToggleState
+        {
+            get
+            {
+                return this.GetPropertyValue<ToggleState>(TogglePattern.ToggleStateProperty);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
+            {
+                return "CheckBox";
             }
         }
 
@@ -117,141 +151,97 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент.
+        /// Устанавливает чекбокс в состояние чекнут.
         /// </summary>
-        protected override AutomationElement Element
+        /// <returns>
+        /// Значение true если удалось установить состояние; в противном случае значение - false.
+        /// </returns>
+        public bool Check()
         {
-            get
+            try
             {
-                if (this.element == null)
+                if (this.IsChecked)
                 {
-                    this.Find();
+                    return true;
                 }
 
-                return this.element;
+                return this.SetState(ToggleState.On);
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
             }
         }
 
         /// <summary>
-        /// Устанавливает чекбоксу состояние сheck.
+        /// Устанавливает чекбокс в состояние не чекнут.
         /// </summary>
-        public void Check()
+        /// <returns>
+        /// Значение true если удалось установить состояние; в противном случае значение - false.
+        /// </returns>
+        public bool UnCheck()
         {
-            var oldState = this.CheckState;
-            if (oldState == CheckState.Checked)
+            try
             {
-                return;
+                if (!this.IsChecked)
+                {
+                    return true;
+                }
+
+                return this.SetState(ToggleState.Off);
             }
-
-            this.SetState(CheckState.Checked);
-        }
-
-        /// <summary>
-        /// Устанавливает чекбоксу состояние uncheck.
-        /// </summary>
-        public void UnCheck()
-        {
-            var oldState = this.CheckState;
-            if (oldState == CheckState.Unchecked)
+            catch (Exception exc)
             {
-                return;
-            }
-
-            this.SetState(CheckState.Unchecked);
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.parent = parent;
-            this.automationId = automationId;
-        }
-
-        internal override CheckBox FromAutomationElement(AutomationElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            this.CheckingOfProperties();
-
-            return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("чекбокс не поддерживает свойство Enabled");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("чекбокс не поддерживает свойство BoundingRectangle");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(TogglePattern.ToggleStateProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство State
-                throw new Exception("чекбокс не поддерживает свойство State");
+                this.LastErrorMessage = exc.Message;
+                return false;
             }
         }
 
         /// <summary>
-        /// Устанавливает чекбоксу указанное состояние.
+        /// Устанавливает чекбоксу заданное состояние.
         /// </summary>
         /// <param name="newState">
-        /// Устанавливаемое состояние.
+        /// Новое состояние.
         /// </param>
-        private void SetState(CheckState newState)
+        /// <returns>
+        /// Значение true если удалось установить состояние; в противном случае значение - false.
+        /// </returns>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Чекбокс не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        private bool SetState(ToggleState newState)
         {
             if (!this.IsEnabled)
             {
-                throw new ElementNotEnabledException("Чекбокс отключен, нельзя изменить состояние.");
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя изменить состояние.", this.ToString());
+                return false;
             }
 
-            var controlBoundingRect = this.BoundingRectangle;
+            Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
+            Mouse.Move(this.ClickablePoint);
 
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
-            int maxClickCount = 4;
-            while (this.CheckState != newState && maxClickCount != 0)
+            int maxClickCount = MaxClickCount;
+            while (this.ToggleState != newState && maxClickCount != 0)
             {
-                Mouse.Click(clickablePoint);
+                Mouse.Click(this.ClickablePoint);
                 --maxClickCount;
             }
 
-            if (maxClickCount == 0)
-            {
-                // TODO: Исключение вида - не удалось установить состояние newState контролу automationId
-                throw new Exception("Не получилось установить состояние чекбоксу.");
-            }
+            return maxClickCount != 0;
         }
 
-        /// <summary>
-        /// Поиск текущего элемента в родительском
-        /// </summary>
-        private void Find()
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
+            Initialize(parent, automationId);
+        }
 
-            // Если не нашли, то загрузить кнопку не удалось
-            if (this.element == null)
-            {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("чекбокс не найден");
-            }
-
-            this.CheckingOfProperties();
+        void IListElement.Initialize(AutomationElement element)
+        {
+            Initialize(element);
         }
     }
 }

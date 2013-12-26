@@ -19,27 +19,63 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент окно.
     /// </summary>
-    public abstract class Window : ILazyInitialize
+    public abstract class Window : CruciatusElement, IContainerElement
     {
         private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
 
-        private string headerName;
-
-        private AutomationElement parent;
-
-        private AutomationElement element;
-
-        protected AutomationElement Element
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
         {
             get
             {
-                if (this.element == null)
+                return "Window";
+            }
+        }
+
+        internal override ControlType GetType
+        {
+            get
+            {
+                return ControlType.Window;
+            }
+        }
+
+        /// <summary>
+        /// Возвращает инициализированный элемент окна.
+        /// </summary>
+        internal override AutomationElement Element
+        {
+            get
+            {
+                if (this.ElementInstance == null)
                 {
-                    this.element = WindowFactory.GetChildWindowElement(this.parent, this.headerName);
+                    this.Find();
+
+                    //// TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
+                    //object objectPattern;
+                    //if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
+                    //{
+                    //    ((WindowPattern)objectPattern).WaitForInputIdle(1500);
+                    //}
+                    //else
+                    //{
+                    //    Thread.Sleep(500);
+                    //}
                 }
 
-                return this.element;
+                return this.ElementInstance;
             }
+        }
+
+        /// <summary>
+        /// Делает пометку, что окно закрыто (удаляет ссылки на дочерние элементы окна).
+        /// </summary>
+        public void Closed()
+        {
+            this.ElementInstance = null;
+            this.objects.Clear();
         }
 
         public bool WaitForReady()
@@ -47,39 +83,29 @@ namespace Cruciatus.Elements
             return this.Element.WaitForElementReady();
         }
 
-        public void LazyInitialize(AutomationElement parent, string headerName)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            if (this.element != null || this.parent != null)
-            {
-                // TODO: Надо адекватное, понятное исключение
-                throw new Exception("Отложенная инициализация доступна только для пустого элемента");
-            }
-
-            this.parent = parent;
-            this.headerName = headerName;
+            Initialize(parent, automationId);
         }
 
-        public void LazyInitialize(AutomationElement element)
+        protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
         {
-            if (this.element != null || this.parent != null)
+            try
             {
-                // TODO: Надо адекватное, понятное исключение
-                throw new Exception("Отложенная инициализация доступна только для пустого элемента");    
+                if (!this.objects.ContainsKey(automationId))
+                {
+                    var item = new T();
+                    item.Initialize(this.Element, automationId);
+                    this.objects.Add(automationId, item);
+                }
+
+                return (T)this.objects[automationId];
             }
-
-            this.element = element;
-        }
-
-        protected T GetElement<T>(string automationId) where T : ILazyInitialize, new()
-        {
-            if (!this.objects.ContainsKey(automationId))
+            catch (Exception exc)
             {
-                var item = new T();
-                item.LazyInitialize(this.Element, automationId);
-                this.objects.Add(automationId, item);
+                this.LastErrorMessage = exc.Message;
+                return null;
             }
-
-            return (T)this.objects[automationId];
         }
     }
 }

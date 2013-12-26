@@ -3,7 +3,7 @@
 //   Cruciatus
 // </copyright>
 // <summary>
-//   Представляет элемент окно.
+//   Представляет элемент управления вкладка.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -11,78 +11,109 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
     /// <summary>
-    /// Представляет элемент вкладка.
+    /// Представляет элемент управления вкладка.
     /// </summary>
-    public abstract class TabItem : BaseElement<TabItem>, ILazyInitialize
+    public abstract class TabItem : CruciatusElement, IContainerElement
     {
-        private const int MouseMoveSpeed = 2500;
+        private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
 
-        private readonly Dictionary<string, object> objects = new Dictionary<string, object>(); 
-
-        private string automationId;
-
-        private AutomationElement parent;
-
-        public TabItem()
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
+        /// </summary>
+        protected TabItem()
         {
         }
 
-        public TabItem(AutomationElement parent, string automationId)
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для вкладки.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор вкладки.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        protected TabItem(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.parent = parent;
-            this.automationId = automationId;
+            Initialize(parent, automationId);
         }
 
+        /// <summary>
+        /// Возвращает значение, указывающее, включена ли вкладка.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Вкладка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
+        /// <summary>
+        /// Возвращает значение, указывающее, выбрана ли вкладка.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Вкладка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsSelection
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(SelectionItemPattern.IsSelectedProperty);
+                return this.GetPropertyValue<bool>(SelectionItemPattern.IsSelectedProperty);
             }
         }
 
-        public Rectangle BoundingRectangle
+        /// <summary>
+        /// Возвращает координаты точки, внутри вкладки, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Вкладка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
+            {
+                return "TabItem";
             }
         }
 
@@ -94,116 +125,122 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected override AutomationElement Element
+        /// <summary>
+        /// Выбирает вкладку текущей.
+        /// </summary>
+        /// <returns>
+        /// Значение true если удалось выбрать либо уже выбрана; в противном случае значение - false.
+        /// </returns>
+        public bool Select()
         {
-            get
+            try
             {
-                if (this.element == null)
+                if (!this.IsSelection)
                 {
-                    this.Find();
+                    if (!this.Click())
+                    {
+                        return false;
+                    }
+
+                    if (!this.Element.WaitForElementReady())
+                    {
+                        this.LastErrorMessage = string.Format(
+                            "Время ожидания готовности вкладки {0} истекло.",
+                            this.ToString());
+                        return false;
+                    }
                 }
 
-                return this.element;
+                return true;
             }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.parent = parent;
-            this.automationId = automationId;
-        }
-
-        internal override TabItem FromAutomationElement(AutomationElement element)
-        {
-            if (element == null)
+            catch (Exception exc)
             {
-                throw new ArgumentNullException("element");
+                this.LastErrorMessage = exc.Message;
+                return false;
             }
-
-            this.element = element;
-            this.CheckingOfProperties();
-
-            return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("вкладка не поддерживает свойство Enabled");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(SelectionItemPattern.IsSelectedProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство Selection
-                throw new Exception("вкладка не поддерживает свойство Selection");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("вкладка не поддерживает свойство BoundingRectangle");
-            }
-        }
-
-        protected T GetElement<T>(string automationId) where T : ILazyInitialize, new()
-        {
-            if (!this.objects.ContainsKey(automationId))
-            {
-                var item = new T();
-                item.LazyInitialize(this.Element, automationId);
-                this.objects.Add(automationId, item);
-            }
-
-            if (!this.IsSelection)
-            {
-                this.Click();
-                if (!this.Element.WaitForElementReady())
-                {
-                    // TODO: Стопить ли все исключением, если время ожидания готовности истекло
-                    throw new Exception("Время ожидания готовности вкладки истекло!");
-                }
-            }
-
-            return (T)this.objects[automationId];
-        }
-
-        private void Click(MouseButtons mouseButton = MouseButtons.Left)
-        {
-            if (!this.IsEnabled)
-            {
-                throw new ElementNotEnabledException("Вкладка отключена, нельзя выполнить переход.");
-            }
-
-            var controlBoundingRect = this.BoundingRectangle;
-
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
-            Mouse.Click(mouseButton);
         }
 
         /// <summary>
-        /// Поиск текущего элемента в родительском
+        /// Возвращает элемент заданного типа с указанным уникальным идентификатором.
         /// </summary>
-        private void Find()
+        /// <param name="automationId">
+        /// Уникальный идентификатор элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
         {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
-
-            // Если не нашли, то загрузить вкладку не удалось
-            if (this.element == null)
+            try
             {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("вкладка не найдена");
+                if (!this.IsSelection)
+                {
+                    this.LastErrorMessage = string.Format("Вкладка {0} не выбрана.", this.ToString());
+                    return null;
+                }
+
+                if (!this.objects.ContainsKey(automationId))
+                {
+                    var item = new T();
+                    item.Initialize(this.Element, automationId);
+                    this.objects.Add(automationId, item);
+                }
+
+                return (T)this.objects[automationId];
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Выполняет нажатие по вкладке.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// </param>
+        private bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        {
+            
+            try
+            {
+                var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+                if (!isEnabled)
+                {
+                    this.LastErrorMessage = string.Format(
+                        "Вкладка {0} отключена, нельзя выполнить переход.",
+                        this.ToString());
+                    return false;
+                }
+
+                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
+                Mouse.Move(this.ClickablePoint);
+
+                // Костыльное дело, но без этой строки не работает на "чистой" Telerek-вкладке 
+                Mouse.Move(new System.Drawing.Point(Mouse.Location.X + 1, Mouse.Location.Y));
+
+                Mouse.Click(mouseButton);
+            }
+            catch (Exception exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
             }
 
-            this.CheckingOfProperties();
+            return true;
+        }
+
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
         }
     }
 }

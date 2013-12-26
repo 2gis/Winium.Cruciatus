@@ -1,0 +1,93 @@
+﻿<RibbonWindow x:Class="WpfTestApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:WpfTestApplication"
+        Title="MainWindow" Height="410" Width="375" WindowStartupLocation="CenterScreen"
+        Uid="WpfTestApplicationMainWindow">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Ribbon Grid.Row="0">
+            <local:RibbonTabExt Uid="RibbonTabItem1" Header="RibbonTabItem1">
+                <RibbonGroup Header="Group1">
+                    <RibbonButton Uid="RibbonButton" Label="RibbonButton" Margin="2"/>
+                </RibbonGroup>
+                <RibbonGroup Header="Group2">
+                    <RibbonComboBox Uid="RibbonTextComboBox" Name="RibbonTextComboBox" Width="100" Margin="2">
+                        <RibbonGallery>
+                            <RibbonGalleryCategory Name="TextRibbonGalleryCategory"/>
+                        </RibbonGallery>
+                    </RibbonComboBox>
+                </RibbonGroup>
+                <RibbonGroup Header="Group3">
+                    <RibbonComboBox Uid="RibbonCheckComboBox" Name="RibbonCheckComboBox" Width="100" Margin="2">
+                        <RibbonGallery>
+                            <RibbonGalleryCategory Name="CheckRibbonGalleryCategory"/>
+                        </RibbonGallery>
+                    </RibbonComboBox>
+                </RibbonGroup>
+            </local:RibbonTabExt>
+            <local:RibbonTabExt Uid="RibbonTabItem2" Header="RibbonTabItem2">
+                <RibbonGroup Header="Group1">
+                    <RibbonCheckBox Uid="RibbonCheckBox" Label="RibbonCheckBox" Margin="2"/>
+                </RibbonGroup>
+                <RibbonGroup Header="Group2">
+                    <RibbonToggleButton Uid="RibbonToggleButton" Label="RibbonToggleButton" Margin="2"/>
+                </RibbonGroup>
+            </local:RibbonTabExt>
+        </Ribbon>
+
+        <TabControl Grid.Row="1">
+            <TabItem Header="TabItem1" Uid="TabItem1">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Uid="SetTextButton" Content="Set 'CARAMBA' to TextBox1" Click="SetTextButtonClick"
+						Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <TextBox Uid="TextBox1" x:Name="TextBox1" Text="TextBox1"
+						Grid.Row="1" HorizontalAlignment="Center" Height="23" Margin="2" TextWrapping="Wrap" Width="200"/>
+                    <ComboBox Uid="TextComboBox" x:Name="TextComboBox"
+						Grid.Row="2" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <CheckBox Uid="CheckBox1" x:Name="CheckBox1" Content="IsEnabledTextListBox"
+						Grid.Row="3" HorizontalAlignment="Center" Margin="2" Width="200"
+						Checked="CheckBox1Checked" Unchecked="CheckBox1Unchecked"/>
+                    <ListBox Uid="TextListBox" x:Name="TextListBox"
+						Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TabItem2" Uid="TabItem2">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Uid="ChangeEnabledButton" Content="Change enabled to TextBox2" Click="ChangeEnabledButtonClick"
+						Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <TextBox Uid="TextBox2" x:Name="TextBox2" Text="TextBox2"
+						Grid.Row="1" HorizontalAlignment="Center" Height="23" Margin="2" TextWrapping="Wrap" Width="200"/>
+                    <ComboBox Uid="CheckComboBox" x:Name="CheckComboBox"
+						Grid.Row="2" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <CheckBox Uid="CheckBox2" x:Name="CheckBox2" Content="All months"
+						Grid.Row="3" HorizontalAlignment="Center" Margin="2" Width="200"
+						Checked="CheckBox2Checked" Unchecked="CheckBox2Unchecked"/>
+                    <ListBox Uid="CheckListBox" x:Name="CheckListBox"
+						Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</RibbonWindow>

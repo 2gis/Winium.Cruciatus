@@ -12,123 +12,373 @@ namespace Cruciatus.Elements
     using System;
     using System.Windows.Automation;
 
+    using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    public class ListBox : BaseElement<ListBox>, ILazyInitialize
+    /// <summary>
+    /// Представляет элемент управления список.
+    /// </summary>
+    public class ListBox : CruciatusElement, IContainerElement
     {
-        private string automationId;
-
-        private AutomationElement parent;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
+        /// </summary>
         public ListBox()
         {
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для списка.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор списка.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public ListBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
+            Initialize(parent, automationId);
+        }
 
-            if (automationId == null)
+        /// <summary>
+        /// Возвращает значение, указывающее, включена ли список.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Список не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public bool IsEnabled
+        {
+            get
             {
-                throw new ArgumentNullException("automationId");
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
+        }
 
-            this.parent = parent;
-            this.automationId = automationId;
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
+            {
+                return "ListBox";
+            }
         }
 
         internal override ControlType GetType
         {
             get
             {
-                // TODO: а какой он??
-                return ControlType.Custom;
+                return ControlType.List;
             }
         }
 
-        protected override AutomationElement Element
+        /// <summary>
+        /// Проверяет, если ли в списке элемент заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        public bool Contains<T>(uint number) where T : CruciatusElement, IListElement, new()
         {
-            get
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
             {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return false;
             }
+
+            return this.SearchElement(number, new T().GetType) != null;
         }
 
-        public T Item<T>(uint number) where T : BaseElement<T>, new()
+        /// <summary>
+        /// Проверяет, если ли в списке элемент заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        public bool Contains<T>(string name) where T : CruciatusElement, IListElement, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return false;
+            }
+
+            return this.SearchElement(name, new T().GetType) != null;
+        }
+
+        /// <summary>
+        /// Прокручивает список до элемента заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
+        public bool ScrollTo<T>(uint number) where T : CruciatusElement, IListElement, new()
+        {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
+                return false;
+            }
+
+            var searchElement = this.SearchElement(number, new T().GetType);
+            if (searchElement == null)
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0} количество элементов меньше заданного номера ({1}).",
+                    this.ToString(),
+                    number);
+                return false;
+            }
+
+            return this.Scrolling(searchElement);
+        }
+
+        /// <summary>
+        /// Прокручивает список до элемента заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
+        public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
+        {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
+                return false;
+            }
+
+            var searchElement = this.SearchElement(name, new T().GetType);
+            if (searchElement == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                return false;
+            }
+
+            return this.Scrolling(searchElement);
+        }
+
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным номером.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        public T Item<T>(uint number) where T : CruciatusElement, IListElement, new()
+        {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return null;
+            }
+
             var item = new T();
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
+            var searchElement = this.SearchElement(number, item.GetType);
 
-            var items = this.Element.FindAll(TreeScope.Subtree, condition);
-            if (items.Count <= number)
+            if (searchElement == null)
             {
-                throw new ArgumentOutOfRangeException("number");
+                this.LastErrorMessage = string.Format(
+                    "В {0} количество элементов меньше заданного номера ({1}).",
+                    this.ToString(),
+                    number);
+                return null;
             }
 
-            item.FromAutomationElement(items[(int)number]);
+            if (!this.Element.GeometricallyContains(searchElement))
+            {
+                this.LastErrorMessage = string.Format("В {0} элемент под номером {1} вне видимости.", this.ToString(), number);
+                return null;
+            }
+
+            item.Initialize(searchElement);
             return item;
         }
 
-        public T Item<T>(string name) where T : BaseElement<T>, new()
+        /// <summary>
+        /// Возвращает элемент заданного типа с указанным именем.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип элемента.
+        /// </typeparam>
+        /// <returns>
+        /// Искомый элемент, либо null, если найти не удалось.
+        /// </returns>
+        public T Item<T>(string name) where T : CruciatusElement, IListElement, new()
         {
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return null;
+            }
+
             var item = new T();
+            var searchElement = this.SearchElement(name, item.GetType);
+
+            if (searchElement == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                return null;
+            }
+
+            if (!this.Element.GeometricallyContains(searchElement))
+            {
+                this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} вне видимости.", this.ToString(), name);
+                return null;
+            }
+
+            item.Initialize(searchElement);
+            return item;
+        }
+
+        /// <summary>
+        /// Непосредственный поиск AutomationElement с заданными параметрами.
+        /// </summary>
+        /// <param name="number">
+        /// Номер элемента.
+        /// </param>
+        /// <param name="type">
+        /// Тип элемента.
+        /// </param>
+        /// <returns>
+        /// Элемент если найден; в противном случае - null.
+        /// </returns>
+        private AutomationElement SearchElement(uint number, ControlType type)
+        {
+            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, type);
+
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindAll(TreeScope.Subtree, condition),
+                collection => collection.Count <= number,
+                collection => collection.Count > number ? collection[(int)number] : null);
+
+            if (searchElement == null && !type.Equals(ControlType.ListItem))
+            {
+                searchElement = this.SearchElement(number, ControlType.ListItem);
+            }
+
+            return searchElement;
+        }
+
+        /// <summary>
+        /// Непосредственный поиск AutomationElement с заданными параметрами.
+        /// </summary>
+        /// <param name="name">
+        /// Имя элемента.
+        /// </param>
+        /// <param name="type">
+        /// Тип элемента.
+        /// </param>
+        /// <returns>
+        /// Элемент если найден; в противном случае - null.
+        /// </returns>
+        private AutomationElement SearchElement(string name, ControlType type)
+        {
             var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
-                new PropertyCondition(AutomationElement.NameProperty, name));
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, type),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
 
-            var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
-            if (elem == null)
+            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
+                elem => elem.FindFirst(TreeScope.Subtree, condition),
+                elem => elem == null,
+                elem => elem);
+
+            if (searchElement == null && !type.Equals(ControlType.ListItem))
             {
-                // TODO: Исключение вида - не найдено элемента в списке, удовлетворяющему заданным условиям
-                throw new Exception("не нашлось элемента в списке");
+                searchElement = this.SearchElement(name, ControlType.ListItem);
             }
 
-            item.FromAutomationElement(elem);
-            return item;
+            return searchElement;
         }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
+        /// <summary>
+        /// Непосредственная прокрутка до заданного AutomationElement.
+        /// </summary>
+        /// <param name="innerElement">
+        /// Элемент до которого надо прокрутить.
+        /// </param>
+        /// <returns>
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// </returns>
+        private bool Scrolling(AutomationElement innerElement)
         {
-            this.parent = parent;
-            this.automationId = automationId;
-        }
-
-        internal override ListBox FromAutomationElement(AutomationElement element)
-        {
-            this.element = element;
-            this.CheckingOfProperties();
-
-            return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            // TODO: Какие-то проверки явно должны быть
-        }
-
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
-
-            // Если не нашли, то загрузить выпадающий список не удалось
-            if (this.element == null)
+            var scrollingResult = this.Element.Scrolling(innerElement);
+            if (!scrollingResult)
             {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("список не найден");
+                this.LastErrorMessage = string.Format("Элемент {0} не поддерживает прокрутку содержимого.", this.ToString());
+                return false;
             }
 
-            this.CheckingOfProperties();
+            return true;
+        }
+
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
         }
     }
 }

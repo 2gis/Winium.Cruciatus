@@ -9,20 +9,74 @@
 
 namespace Cruciatus
 {
-    using System.Diagnostics;
+    using System;
     using System.Windows.Automation;
 
-    public static class WindowFactory
+    internal static class WindowFactory
     {
-        public static AutomationElement GetMainWindowElement(Process process)
+        /// <summary>
+        /// Возвращает главное окно по соответствию processId и automationId.
+        /// </summary>
+        /// <param name="processId">
+        /// Уникальный идентификатор процесса.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор окна.
+        /// </param>
+        /// <returns>
+        /// Найденное окно либо null.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        internal static AutomationElement GetMainWindowElement(int processId, string automationId)
         {
-            return AutomationElement.FromHandle(process.MainWindowHandle);
+            if (processId <= 0)
+            {
+                throw new ArgumentException("processId");
+            }
+
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
+            var condition = new AndCondition(
+                new PropertyCondition(AutomationElement.ProcessIdProperty, processId),
+                new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
+            var mainWindow = AutomationElement.RootElement.FindFirst(TreeScope.Children, condition);
+            return mainWindow;
         }
 
-        public static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string headerName)
+        /// <summary>
+        /// Возвращает дочернее окно главного (родителя) по соответствию с automationId.
+        /// </summary>
+        /// <param name="mainWindow">
+        /// Главное окно.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор дочернего окна.
+        /// </param>
+        /// <returns>
+        /// Найденное окно либо null.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        internal static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string automationId)
         {
-            var propertyCondition = new PropertyCondition(AutomationElement.NameProperty, headerName);
-            var window = mainWindow.FindFirst(TreeScope.Children, propertyCondition);
+            if (mainWindow == null)
+            {
+                throw new ArgumentNullException("mainWindow");
+            }
+
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
+            var propertyCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, automationId);
+            var window = mainWindow.FindFirst(TreeScope.Subtree, propertyCondition);
             return window;
         }
     }

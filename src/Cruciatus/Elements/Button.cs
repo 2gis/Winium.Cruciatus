@@ -10,34 +10,22 @@
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
-    using Cruciatus.Interfaces;
-
-    using Microsoft.VisualStudio.TestTools.UITesting;
+    using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
     /// <summary>
     /// Представляет элемент управления кнопка.
     /// </summary>
-    public class Button : BaseElement<Button>, ILazyInitialize
+    public class Button : ClickableElement
     {
-        private const int MouseMoveSpeed = 2500;
-
         /// <summary>
-        /// Индетификатор кнопки.
+        /// Инициализирует новый экземпляр класса <see cref="Button"/>.
         /// </summary>
-        private string automationId;
-
-        private AutomationElement parent;
-
         public Button()
         {
         }
@@ -51,44 +39,56 @@ namespace Cruciatus.Elements
         /// <param name="automationId">
         /// Уникальный идентификатор кнопки.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
         public Button(AutomationElement parent, string automationId)
+            : base(parent, automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.parent = parent;
-            this.automationId = automationId;
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли данный элемент управления.
+        /// Возвращает значение, указывающее, включена ли кнопка.
         /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Кнопка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
         public bool IsEnabled
         {
             get
             {
-                return (bool)this.Element.GetCurrentPropertyValue(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
         /// <summary>
-        /// Возвращает координаты прямоугольника, который полностью охватывает элемент.
+        /// Возвращает координаты точки, внутри кнопки, которые можно использовать для нажатия.
         /// </summary>
-        public Rectangle BoundingRectangle
+        /// <exception cref="PropertyNotSupportedException">
+        /// Кнопка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public new System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                return base.ClickablePoint;
+            }
+        }
 
-                // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
+            {
+                return "Button";
             }
         }
 
@@ -101,96 +101,64 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент.
+        /// Выполняет попытку нажатия по кнопке за время ожидания по умолчанию и кнопкой мыши по умолчанию.
         /// </summary>
-        protected override AutomationElement Element
+        /// <returns>
+        /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
+        /// </returns>
+        public new bool Click()
         {
-            get
+            return this.Click(CruciatusFactory.Settings.WaitForGetValueTimeout, CruciatusFactory.Settings.ClickButton);
+        }
+
+        /// <summary>
+        /// Выполняет попытку нажатия по кнопке за заданное время ожидания и кнопкой мыши по умолчанию.
+        /// </summary>
+        /// <param name="waitingTime">
+        /// Задает время ожидания на выполнение действия (миллисекунды).
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click(int waitingTime)
+        {
+            return this.Click(waitingTime, CruciatusFactory.Settings.ClickButton);
+        }
+
+        /// <summary>
+        /// Выполняет попытку нажатия по кнопке за заданное время ожидания и заданной кнопкой мыши.
+        /// </summary>
+        /// <param name="waitingTime">
+        /// Задает время ожидания на выполнение действия (миллисекунды).
+        /// </param>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие.
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click(int waitingTime, MouseButtons mouseButton)
+        {
+            try
             {
-                if (this.element == null)
+                var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true,
+                    waitingTime);
+
+                if (!isEnabled)
                 {
-                    this.Find();
+                    this.LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", this.ToString());
+                    return false;
                 }
 
-                return this.element;
+                return base.Click(mouseButton);
             }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.parent = parent;
-            this.automationId = automationId;
-        }
-
-        /// <summary>
-        /// Эмулирует нажатие кнопки мыши на данном элементе управления.
-        /// </summary>
-        /// <param name="mouseButton">
-        /// Используемая кнопка мыши для нажатия.
-        /// </param>
-        public void Click(MouseButtons mouseButton = MouseButtons.Left)
-        {
-            if (!this.IsEnabled)
+            catch (Exception exc)
             {
-                throw new ElementNotEnabledException("Кнопка отключена, нельзя выполнить нажатие.");
+                this.LastErrorMessage = exc.Message;
+                return false;
             }
-
-            var controlBoundingRect = this.BoundingRectangle;
-
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
-            Mouse.Click(mouseButton);
-        }
-
-        internal override Button FromAutomationElement(AutomationElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            this.CheckingOfProperties();
-
-            return this;
-        }
-
-        protected override void CheckingOfProperties()
-        {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.IsEnabledProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство Enabled
-                throw new Exception("кнопка не поддерживает свойство Enabled");
-            }
-
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("кнопка не поддерживает свойство BoundingRectangle");
-            }
-        }
-
-        /// <summary>
-        /// Поиск текущего элемента в родительском
-        /// </summary>
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            this.element = this.parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.automationId));
-
-            // Если не нашли, то загрузить кнопку не удалось
-            if (this.element == null)
-            {
-                // TODO: Исключение вида - не найдено контрола с заданным AutomationId
-                throw new Exception("кнопка не найдена");
-            }
-
-            this.CheckingOfProperties();
         }
     }
 }

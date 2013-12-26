@@ -3,37 +3,103 @@
 //   Cruciatus
 // </copyright>
 // <summary>
-//   Представляет элемент текстовый блок.
+//   Представляет элемент управления текстовый блок.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Cruciatus.Elements
 {
     using System;
-    using System.Drawing;
-    using System.Linq;
-    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
+    using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
+    using Cruciatus.Interfaces;
 
     using ControlType = System.Windows.Automation.ControlType;
-    using Point = System.Drawing.Point;
-    using Size = System.Drawing.Size;
 
-    public class TextBlock : BaseElement<TextBlock>
+    /// <summary>
+    /// Представляет элемент управления текстовый блок.
+    /// </summary>
+    public class TextBlock : CruciatusElement, IContainerElement, IListElement, IClickable
     {
-        private const int MouseMoveSpeed = 2500;
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
+        /// </summary>
+        public TextBlock()
+        {
+        }
 
-        public Rectangle BoundingRectangle
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родителем для текстового блока.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор текстового блока.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        public TextBlock(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
+        }
+
+        /// <summary>
+        /// Возвращает координаты точки, внутри текстового блока, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовый блок не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public System.Drawing.Point ClickablePoint
         {
             get
             {
-                var rect = (Rect)this.Element.GetCurrentPropertyValue(AutomationElement.BoundingRectangleProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                // Усечение дабла дает немного меньший прямоугольник, но он внутри изначального
-                return new Rectangle(new Point((int)rect.X, (int)rect.Y), new Size((int)rect.Width, (int)rect.Height));
+                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает текст из текстового блока.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовый блок не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public string Text
+        {
+            get
+            {
+                try
+                {
+                    return this.GetPropertyValue<string>(AutomationElement.NameProperty);
+                }
+                catch (Exception exc)
+                {
+                    this.LastErrorMessage = exc.Message;
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Возвращает текстовое представление имени класса.
+        /// </summary>
+        internal override string ClassName
+        {
+            get
+            {
+                return "TextBlock";
             }
         }
 
@@ -45,46 +111,39 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected override AutomationElement Element
+        /// <summary>
+        /// Выполняет нажатие по текстовому блоку кнопкой по умолчанию.
+        /// </summary>
+        /// <returns>
+        /// Значение true если нажать на элемент удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click()
         {
-            get
-            {
-                return this.element;
-            }
+            return this.Click(CruciatusFactory.Settings.ClickButton);
         }
 
-        public void Click(MouseButtons mouseButton = MouseButtons.Left)
+        /// <summary>
+        /// Выполняет нажатие по текстовому блоку.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие.
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на текстовый блок удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click(MouseButtons mouseButton)
         {
-            var controlBoundingRect = this.BoundingRectangle;
-
-            // TODO Вынести это действие как расширения для типа Rectangle
-            var clickablePoint = Point.Add(controlBoundingRect.Location, new Size(controlBoundingRect.Width / 2, controlBoundingRect.Height / 2));
-
-            Mouse.MouseMoveSpeed = MouseMoveSpeed;
-            Mouse.Move(clickablePoint);
-            Mouse.Click(mouseButton);
+            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
         }
 
-        internal override TextBlock FromAutomationElement(AutomationElement element)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            this.CheckingOfProperties();
-
-            return this;
+            Initialize(parent, automationId);
         }
 
-        protected override void CheckingOfProperties()
+        void IListElement.Initialize(AutomationElement element)
         {
-            if (!this.Element.GetSupportedProperties().Contains(AutomationElement.BoundingRectangleProperty))
-            {
-                // TODO: Исключение вида - контрол не поддерживает свойство BoundingRectangle
-                throw new Exception("текстовый блок не поддерживает свойство BoundingRectangle");
-            }
+            Initialize(element);
         }
     }
 }
