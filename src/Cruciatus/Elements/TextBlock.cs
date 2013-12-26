@@ -17,14 +17,12 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-
     using ControlType = System.Windows.Automation.ControlType;
 
     /// <summary>
     /// Представляет элемент управления текстовый блок.
     /// </summary>
-    public class TextBlock : CruciatusElement, IContainerElement, IListElement
+    public class TextBlock : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
@@ -114,29 +112,28 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Выполняет нажатие по текстовому блоку кнопкой по умолчанию.
+        /// </summary>
+        /// <returns>
+        /// Значение true если нажать на элемент удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click()
+        {
+            return this.Click(CruciatusFactory.Settings.ClickButton);
+        }
+
+        /// <summary>
         /// Выполняет нажатие по текстовому блоку.
         /// </summary>
         /// <param name="mouseButton">
-        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// Задает кнопку мыши, которой будет произведено нажатие.
         /// </param>
         /// <returns>
-        /// Значение true если нажать на выпадающий список удалось; в противном случае значение - false.
+        /// Значение true если нажать на текстовый блок удалось; в противном случае значение - false.
         /// </returns>
-        public bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(MouseButtons mouseButton)
         {
-            try
-            {
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(mouseButton);
-            }
-            catch (Exception exc)
-            {
-                this.LastErrorMessage = exc.Message;
-                return false;
-            }
-
-            return true;
+            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
