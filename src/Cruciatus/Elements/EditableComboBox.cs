@@ -112,12 +112,13 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
-                var topRightPoint = this.GetPropertyValue<ComboBox, System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
+                var topRightPoint = this.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
                 var clickablePoint = new Point((int)topRightPoint.X - 5, (int)topRightPoint.Y + 5);
 
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(clickablePoint);
-                Mouse.Click(mouseButton);
+                if (!CruciatusCommand.Click(clickablePoint, mouseButton, out this.LastErrorMessageInstance))
+                {
+                    return false;
+                }
 
                 if (!this.Element.WaitForElementReady())
                 {

@@ -24,7 +24,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления выпадающий список.
     /// </summary>
-    public class ComboBox : BaseElement<ComboBox>, ILazyInitialize
+    public class ComboBox : CruciatusElement, IContainerElement
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
@@ -47,18 +47,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public ComboBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -74,7 +63,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<ComboBox, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -108,7 +97,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<ComboBox, System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
                 return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
@@ -127,7 +116,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<ComboBox, ExpandCollapseState>(ExpandCollapsePattern.ExpandCollapseStateProperty);
+                return this.GetPropertyValue<ExpandCollapseState>(ExpandCollapsePattern.ExpandCollapseStateProperty);
             }
         }
 
@@ -142,44 +131,12 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор выпадающего списка.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем выпадающего списка.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
             {
                 return ControlType.ComboBox;
             }
-        }
-
-        /// <summary>
-        /// Возвращает инициализированный элемент выпадающего списка.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
-            }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
         }
 
         /// <summary>
@@ -242,7 +199,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public T Item<T>(uint number) where T : BaseElement<T>, new()
+        public T Item<T>(uint number) where T : CruciatusElement, IListElement, new()
         {
             try
             {
@@ -274,7 +231,7 @@ namespace Cruciatus.Elements
                     return null;
                 }
 
-                item.FromAutomationElement(items[(int)number]);
+                item.Initialize(items[(int)number]);
                 return item;
             }
             catch (Exception exc)
@@ -296,7 +253,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public T Item<T>(string name) where T : BaseElement<T>, new()
+        public T Item<T>(string name) where T : CruciatusElement, IListElement, new()
         {
             try
             {
@@ -327,7 +284,7 @@ namespace Cruciatus.Elements
                     return null;
                 }
 
-                item.FromAutomationElement(elem);
+                item.Initialize(elem);
                 return item;
             }
             catch (Exception exc)
@@ -349,7 +306,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
         /// </returns>
-        public bool ScrollTo<T>(string name) where T : BaseElement<T>, new()
+        public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -377,18 +334,6 @@ namespace Cruciatus.Elements
             return this.Scrolling(searchElement);
         }
 
-        internal override ComboBox FromAutomationElement(AutomationElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-
-            return this;
-        }
-
         /// <summary>
         /// Выполняет нажатие по выпадающему списку.
         /// </summary>
@@ -412,9 +357,10 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(mouseButton);
+                if (!CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance))
+                {
+                    return false;
+                }
 
                 if (!this.Element.WaitForElementReady())
                 {
@@ -473,23 +419,9 @@ namespace Cruciatus.Elements
             return true;
         }
 
-        /// <summary>
-        /// Поиск выпадающего списка в родительском элементе.
-        /// </summary>
-        private void Find()
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить выпадающий список не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(parent, automationId);
         }
     }
 }

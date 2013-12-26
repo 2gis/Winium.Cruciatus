@@ -24,7 +24,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления текстовый блок.
     /// </summary>
-    public class TextBlock : BaseElement<TextBlock>, ILazyInitialize
+    public class TextBlock : CruciatusElement, IContainerElement, IListElement
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
@@ -47,18 +47,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public TextBlock(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -74,7 +63,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<TextBlock, System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
                 return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
@@ -95,7 +84,7 @@ namespace Cruciatus.Elements
             {
                 try
                 {
-                    return this.GetPropertyValue<TextBlock, string>(AutomationElement.NameProperty);
+                    return this.GetPropertyValue<string>(AutomationElement.NameProperty);
                 }
                 catch (Exception exc)
                 {
@@ -116,37 +105,11 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор текстового блока.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем текстового блока.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
             {
                 return ControlType.Text;
-            }
-        }
-
-        /// <summary>
-        /// Возвращает инициализированный элемент выпадающего списка.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
             }
         }
 
@@ -176,39 +139,14 @@ namespace Cruciatus.Elements
             return true;
         }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
-        internal override TextBlock FromAutomationElement(AutomationElement element)
+        void IListElement.Initialize(AutomationElement element)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            return this;
-        }
-
-        /// <summary>
-        /// Поиск текстового блока в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить текстовый блок не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(element);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Cruciatus
     using System;
     using System.Windows.Automation;
 
-    public static class WindowFactory
+    internal static class WindowFactory
     {
         /// <summary>
         /// Возвращает главное окно по соответствию processId и automationId.
@@ -27,9 +27,9 @@ namespace Cruciatus
         /// Найденное окно либо null.
         /// </returns>
         /// <exception cref="ArgumentNullException">
-        /// Входные параметры не должны быть нулевыми
+        /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public static AutomationElement GetMainWindowElement(int processId, string automationId)
+        internal static AutomationElement GetMainWindowElement(int processId, string automationId)
         {
             if (processId <= 0)
             {
@@ -48,8 +48,33 @@ namespace Cruciatus
             return mainWindow;
         }
 
-        public static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string automationId)
+        /// <summary>
+        /// Возвращает дочернее окно главного (родителя) по соответствию с automationId.
+        /// </summary>
+        /// <param name="mainWindow">
+        /// Главное окно.
+        /// </param>
+        /// <param name="automationId">
+        /// Уникальный идентификатор дочернего окна.
+        /// </param>
+        /// <returns>
+        /// Найденное окно либо null.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        internal static AutomationElement GetChildWindowElement(AutomationElement mainWindow, string automationId)
         {
+            if (mainWindow == null)
+            {
+                throw new ArgumentNullException("mainWindow");
+            }
+
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
             var propertyCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, automationId);
             var window = mainWindow.FindFirst(TreeScope.Subtree, propertyCondition);
             return window;

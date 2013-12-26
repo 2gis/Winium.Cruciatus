@@ -9,6 +9,8 @@
 
 namespace Cruciatus
 {
+    using System.Windows.Forms;
+
     public class CruciatusSettings
     {
         private const int DefaultWaitingPeriod = 25;
@@ -22,6 +24,8 @@ namespace Cruciatus
         private const int DefaultWaitForGetValueTimeout = 7500;
         
         private const int DefaultMouseMoveSpeed = 2500;
+
+        private const MouseButtons DefaultClickButton = MouseButtons.Left;
 
         private static CruciatusSettings instance;
 
@@ -60,6 +64,11 @@ namespace Cruciatus
         /// </summary>
         public int MouseMoveSpeed { get; set; }
 
+        /// <summary>
+        /// Возвращает или задает кнопку мыши, которой производится нажатие (click).
+        /// </summary>
+        public MouseButtons ClickButton { get; set; }
+
         internal static CruciatusSettings Instance
         {
             get
@@ -79,6 +88,7 @@ namespace Cruciatus
             this.WaitForReadyTimeout = DefaultWaitForReadyTimeout;
             this.WaitForGetValueTimeout = DefaultWaitForGetValueTimeout;
             this.MouseMoveSpeed = DefaultMouseMoveSpeed;
+            this.ClickButton = DefaultClickButton;
         }
     }
 }

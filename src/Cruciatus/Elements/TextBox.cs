@@ -25,7 +25,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления текстовое поле.
     /// </summary>
-    public class TextBox : BaseElement<TextBox>, ILazyInitialize
+    public class TextBox : CruciatusElement, IContainerElement, IListElement
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBox"/>.
@@ -48,18 +48,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public TextBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -75,7 +64,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<TextBox, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -92,7 +81,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<TextBox, System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
                 return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
@@ -111,7 +100,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<TextBox, bool>(ValuePattern.IsReadOnlyProperty);
+                return this.GetPropertyValue<bool>(ValuePattern.IsReadOnlyProperty);
             }
         }
 
@@ -138,7 +127,7 @@ namespace Cruciatus.Elements
                     }
 
                     // Иначе текст получается так
-                    return this.GetPropertyValue<TextBox, string>(ValuePattern.ValueProperty);
+                    return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
                 }
                 catch (Exception exc)
                 {
@@ -159,37 +148,11 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор кнопки.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем кнопки.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
             {
                 return ControlType.Edit;
-            }
-        }
-
-        /// <summary>
-        /// Возвращает инициализированный элемент текстового поля.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
             }
         }
 
@@ -222,9 +185,11 @@ namespace Cruciatus.Elements
                     throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
                 }
 
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(MouseButtons.Left);
+                if (!CruciatusCommand.Click(this.ClickablePoint, MouseButtons.Left, out this.LastErrorMessageInstance))
+                {
+                    return false;
+                }
+
                 Keyboard.SendKeys("^a");
                 Keyboard.SendKeys(text);
             }
@@ -237,39 +202,14 @@ namespace Cruciatus.Elements
             return true;
         }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
-        internal override TextBox FromAutomationElement(AutomationElement element)
+        void IListElement.Initialize(AutomationElement element)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            return this;
-        }
-
-        /// <summary>
-        /// Поиск текстового поля в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить элемент не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(element);
         }
     }
 }

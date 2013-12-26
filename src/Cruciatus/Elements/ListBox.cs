@@ -19,7 +19,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления список.
     /// </summary>
-    public class ListBox : BaseElement<ListBox>, ILazyInitialize
+    public class ListBox : CruciatusElement, IContainerElement
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
@@ -42,18 +42,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public ListBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -69,7 +58,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<ListBox, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -84,37 +73,11 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор списка.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем списка.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
             {
                 return ControlType.List;
-            }
-        }
-
-        /// <summary>
-        /// Возвращает инициализированный элемент списка.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
             }
         }
 
@@ -130,7 +93,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public bool Contains<T>(uint number) where T : BaseElement<T>, new()
+        public bool Contains<T>(uint number) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -157,7 +120,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public bool Contains<T>(string name) where T : BaseElement<T>, new()
+        public bool Contains<T>(string name) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -184,7 +147,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
         /// </returns>
-        public bool ScrollTo<T>(uint number) where T : BaseElement<T>, new()
+        public bool ScrollTo<T>(uint number) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -221,7 +184,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
         /// </returns>
-        public bool ScrollTo<T>(string name) where T : BaseElement<T>, new()
+        public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -255,7 +218,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public T Item<T>(uint number) where T : BaseElement<T>, new()
+        public T Item<T>(uint number) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -285,7 +248,7 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            item.FromAutomationElement(searchElement);
+            item.Initialize(searchElement);
             return item;
         }
 
@@ -301,7 +264,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public T Item<T>(string name) where T : BaseElement<T>, new()
+        public T Item<T>(string name) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
@@ -328,20 +291,8 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            item.FromAutomationElement(searchElement);
+            item.Initialize(searchElement);
             return item;
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
-        }
-
-        internal override ListBox FromAutomationElement(AutomationElement element)
-        {
-            this.element = element;
-            return this;
         }
 
         /// <summary>
@@ -425,23 +376,9 @@ namespace Cruciatus.Elements
             return true;
         }
 
-        /// <summary>
-        /// Поиск списка в родительском элементе.
-        /// </summary>
-        private void Find()
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить выпадающий список не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(parent, automationId);
         }
     }
 }
