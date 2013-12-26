@@ -19,7 +19,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления таблица.
     /// </summary>
-    public class DataGrid : BaseElement<DataGrid>, ILazyInitialize
+    public class DataGrid : CruciatusElement, IContainerElement
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
@@ -42,18 +42,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public DataGrid(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -69,7 +58,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<DataGrid, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -86,7 +75,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<DataGrid, int>(GridPattern.RowCountProperty);
+                return this.GetPropertyValue<int>(GridPattern.RowCountProperty);
             }
         }
 
@@ -103,7 +92,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<DataGrid, int>(GridPattern.ColumnCountProperty);
+                return this.GetPropertyValue<int>(GridPattern.ColumnCountProperty);
             }
         }
 
@@ -118,44 +107,12 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор выпадающего списка.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем выпадающего списка.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
             {
                 return ControlType.DataGrid;
             }
-        }
-
-        /// <summary>
-        /// Возвращает инициализированный элемент таблицы.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-                
-                return this.element;
-            }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
         }
 
         /// <summary>
@@ -275,7 +232,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public T Item<T>(int row, int column) where T : BaseElement<T>, new()
+        public T Item<T>(int row, int column) where T : CruciatusElement, IListElement, new()
         {
             // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
@@ -330,33 +287,13 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            item.FromAutomationElement(elem);
+            item.Initialize(elem);
             return item;
         }
 
-        internal override DataGrid FromAutomationElement(AutomationElement element)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.element = element;
-            return this;
-        }
-
-        /// <summary>
-        /// Поиск таблицы в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить кнопку не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(parent, automationId);
         }
     }
 }

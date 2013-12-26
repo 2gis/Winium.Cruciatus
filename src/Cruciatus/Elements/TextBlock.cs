@@ -17,14 +17,12 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-
     using ControlType = System.Windows.Automation.ControlType;
 
     /// <summary>
     /// Представляет элемент управления текстовый блок.
     /// </summary>
-    public class TextBlock : BaseElement<TextBlock>, ILazyInitialize
+    public class TextBlock : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
@@ -47,18 +45,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public TextBlock(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -74,7 +61,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<TextBlock, System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
                 return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
@@ -95,7 +82,7 @@ namespace Cruciatus.Elements
             {
                 try
                 {
-                    return this.GetPropertyValue<TextBlock, string>(AutomationElement.NameProperty);
+                    return this.GetPropertyValue<string>(AutomationElement.NameProperty);
                 }
                 catch (Exception exc)
                 {
@@ -116,16 +103,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор текстового блока.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем текстового блока.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
@@ -135,80 +112,38 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный элемент выпадающего списка.
+        /// Выполняет нажатие по текстовому блоку кнопкой по умолчанию.
         /// </summary>
-        internal override AutomationElement Element
+        /// <returns>
+        /// Значение true если нажать на элемент удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click()
         {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
-            }
+            return this.Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
         /// Выполняет нажатие по текстовому блоку.
         /// </summary>
         /// <param name="mouseButton">
-        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// Задает кнопку мыши, которой будет произведено нажатие.
         /// </param>
         /// <returns>
-        /// Значение true если нажать на выпадающий список удалось; в противном случае значение - false.
+        /// Значение true если нажать на текстовый блок удалось; в противном случае значение - false.
         /// </returns>
-        public bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(MouseButtons mouseButton)
         {
-            try
-            {
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(mouseButton);
-            }
-            catch (Exception exc)
-            {
-                this.LastErrorMessage = exc.Message;
-                return false;
-            }
-
-            return true;
+            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
         }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
-        internal override TextBlock FromAutomationElement(AutomationElement element)
+        void IListElement.Initialize(AutomationElement element)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            return this;
-        }
-
-        /// <summary>
-        /// Поиск текстового блока в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить текстовый блок не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(element);
         }
     }
 }

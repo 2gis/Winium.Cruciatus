@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusBaseElementExtension.cs" company="2GIS">
+// <copyright file="CruciatusElementExtension.cs" company="2GIS">
 //   Cruciatus
 // </copyright>
 // <summary>
-//   Представляет расширения для элементов, наследующихся от BaseElement.
+//   Представляет расширения для элементов, наследующихся от CruciatusElement.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -15,20 +15,17 @@ namespace Cruciatus.Extensions
     using Cruciatus.Elements;
     using Cruciatus.Exceptions;
 
-    public static class CruciatusBaseElementExtension
+    public static class CruciatusElementExtension
     {
         /// <summary>
         /// Возвращает значение заданного свойства, приведенное к указанному типу.
         /// </summary>
-        /// <param name="baseElement">
+        /// <param name="cruciatusElement">
         /// Текущий элемент, свойство которого необходимо получить.
         /// </param>
         /// <param name="property">
         /// Свойство, которое необходимо получить.
         /// </param>
-        /// <typeparam name="T">
-        /// Тип элемента Круциатуса.
-        /// </typeparam>
         /// <typeparam name="TOut">
         /// Тип значения получаемого свойства.
         /// </typeparam>
@@ -41,22 +38,22 @@ namespace Cruciatus.Extensions
         /// <exception cref="InvalidCastException">
         /// Нельзя привести значение свойства к указанному типу.
         /// </exception>
-        internal static TOut GetPropertyValue<T, TOut>(this BaseElement<T> baseElement, AutomationProperty property)
+        internal static TOut GetPropertyValue<TOut>(this CruciatusElement cruciatusElement, AutomationProperty property)
         {
             try
             {
-                return baseElement.Element.GetPropertyValue<TOut>(property);
+                return cruciatusElement.Element.GetPropertyValue<TOut>(property);
             }
             catch (NotSupportedException)
             {
-                throw new PropertyNotSupportedException(baseElement.ToString(), property.ProgrammaticName);
+                throw new PropertyNotSupportedException(cruciatusElement.ToString(), property.ProgrammaticName);
             }
             catch (InvalidCastException exc)
             {
                 var err = string.Format(
                     "При получении значения свойства {0} у элемента {1} произошла ошибка. ",
                     property,
-                    baseElement.ToString());
+                    cruciatusElement.ToString());
                 err += exc.Message;
 
                 throw new InvalidCastException(err);

@@ -54,7 +54,7 @@ namespace Cruciatus.Elements
         /// <summary>
         /// Поиск вкладки в родительском элементе.
         /// </summary>
-        protected override void Find()
+        internal override void Find()
         {
             // Сначала ищем дочерний элемент искомой вкладки по заданному AutomationId
             var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
@@ -70,10 +70,10 @@ namespace Cruciatus.Elements
             }
 
             var walker = new TreeWalker(Condition.TrueCondition);
-            this.element = walker.GetParent(elementChild);
+            this.ElementInstance = walker.GetParent(elementChild);
 
             // На всякий случай проверяем, что родитель успешно получен
-            if (this.element == null)
+            if (this.ElementInstance == null)
             {
                 throw new ElementNotFoundException(this.ToString());
             }

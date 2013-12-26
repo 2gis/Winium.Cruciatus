@@ -17,9 +17,7 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-
-    public class ClickableElement : BaseElement<ClickableElement>, IClickable, ILazyInitialize
+    public class ClickableElement : CruciatusElement, IContainerElement, IClickable
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ClickableElement"/>.
@@ -42,18 +40,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public ClickableElement(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -69,7 +56,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<ClickableElement, System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
                 return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
@@ -86,16 +73,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор кликабельного элемента.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем кликабельного элемента.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
@@ -105,81 +82,33 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает инициализированный кликабельный элемент.
+        /// Выполняет нажатие по кликабельному элементу кнопкой по умолчанию.
         /// </summary>
-        internal override AutomationElement Element
+        /// <returns>
+        /// Значение true если нажать на элемент удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click()
         {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
-            }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            return CruciatusCommand.Click(this.ClickablePoint, out this.LastErrorMessageInstance);
         }
 
         /// <summary>
         /// Выполняет нажатие по кликабельному элементу.
         /// </summary>
         /// <param name="mouseButton">
-        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// Задает кнопку мыши, которой будет произведено нажатие.
         /// </param>
         /// <returns>
         /// Значение true если нажать на элемент удалось; в противном случае значение - false.
         /// </returns>
-        public virtual bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public virtual bool Click(MouseButtons mouseButton)
         {
-            try
-            {
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
-                Mouse.Click(mouseButton);
-            }
-            catch (Exception exc)
-            {
-                this.LastErrorMessage = exc.Message;
-                return false;
-            }
-
-            return true;
+            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
         }
 
-        internal override ClickableElement FromAutomationElement(AutomationElement element)
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            return this;
-        }
-
-        /// <summary>
-        /// Поиск кликабельного элемента в родительском элементе.
-        /// </summary>
-        private void Find()
-        {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить кликабельный элемент не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(parent, automationId);
         }
     }
 }

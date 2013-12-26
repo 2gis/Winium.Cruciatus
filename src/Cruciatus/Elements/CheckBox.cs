@@ -23,7 +23,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления чекбокс.
     /// </summary>
-    public class CheckBox : BaseElement<CheckBox>, ILazyInitialize
+    public class CheckBox : CruciatusElement, IContainerElement, IListElement
     {
         private const int MaxClickCount = 10;
 
@@ -48,18 +48,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public CheckBox(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.Parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -75,7 +64,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<CheckBox, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -92,7 +81,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                var windowsPoint = this.GetPropertyValue<CheckBox, System.Windows.Point>(AutomationElement.ClickablePointProperty);
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
                 return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
@@ -138,7 +127,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<CheckBox, ToggleState>(TogglePattern.ToggleStateProperty);
+                return this.GetPropertyValue<ToggleState>(TogglePattern.ToggleStateProperty);
             }
         }
 
@@ -153,37 +142,11 @@ namespace Cruciatus.Elements
             }
         }
 
-        /// <summary>
-        /// Возвращает или задает уникальный идентификатор чекбокса.
-        /// </summary>
-        internal override sealed string AutomationId { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает элемент, который является родителем чекбокса.
-        /// </summary>
-        internal AutomationElement Parent { get; set; }
-
         internal override ControlType GetType
         {
             get
             {
                 return ControlType.CheckBox;
-            }
-        }
-
-        /// <summary>
-        /// Возвращает инициализированный элемент чекбокса.
-        /// </summary>
-        internal override AutomationElement Element
-        {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
             }
         }
 
@@ -235,23 +198,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.Parent = parent;
-            this.AutomationId = automationId;
-        }
-
-        internal override CheckBox FromAutomationElement(AutomationElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            this.element = element;
-            return this;
-        }
-
         /// <summary>
         /// Устанавливает чекбоксу заданное состояние.
         /// </summary>
@@ -288,23 +234,14 @@ namespace Cruciatus.Elements
             return maxClickCount != 0;
         }
 
-        /// <summary>
-        /// Поиск чекбокса в родительском элементе.
-        /// </summary>
-        private void Find()
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            // Ищем в нем первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.element = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
+            Initialize(parent, automationId);
+        }
 
-            // Если не нашли, то загрузить чекбокс не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+        void IListElement.Initialize(AutomationElement element)
+        {
+            Initialize(element);
         }
     }
 }

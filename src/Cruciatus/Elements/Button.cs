@@ -60,7 +60,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return this.GetPropertyValue<ClickableElement, bool>(AutomationElement.IsEnabledProperty);
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
             }
         }
 
@@ -101,32 +101,43 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Выполняет нажатие по кнопке за время ожидания по умолчанию.
+        /// Выполняет попытку нажатия по кнопке за время ожидания по умолчанию и кнопкой мыши по умолчанию.
         /// </summary>
-        /// <param name="mouseButton">
-        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// <returns>
+        /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
+        /// </returns>
+        public new bool Click()
+        {
+            return this.Click(CruciatusFactory.Settings.WaitForGetValueTimeout, CruciatusFactory.Settings.ClickButton);
+        }
+
+        /// <summary>
+        /// Выполняет попытку нажатия по кнопке за заданное время ожидания и кнопкой мыши по умолчанию.
+        /// </summary>
+        /// <param name="waitingTime">
+        /// Задает время ожидания на выполнение действия (миллисекунды).
         /// </param>
         /// <returns>
         /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
         /// </returns>
-        public override bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(int waitingTime)
         {
-            return this.Click(CruciatusFactory.Settings.WaitForGetValueTimeout, mouseButton);
+            return this.Click(waitingTime, CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
-        /// Выполняет нажатие по кнопке за заданное время ожидания.
+        /// Выполняет попытку нажатия по кнопке за заданное время ожидания и заданной кнопкой мыши.
         /// </summary>
         /// <param name="waitingTime">
         /// Задает время ожидания на выполнение действия (миллисекунды).
         /// </param>
         /// <param name="mouseButton">
-        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// Задает кнопку мыши, которой будет произведено нажатие.
         /// </param>
         /// <returns>
         /// Значение true если нажать на кнопку удалось; в противном случае значение - false.
         /// </returns>
-        public bool Click(int waitingTime, MouseButtons mouseButton = MouseButtons.Left)
+        public bool Click(int waitingTime, MouseButtons mouseButton)
         {
             try
             {

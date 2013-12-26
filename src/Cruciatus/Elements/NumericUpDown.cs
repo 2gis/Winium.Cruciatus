@@ -12,39 +12,25 @@ namespace Cruciatus.Elements
     using System;
     using System.Windows.Automation;
 
-    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    public class NumericUpDown : BaseElement<NumericUpDown>, ILazyInitialize
+    public class NumericUpDown : CruciatusElement, IContainerElement
     {
-        private AutomationElement parent;
-
         public NumericUpDown()
         {
         }
 
         public NumericUpDown(AutomationElement parent, string automationId)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            this.parent = parent;
-            this.AutomationId = automationId;
+            Initialize(parent, automationId);
         }
 
         public int Value
         {
             get
             {
-                return Convert.ToInt32(this.GetPropertyValue<NumericUpDown, double>(RangeValuePattern.ValueProperty));
+                return Convert.ToInt32(this.GetPropertyValue<double>(RangeValuePattern.ValueProperty));
             }
         }
 
@@ -56,8 +42,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        internal override sealed string AutomationId { get; set; }
-
         internal override ControlType GetType
         {
             get
@@ -67,42 +51,9 @@ namespace Cruciatus.Elements
             }
         }
 
-        internal override AutomationElement Element
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            get
-            {
-                if (this.element == null)
-                {
-                    this.Find();
-                }
-
-                return this.element;
-            }
-        }
-
-        public void LazyInitialize(AutomationElement parent, string automationId)
-        {
-            this.parent = parent;
-            this.AutomationId = automationId;
-        }
-
-        internal override NumericUpDown FromAutomationElement(AutomationElement element)
-        {
-            this.element = element;
-            return this;
-        }
-
-        private void Find()
-        {
-            this.element = this.parent.FindFirst(
-                TreeScope.Subtree,
-                new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId));
-
-            // Если не нашли, то загрузить элемент не удалось
-            if (this.element == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
+            Initialize(parent, automationId);
         }
     }
 }

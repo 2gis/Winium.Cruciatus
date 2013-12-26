@@ -15,6 +15,8 @@ namespace Cruciatus.Interfaces
     {
         System.Drawing.Point ClickablePoint { get; }
 
-        bool Click(MouseButtons mouseButton = MouseButtons.Left);
+        bool Click();
+
+        bool Click(MouseButtons mouseButton);
     }
 }

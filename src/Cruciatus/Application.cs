@@ -16,6 +16,7 @@ namespace Cruciatus
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
+    using Cruciatus.Interfaces;
 
     /// <summary>
     /// Представляет объект приложение.
@@ -23,7 +24,7 @@ namespace Cruciatus
     /// <typeparam name="T">
     /// Главное окно.
     /// </typeparam>
-    public abstract class Application<T> where T : Window, new()
+    public abstract class Application<T> where T : Window, IContainerElement, new()
     {
         private readonly bool isClickOnceApplication;
 
@@ -121,7 +122,7 @@ namespace Cruciatus
                 if (this.mainWindow == null)
                 {
                     this.mainWindow = new T();
-                    this.mainWindow.LazyInitialize(this.mainWindowElement, this.mainWindowAutomationId);
+                    this.mainWindow.Initialize(this.mainWindowElement, this.mainWindowAutomationId);
                 }
 
                 return this.mainWindow;
@@ -283,12 +284,12 @@ namespace Cruciatus
             return this.process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout);
         }
 
-        protected TU GetElement<TU>(string headerName) where TU : Window, new()
+        protected TU GetElement<TU>(string headerName) where TU : Window, IContainerElement, new()
         {
             if (!this.objects.ContainsKey(headerName))
             {
                 var item = new TU();
-                item.LazyInitialize(this.mainWindowElement, headerName);
+                item.Initialize(this.mainWindowElement, headerName);
                 this.objects.Add(headerName, item);
             }
 
