@@ -80,7 +80,8 @@ namespace Cruciatus.Elements
 
                 if (!isEnabled)
                 {
-                    throw new ElementNotEnabledException(string.Format("{0} отключен, нельзя установить текст.", this.ToString()));
+                    this.LastErrorMessage = string.Format("{0} отключен, нельзя установить текст.", this.ToString());
+                    return false;
                 }
 
                 Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;

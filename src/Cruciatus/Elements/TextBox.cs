@@ -177,12 +177,14 @@ namespace Cruciatus.Elements
             {
                 if (!this.IsEnabled)
                 {
-                    throw new ElementNotEnabledException("Текстовое поле отключено, нельзя заполнить текстом.");
+                    this.LastErrorMessage = string.Format("{0} отключен, нельзя заполнить текстом.", this.ToString());
+                    return false;
                 }
 
                 if (this.IsReadOnly)
                 {
-                    throw new ReadOnlyException("Текстовое поле доступно только для чтения.");
+                    this.LastErrorMessage = string.Format("{0} доступен только для чтения.", this.ToString());
+                    return false;
                 }
 
                 if (!CruciatusCommand.Click(this.ClickablePoint, MouseButtons.Left, out this.LastErrorMessageInstance))
