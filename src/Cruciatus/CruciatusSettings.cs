@@ -27,10 +27,22 @@ namespace Cruciatus
 
         private const MouseButtons DefaultClickButton = MouseButtons.Left;
 
+        private readonly MessageBox.ButtonUid defaultMessageBoxButtonUid;
+
         private static CruciatusSettings instance;
 
         private CruciatusSettings()
         {
+            this.defaultMessageBoxButtonUid.CloseButtonUid = "Close";
+            this.defaultMessageBoxButtonUid.OkType.OkUid = "2";
+            this.defaultMessageBoxButtonUid.OkCancelType.OkUid = "1";
+            this.defaultMessageBoxButtonUid.OkCancelType.CancelUid = "2";
+            this.defaultMessageBoxButtonUid.YesNoType.YesUid = "6";
+            this.defaultMessageBoxButtonUid.YesNoType.NoUid = "7";
+            this.defaultMessageBoxButtonUid.YesNoCancelType.YesUid = "6";
+            this.defaultMessageBoxButtonUid.YesNoCancelType.NoUid = "7";
+            this.defaultMessageBoxButtonUid.YesNoCancelType.CancelUid = "2";
+
             this.ResetToDefault();
         }
 
@@ -69,6 +81,11 @@ namespace Cruciatus
         /// </summary>
         public MouseButtons ClickButton { get; set; }
 
+        /// <summary>
+        /// Возвращает или задает информацию о уникальных идентификаторах кнопок в MessageBox.
+        /// </summary>
+        public MessageBox.ButtonUid MessageBoxButtonUid;
+
         internal static CruciatusSettings Instance
         {
             get
@@ -89,6 +106,8 @@ namespace Cruciatus
             this.WaitForGetValueTimeout = DefaultWaitForGetValueTimeout;
             this.MouseMoveSpeed = DefaultMouseMoveSpeed;
             this.ClickButton = DefaultClickButton;
+
+            this.MessageBoxButtonUid = this.defaultMessageBoxButtonUid;
         }
     }
 }
