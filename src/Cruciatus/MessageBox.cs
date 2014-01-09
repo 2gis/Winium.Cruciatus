@@ -1,4 +1,12 @@
-﻿
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageBox.cs" company="2GIS">
+//   Cruciatus
+// </copyright>
+// <summary>
+//   Представляет класс для работы с диалогом MessageBox.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace Cruciatus
 {
     using System.Windows;
@@ -8,8 +16,51 @@ namespace Cruciatus
 
     using Window = Cruciatus.Elements.Window;
 
-    internal static class MessageBox
+    public static class MessageBox
     {
+        #region Структуры для описания UID кнопок
+        public struct OkType
+        {
+            public string OkUid;
+        }
+
+        public struct OkCancelType
+        {
+            public string OkUid;
+
+            public string CancelUid;
+        }
+
+        public struct YesNoType
+        {
+            public string YesUid;
+
+            public string NoUid;
+        }
+
+        public struct YesNoCancelType
+        {
+            public string YesUid;
+
+            public string NoUid;
+
+            public string CancelUid;
+        }
+
+        public struct ButtonUid
+        {
+            public string CloseButtonUid;
+
+            public OkType OkType;
+
+            public OkCancelType OkCancelType;
+
+            public YesNoType YesNoType;
+
+            public YesNoCancelType YesNoCancelType;
+        }
+        #endregion
+
         internal static int NumberOfOpenModalWindow(Window window)
         {
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
@@ -28,7 +79,7 @@ namespace Cruciatus
             string uid;
             if (button == MessageBoxResult.None)
             {
-                uid = "Close";
+                uid = CruciatusFactory.Settings.MessageBoxButtonUid.CloseButtonUid;
             }
             else
             {
@@ -38,7 +89,7 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.OK:
-                                uid = "2";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkType.OkUid;
                                 break;
                             default:
                                 return false;
@@ -50,10 +101,10 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.OK:
-                                uid = "1";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.OkUid;
                                 break;
                             case MessageBoxResult.Cancel:
-                                uid = "2";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.CancelUid;
                                 break;
                             default:
                                 return false;
@@ -65,10 +116,10 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.Yes:
-                                uid = "6";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.YesUid;
                                 break;
                             case MessageBoxResult.No:
-                                uid = "7";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.NoUid;
                                 break;
                             default:
                                 return false;
@@ -80,13 +131,13 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.Yes:
-                                uid = "6";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.YesUid;
                                 break;
                             case MessageBoxResult.No:
-                                uid = "7";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.NoUid;
                                 break;
                             case MessageBoxResult.Cancel:
-                                uid = "2";
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.CancelUid;
                                 break;
                             default:
                                 return false;
