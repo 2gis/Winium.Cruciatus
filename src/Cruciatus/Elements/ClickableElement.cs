@@ -17,7 +17,7 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    public class ClickableElement : CruciatusElement, IContainerElement, IClickable
+    public class ClickableElement : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ClickableElement"/>.
@@ -109,6 +109,11 @@ namespace Cruciatus.Elements
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
             Initialize(parent, automationId);
+        }
+
+        void IListElement.Initialize(AutomationElement element)
+        {
+            Initialize(element);
         }
     }
 }

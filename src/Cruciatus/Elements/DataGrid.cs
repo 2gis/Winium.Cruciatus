@@ -130,6 +130,16 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool ScrollTo(int row, int column)
         {
+            // Проверка, что таблица включена
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+            if (!isEnabled)
+            {
+                this.LastErrorMessage = string.Format("{0} отключена.", this.ToString());
+                return false;
+            }
+
             // Проверка на дурака
             if (row < 0 || column < 0)
             {
@@ -215,6 +225,36 @@ namespace Cruciatus.Elements
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Выбирает ячейку с указанным номером строки и колонки.
+        /// </summary>
+        /// <param name="row">
+        /// Номер строки.
+        /// </param>
+        /// <param name="column">
+        /// Номер колонки.
+        /// </param>
+        /// <returns>
+        /// Значение true если выбрать удалось; в противном случае значение - false.
+        /// </returns>
+        public bool SelectCell(int row, int column)
+        {
+            var cell = this.Item<ClickableElement>(row, column);
+            if (cell == null)
+            {
+                return false;
+            }
+
+            var result = cell.Click();
+            if (result)
+            {
+                return true;
+            }
+
+            this.LastErrorMessage = cell.LastErrorMessage;
+            return false;
         }
 
         /// <summary>
