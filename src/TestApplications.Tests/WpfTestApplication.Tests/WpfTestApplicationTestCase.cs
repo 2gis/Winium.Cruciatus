@@ -33,7 +33,7 @@ namespace WpfTestApplication.Tests
         public void MyTestInitialize()
         {
             this.Application = new WpfTestApplicationApp(@"F:\Projects\cruciatus\src\TestApplications\WpfTestApplication\bin\Debug\WpfTestApplication.exe");
-            Assert.IsTrue(this.Application.Start(), "Неудалось запустить приложение WpfTestApplication.");
+            Assert.IsTrue(this.Application.Start(), "Не удалось запустить приложение WpfTestApplication.");
         }
 
         [TestCleanup]
@@ -45,7 +45,7 @@ namespace WpfTestApplication.Tests
                 additionalMessage = " A так же была ошибка внутри теста.";
             }
 
-            Assert.IsTrue(this.Application.Close(), "Неудалось завершить приложение WpfTestApplication." + additionalMessage);
+            Assert.IsTrue(this.Application.Close(), "Не удалось завершить приложение WpfTestApplication." + additionalMessage);
         }
     }
 }

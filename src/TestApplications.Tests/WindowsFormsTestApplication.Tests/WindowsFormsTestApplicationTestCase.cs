@@ -35,7 +35,7 @@ namespace WindowsFormsTestApplication.Tests
             this.Application =
                 new WindowsFormsTestApplicationApp(
                     @"F:\Projects\cruciatus\src\TestApplications\WindowsFormsTestApplication\bin\Debug\WindowsFormsTestApplication.exe");
-            Assert.IsTrue(this.Application.Start(), "Неудалось запустить приложение WindowsFormsTestApplication.");
+            Assert.IsTrue(this.Application.Start(), "Не удалось запустить приложение WindowsFormsTestApplication.");
         }
 
         [TestCleanup]
@@ -47,7 +47,7 @@ namespace WindowsFormsTestApplication.Tests
                 additionalMessage = " A так же была ошибка внутри теста.";
             }
 
-            Assert.IsTrue(this.Application.Close(), "Неудалось завершить приложение WindowsFormsTestApplication." + additionalMessage);
+            Assert.IsTrue(this.Application.Close(), "Не удалось завершить приложение WindowsFormsTestApplication." + additionalMessage);
         }
     }
 }

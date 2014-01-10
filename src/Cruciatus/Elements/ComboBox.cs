@@ -10,6 +10,7 @@
 namespace Cruciatus.Elements
 {
     using System;
+    using System.Linq;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -136,6 +137,39 @@ namespace Cruciatus.Elements
             get
             {
                 return ControlType.ComboBox;
+            }
+        }
+
+        public string Text
+        {
+            get
+            {
+                object obj;
+                if (this.Element.TryGetCurrentPattern(ValuePattern.Pattern, out obj))
+                {
+                    // Если шаблон значения поддерживается, то текст вернее получить так
+                    return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
+                }
+                
+                // В противном случае работаем с шаблоном выбора
+                obj = this.GetPropertyValue<object>(SelectionPattern.SelectionProperty);
+                var tempList = (AutomationElement[])obj;
+                if (!tempList.Any())
+                {
+                    // Если получили 0 элементов, то возвращаем пустую строку,
+                    // так как возврат null только при ошибке
+                    return string.Empty;
+                }
+
+                if (tempList.Count() == 1)
+                {
+                    // При одном элементе все здорово, возвращаем его свойство Name
+                    return tempList[0].GetPropertyValue<string>(AutomationElement.NameProperty);
+                }
+
+                // В противном случае кол-во полученных элементов странное - ошибка
+                this.LastErrorMessage = string.Format("Не удалось получить текст из {0}", this.ToString());
+                return null;
             }
         }
 
