@@ -66,6 +66,8 @@
     <Compile Include="TestCases\CheckingAllInRibbonTabItem2TestCase.cs" />
     <Compile Include="TestCases\CheckingAllInTabItem1TestCase.cs" />
     <Compile Include="TestCases\CheckingAllInTabItem2TestCase.cs" />
+    <Compile Include="TestCases\CheckingRibbonMenu.cs" />
+    <Compile Include="TestCases\CheckingSimpleMenu.cs" />
     <Compile Include="WpfTestApplicationTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
