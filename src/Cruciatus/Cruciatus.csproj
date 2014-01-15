@@ -36,11 +36,11 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
@@ -60,7 +60,9 @@
     <Compile Include="Elements\DateTimePicker.cs" />
     <Compile Include="Elements\EditableComboBox.cs" />
     <Compile Include="Elements\ListBox.cs" />
+    <Compile Include="Elements\Menu.cs" />
     <Compile Include="Elements\NumericUpDown.cs" />
+    <Compile Include="Elements\RibbonApplicationMenu.cs" />
     <Compile Include="Elements\TabItem.cs" />
     <Compile Include="Elements\TextBlock.cs" />
     <Compile Include="Elements\TextBox.cs" />
