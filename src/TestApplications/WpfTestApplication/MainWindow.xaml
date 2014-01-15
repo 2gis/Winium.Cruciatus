@@ -12,6 +12,20 @@
         </Grid.RowDefinitions>
 
         <Ribbon Grid.Row="0">
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu>
+                    <RibbonApplicationMenuItem Header="New"/>
+                    <RibbonApplicationMenuItem Header="Open"/>
+                    <RibbonSeparator/>
+                    <RibbonApplicationMenuItem Header="Save"/>
+                    <RibbonApplicationMenuItem Header="Save as ..."/>
+                    <RibbonSeparator/>
+                    <RibbonApplicationMenuItem Header="Print"/>
+                    <RibbonSeparator/>
+                    <RibbonApplicationMenuItem Header="Exit"/>
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+            
             <local:RibbonTabExt Uid="RibbonTabItem1" Header="RibbonTabItem1">
                 <RibbonGroup Header="Group1">
                     <RibbonButton Uid="RibbonButton" Label="RibbonButton" Margin="2"/>
@@ -39,6 +53,14 @@
                     <RibbonToggleButton Uid="RibbonToggleButton" Label="RibbonToggleButton" Margin="2"/>
                 </RibbonGroup>
             </local:RibbonTabExt>
+            <Menu Uid="MainMenu">
+                <MenuItem Header="Level1" Uid="ItemLevel1">
+                    <MenuItem Header="Level2" Uid="ItemLevel2"/>
+                    <MenuItem Header="MultiLevel2" Uid="MultiItemLevel2">
+                        <MenuItem Header="Level3" Uid="Level3"/>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
         </Ribbon>
 
         <TabControl Grid.Row="1">
