@@ -39,6 +39,22 @@ namespace WpfTestApplication.Tests.Map
             }
         }
 
+        public RibbonApplicationMenu RibbonMenu
+        {
+            get
+            {
+                return this.GetElement<RibbonApplicationMenu>("RibbonMenu");
+            }
+        }
+
+        public Menu SimpleMenu
+        {
+            get
+            {
+                return this.GetElement<Menu>("SimpleMenu");
+            }
+        }
+
         protected override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
