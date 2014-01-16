@@ -18,8 +18,6 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-
     using ControlType = System.Windows.Automation.ControlType;
 
     /// <summary>
@@ -48,7 +46,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public ComboBox(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -104,6 +102,39 @@ namespace Cruciatus.Elements
             }
         }
 
+        public string Text
+        {
+            get
+            {
+                object obj;
+                if (this.Element.TryGetCurrentPattern(ValuePattern.Pattern, out obj))
+                {
+                    // Если шаблон значения поддерживается, то текст вернее получить так
+                    return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
+                }
+
+                // В противном случае работаем с шаблоном выбора
+                obj = this.GetPropertyValue<object>(SelectionPattern.SelectionProperty);
+                var tempList = (AutomationElement[])obj;
+                if (!tempList.Any())
+                {
+                    // Если получили 0 элементов, то возвращаем пустую строку,
+                    // так как возврат null только при ошибке
+                    return string.Empty;
+                }
+
+                if (tempList.Count() == 1)
+                {
+                    // При одном элементе все здорово, возвращаем его свойство Name
+                    return tempList[0].GetPropertyValue<string>(AutomationElement.NameProperty);
+                }
+
+                // В противном случае кол-во полученных элементов странное - ошибка
+                this.LastErrorMessage = string.Format("Не удалось получить текст из {0}", this.ToString());
+                return null;
+            }
+        }
+
         /// <summary>
         /// Возвращает состояние раскрытости выпадающего списка.
         /// </summary>
@@ -137,39 +168,6 @@ namespace Cruciatus.Elements
             get
             {
                 return ControlType.ComboBox;
-            }
-        }
-
-        public string Text
-        {
-            get
-            {
-                object obj;
-                if (this.Element.TryGetCurrentPattern(ValuePattern.Pattern, out obj))
-                {
-                    // Если шаблон значения поддерживается, то текст вернее получить так
-                    return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
-                }
-                
-                // В противном случае работаем с шаблоном выбора
-                obj = this.GetPropertyValue<object>(SelectionPattern.SelectionProperty);
-                var tempList = (AutomationElement[])obj;
-                if (!tempList.Any())
-                {
-                    // Если получили 0 элементов, то возвращаем пустую строку,
-                    // так как возврат null только при ошибке
-                    return string.Empty;
-                }
-
-                if (tempList.Count() == 1)
-                {
-                    // При одном элементе все здорово, возвращаем его свойство Name
-                    return tempList[0].GetPropertyValue<string>(AutomationElement.NameProperty);
-                }
-
-                // В противном случае кол-во полученных элементов странное - ошибка
-                this.LastErrorMessage = string.Format("Не удалось получить текст из {0}", this.ToString());
-                return null;
             }
         }
 
@@ -368,6 +366,11 @@ namespace Cruciatus.Elements
             return this.Scrolling(searchElement);
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            this.Initialize(parent, automationId);
+        }
+
         /// <summary>
         /// Выполняет нажатие по выпадающему списку.
         /// </summary>
@@ -451,11 +454,6 @@ namespace Cruciatus.Elements
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
     }
 }

@@ -18,49 +18,6 @@ namespace Cruciatus
 
     public static class MessageBox
     {
-        #region Структуры для описания UID кнопок
-        public struct OkType
-        {
-            public string OkUid;
-        }
-
-        public struct OkCancelType
-        {
-            public string OkUid;
-
-            public string CancelUid;
-        }
-
-        public struct YesNoType
-        {
-            public string YesUid;
-
-            public string NoUid;
-        }
-
-        public struct YesNoCancelType
-        {
-            public string YesUid;
-
-            public string NoUid;
-
-            public string CancelUid;
-        }
-
-        public struct ButtonUid
-        {
-            public string CloseButtonUid;
-
-            public OkType OkType;
-
-            public OkCancelType OkCancelType;
-
-            public YesNoType YesNoType;
-
-            public YesNoCancelType YesNoCancelType;
-        }
-        #endregion
-
         internal static int NumberOfOpenModalWindow(Window window)
         {
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
@@ -153,5 +110,48 @@ namespace Cruciatus
             var buttonElement = new Button(modalwindow, uid);
             return buttonElement.Click();
         }
+
+        #region Структуры для описания UID кнопок
+        public struct OkType
+        {
+            public string OkUid;
+        }
+
+        public struct OkCancelType
+        {
+            public string OkUid;
+
+            public string CancelUid;
+        }
+
+        public struct YesNoType
+        {
+            public string YesUid;
+
+            public string NoUid;
+        }
+
+        public struct YesNoCancelType
+        {
+            public string YesUid;
+
+            public string NoUid;
+
+            public string CancelUid;
+        }
+
+        public struct ButtonUid
+        {
+            public string CloseButtonUid;
+
+            public OkType OkType;
+
+            public OkCancelType OkCancelType;
+
+            public YesNoType YesNoType;
+
+            public YesNoCancelType YesNoCancelType;
+        }
+        #endregion
     }
 }

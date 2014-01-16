@@ -42,7 +42,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public DataGrid(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Cruciatus.Elements
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
     }
 }

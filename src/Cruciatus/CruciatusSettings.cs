@@ -22,14 +22,16 @@ namespace Cruciatus
         private const int DefaultWaitForReadyTimeout = 5000;
 
         private const int DefaultWaitForGetValueTimeout = 7500;
-        
+
         private const int DefaultMouseMoveSpeed = 2500;
 
         private const MouseButtons DefaultClickButton = MouseButtons.Left;
 
+        private static CruciatusSettings instance;
+
         private readonly MessageBox.ButtonUid defaultMessageBoxButtonUid;
 
-        private static CruciatusSettings instance;
+        private MessageBox.ButtonUid messageBoxButtonUid;
 
         private CruciatusSettings()
         {
@@ -84,7 +86,18 @@ namespace Cruciatus
         /// <summary>
         /// Возвращает или задает информацию о уникальных идентификаторах кнопок в MessageBox.
         /// </summary>
-        public MessageBox.ButtonUid MessageBoxButtonUid;
+        public MessageBox.ButtonUid MessageBoxButtonUid
+        {
+            get
+            {
+                return this.messageBoxButtonUid;
+            }
+
+            private set
+            {
+                this.messageBoxButtonUid = value;
+            }
+        }
 
         internal static CruciatusSettings Instance
         {

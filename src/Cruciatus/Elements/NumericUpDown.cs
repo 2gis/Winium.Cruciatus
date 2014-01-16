@@ -23,7 +23,7 @@ namespace Cruciatus.Elements
 
         public NumericUpDown(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         public int Value
@@ -53,7 +53,7 @@ namespace Cruciatus.Elements
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
     }
 }

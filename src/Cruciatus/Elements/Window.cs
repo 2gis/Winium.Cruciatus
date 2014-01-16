@@ -85,7 +85,7 @@ namespace Cruciatus.Elements
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()

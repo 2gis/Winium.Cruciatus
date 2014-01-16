@@ -48,7 +48,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public CheckBox(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -198,6 +198,16 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            this.Initialize(parent, automationId);
+        }
+
+        void IListElement.Initialize(AutomationElement element)
+        {
+            this.Initialize(element);
+        }
+
         /// <summary>
         /// Устанавливает чекбоксу заданное состояние.
         /// </summary>
@@ -232,16 +242,6 @@ namespace Cruciatus.Elements
             }
 
             return maxClickCount != 0;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
     }
 }

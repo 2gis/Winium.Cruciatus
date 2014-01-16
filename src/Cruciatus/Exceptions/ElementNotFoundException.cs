@@ -15,7 +15,7 @@ namespace Cruciatus.Exceptions
     [Serializable]
     public class ElementNotFoundException : Exception
     {
-        private string fieldMessage = "Элемент не найден.\n";
+        private readonly string fieldMessage = "Элемент не найден.\n";
 
         public ElementNotFoundException()
         {

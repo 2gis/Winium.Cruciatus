@@ -50,7 +50,7 @@ namespace Cruciatus.Elements
         /// </exception>
         protected TabItem(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -160,6 +160,11 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            this.Initialize(parent, automationId);
+        }
+
         /// <summary>
         /// Возвращает элемент заданного типа с указанным уникальным идентификатором.
         /// </summary>
@@ -204,9 +209,11 @@ namespace Cruciatus.Elements
         /// <param name="mouseButton">
         /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
         /// </param>
+        /// <returns>
+        /// Значение true если нажать на элемент удалось; в противном случае значение - false.
+        /// </returns>
         private bool Click(MouseButtons mouseButton = MouseButtons.Left)
         {
-            
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
@@ -236,11 +243,6 @@ namespace Cruciatus.Elements
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
     }
 }

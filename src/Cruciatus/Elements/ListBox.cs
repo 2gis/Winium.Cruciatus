@@ -42,7 +42,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public ListBox(AutomationElement parent, string automationId)
         {
-            Initialize(parent, automationId);
+            this.Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -295,6 +295,11 @@ namespace Cruciatus.Elements
             return item;
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            this.Initialize(parent, automationId);
+        }
+
         /// <summary>
         /// Непосредственный поиск AutomationElement с заданными параметрами.
         /// </summary>
@@ -374,11 +379,6 @@ namespace Cruciatus.Elements
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
     }
 }

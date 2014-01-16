@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BaseElement.cs" company="2GIS">
+// <copyright file="CruciatusElement.cs" company="2GIS">
 //   Cruciatus
 // </copyright>
 // <summary>
@@ -24,12 +24,12 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return LastErrorMessageInstance;
+                return this.LastErrorMessageInstance;
             }
 
             internal set
             {
-                LastErrorMessageInstance = value;
+                this.LastErrorMessageInstance = value;
             }
         }
 
@@ -54,30 +54,9 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected void Initialize(AutomationElement parent, string automationId)
+        public new string ToString()
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            if (automationId == null)
-            {
-                throw new ArgumentNullException("automationId");
-            }
-
-            Parent = parent;
-            AutomationId = automationId;
-        }
-
-        protected void Initialize(AutomationElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            ElementInstance = element;
+            return string.Format("{0} (uid: {1})", this.ClassName, this.AutomationId ?? "nonUid");
         }
 
         internal virtual void Find()
@@ -96,9 +75,30 @@ namespace Cruciatus.Elements
             }
         }
 
-        public new string ToString()
+        protected void Initialize(AutomationElement parent, string automationId)
         {
-            return string.Format("{0} (uid: {1})", this.ClassName, this.AutomationId ?? "nonUid");
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
+            this.Parent = parent;
+            this.AutomationId = automationId;
+        }
+
+        protected void Initialize(AutomationElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element");
+            }
+
+            this.ElementInstance = element;
         }
     }
 }
