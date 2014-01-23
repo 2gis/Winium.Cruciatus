@@ -4,9 +4,9 @@ namespace WpfTestApplication.Tests.TestCases
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
-    /// The wpf test application test class 1.
+    /// The test class 1.
     /// </summary>
-    public partial class WpfTestApplicationTestClass1
+    public partial class TestClass1
     {
         [TestMethod]
         public void RibbonMenuTestMethod1()

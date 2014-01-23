@@ -5,7 +5,9 @@ namespace WpfTestApplication.Tests.Map
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    public class MainWindow : Window
+    using Patronum.Actions.Intarfaces;
+
+    public class MainWindow : Window, IApplicationUnderTest
     {
         public FirstTab TabItem1
         {

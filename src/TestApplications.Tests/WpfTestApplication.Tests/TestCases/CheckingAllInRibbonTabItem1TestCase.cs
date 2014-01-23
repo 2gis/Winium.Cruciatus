@@ -3,42 +3,36 @@ namespace WpfTestApplication.Tests.TestCases
 {
     using Cruciatus.Elements;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using WpfTestApplication.Tests.Map;
-
-    [CodedUITest]
-    public class CheckingAllInRibbonTabItem1TestCase : WpfTestApplicationTestCase
+    /// <summary>
+    /// The test class 2.
+    /// </summary>
+    public partial class TestClass2
     {
-        private FirstRibbonTab tab;
-
-        [TestInitialize]
-        public void MyInitialize()
-        {
-            this.tab = Application.MainWindow.RibbonTabItem1;
-            Assert.IsTrue(this.tab.Select(), this.tab.LastErrorMessage);
-        }
-
         [TestMethod]
         public void CheckingRibbonTabItem1()
         {
-            Assert.IsTrue(this.tab.Select(), this.tab.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.Select(), this.firstRibbonTab.LastErrorMessage);
         }
 
         [TestMethod]
         public void CheckingRibbonButton()
         {
-            Assert.IsTrue(this.tab.RibbonButton.Click(), this.tab.RibbonButton.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.Select(), this.firstRibbonTab.LastErrorMessage);
+
+            Assert.IsTrue(this.firstRibbonTab.RibbonButton.Click(), this.firstRibbonTab.RibbonButton.LastErrorMessage);
         }
 
         [TestMethod]
         public void CheckingRibbonTextComboBox()
         {
-            Assert.IsTrue(this.tab.RibbonTextComboBox.Expand(), this.tab.RibbonTextComboBox.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.Select(), this.firstRibbonTab.LastErrorMessage);
 
-            var element = this.tab.RibbonTextComboBox.Item<TextBlock>("Quarter");
-            Assert.IsNotNull(element, this.tab.RibbonTextComboBox.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.RibbonTextComboBox.Expand(), this.firstRibbonTab.RibbonTextComboBox.LastErrorMessage);
+
+            var element = this.firstRibbonTab.RibbonTextComboBox.Item<TextBlock>("Quarter");
+            Assert.IsNotNull(element, this.firstRibbonTab.RibbonTextComboBox.LastErrorMessage);
 
             Assert.IsTrue(element.Click(), element.LastErrorMessage);
         }
@@ -46,21 +40,23 @@ namespace WpfTestApplication.Tests.TestCases
         [TestMethod]
         public void CheckingRibbonCheckComboBox()
         {
-            Assert.IsTrue(this.tab.RibbonCheckComboBox.Expand(), this.tab.RibbonCheckComboBox.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.Select(), this.firstRibbonTab.LastErrorMessage);
 
-            var element = this.tab.RibbonCheckComboBox.Item<CheckBox>("Quarter");
-            Assert.IsNotNull(element, this.tab.RibbonCheckComboBox.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.RibbonCheckComboBox.Expand(), this.firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
+
+            var element = this.firstRibbonTab.RibbonCheckComboBox.Item<CheckBox>("Quarter");
+            Assert.IsNotNull(element, this.firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
 
             Assert.IsTrue(element.Check(), element.LastErrorMessage);
             Assert.IsTrue(element.IsChecked, "Чекбокс Quarter в uncheck состоянии после check.");
 
-            element = this.tab.RibbonCheckComboBox.Item<CheckBox>("Week");
-            Assert.IsNotNull(element, this.tab.RibbonCheckComboBox.LastErrorMessage);
+            element = this.firstRibbonTab.RibbonCheckComboBox.Item<CheckBox>("Week");
+            Assert.IsNotNull(element, this.firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
 
             Assert.IsTrue(element.Check(), element.LastErrorMessage);
             Assert.IsTrue(element.IsChecked, "Чекбокс Week в uncheck состоянии после check.");
 
-            Assert.IsTrue(this.tab.RibbonCheckComboBox.Collapse(), this.tab.RibbonCheckComboBox.LastErrorMessage);
+            Assert.IsTrue(this.firstRibbonTab.RibbonCheckComboBox.Collapse(), this.firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
         }
     }
 }

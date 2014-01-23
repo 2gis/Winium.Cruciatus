@@ -68,10 +68,20 @@
     <Compile Include="TestCases\CheckingAllInTabItem2TestCase.cs" />
     <Compile Include="TestCases\CheckingRibbonMenu.cs" />
     <Compile Include="TestCases\CheckingSimpleMenu.cs" />
-    <Compile Include="WpfTestApplicationTestCase.cs" />
+    <Compile Include="TestCases\TestClass1.cs" />
+    <Compile Include="BaseTestClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCases\TestClass2.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\patronum\Patronum.Actions\Patronum.Actions.csproj">
+      <Project>{f657fcaf-f10a-45b9-885c-492263ea10cf}</Project>
+      <Name>Patronum.Actions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Actions\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

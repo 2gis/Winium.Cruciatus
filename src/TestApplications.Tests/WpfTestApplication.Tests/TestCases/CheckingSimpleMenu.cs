@@ -1,27 +1,13 @@
 ﻿
 namespace WpfTestApplication.Tests.TestCases
 {
-    using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
-    /// The wpf test application test class 1.
+    /// The test class 1.
     /// </summary>
-    [CodedUITest]
-    public partial class WpfTestApplicationTestClass1 : WpfTestApplicationTestCase
+    public partial class TestClass1
     {
-        private Menu simpleMenu;
-        private RibbonApplicationMenu ribbonMenu;
-
-        [TestInitialize]
-        public void MyInitialize()
-        {
-            this.simpleMenu = Application.MainWindow.SimpleMenu;
-            this.ribbonMenu = Application.MainWindow.RibbonMenu;
-        }
-
         [TestMethod]
         public void SimpleMenuTestMethod1()
         {
