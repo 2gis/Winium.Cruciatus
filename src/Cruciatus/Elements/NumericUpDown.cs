@@ -32,6 +32,12 @@ namespace Cruciatus.Elements
             {
                 return Convert.ToInt32(this.GetPropertyValue<double>(RangeValuePattern.ValueProperty));
             }
+
+            set
+            {
+                var rangeValuePattern = (RangeValuePattern)this.Element.GetCurrentPattern(RangeValuePattern.Pattern);
+                rangeValuePattern.SetValue(value);
+            }
         }
 
         internal override string ClassName

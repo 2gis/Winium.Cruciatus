@@ -62,6 +62,7 @@
     <Compile Include="Elements\ListBox.cs" />
     <Compile Include="Elements\Menu.cs" />
     <Compile Include="Elements\NumericUpDown.cs" />
+    <Compile Include="Elements\RadioButton.cs" />
     <Compile Include="Elements\RibbonApplicationMenu.cs" />
     <Compile Include="Elements\TabItem.cs" />
     <Compile Include="Elements\TextBlock.cs" />
