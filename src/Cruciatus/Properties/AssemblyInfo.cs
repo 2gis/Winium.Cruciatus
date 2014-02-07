@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Cruciatus")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Фреймворк для автоматизации тестирования пользовательского интерфейса WPF приложений.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("2ГИС")]
 [assembly: AssemblyProduct("Cruciatus")]
-[assembly: AssemblyCopyright("Copyright © 2ГИС 2013")]
+[assembly: AssemblyCopyright("Copyright © 2ГИС 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -24,13 +23,13 @@ using System.Runtime.InteropServices;
 
 // Version information for an assembly consists of the following four values:
 //
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
+//      Major Version - увеличение при сделаных обратно несовместимых изменениях
+//      Minor Version - увеличение при добавлении нового функционала, не нарушая обратной совместимости
+//      Build Number - увеличение при обратно совместимых исправлениях
+//      Revision - auto
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.*")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
