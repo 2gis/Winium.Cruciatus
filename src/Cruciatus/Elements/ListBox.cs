@@ -82,98 +82,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Проверяет, если ли в списке элемент заданного типа с указанным номером.
-        /// </summary>
-        /// <param name="number">
-        /// Номер элемента.
-        /// </param>
-        /// <typeparam name="T">
-        /// Тип элемента.
-        /// </typeparam>
-        /// <returns>
-        /// Искомый элемент, либо null, если найти не удалось.
-        /// </returns>
-        public bool Contains<T>(uint number) where T : CruciatusElement, IListElement, new()
-        {
-            var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
-
-            if (!isEnabled)
-            {
-                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
-                return false;
-            }
-
-            return this.SearchElement(number, new T().GetType) != null;
-        }
-
-        /// <summary>
-        /// Проверяет, если ли в списке элемент заданного типа с указанным именем.
-        /// </summary>
-        /// <param name="name">
-        /// Имя элемента.
-        /// </param>
-        /// <typeparam name="T">
-        /// Тип элемента.
-        /// </typeparam>
-        /// <returns>
-        /// Искомый элемент, либо null, если найти не удалось.
-        /// </returns>
-        public bool Contains<T>(string name) where T : CruciatusElement, IListElement, new()
-        {
-            var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
-
-            if (!isEnabled)
-            {
-                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
-                return false;
-            }
-
-            return this.SearchElement(name, new T().GetType) != null;
-        }
-
-        /// <summary>
-        /// Прокручивает список до элемента заданного типа с указанным номером.
-        /// </summary>
-        /// <param name="number">
-        /// Номер элемента.
-        /// </param>
-        /// <typeparam name="T">
-        /// Тип элемента.
-        /// </typeparam>
-        /// <returns>
-        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
-        /// </returns>
-        public bool ScrollTo<T>(uint number) where T : CruciatusElement, IListElement, new()
-        {
-            var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
-
-            if (!isEnabled)
-            {
-                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
-                return false;
-            }
-
-            var searchElement = this.SearchElement(number, new T().GetType);
-            if (searchElement == null)
-            {
-                this.LastErrorMessage = string.Format(
-                    "В {0} количество элементов меньше заданного номера ({1}).",
-                    this.ToString(),
-                    number);
-                return false;
-            }
-
-            return this.Scrolling(searchElement);
-        }
-
-        /// <summary>
-        /// Прокручивает список до элемента заданного типа с указанным именем.
+        /// Прокручивает список до элемента с указанным именем.
         /// </summary>
         /// <param name="name">
         /// Имя элемента.
@@ -186,70 +95,97 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
         {
-            var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
-
-            if (!isEnabled)
+            // Проверка на дурака
+            if (string.IsNullOrEmpty(name))
             {
-                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
+                this.LastErrorMessage = "Параметр name не должен быть пустым.";
                 return false;
             }
 
-            var searchElement = this.SearchElement(name, new T().GetType);
-            if (searchElement == null)
-            {
-                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
-                return false;
-            }
-
-            return this.Scrolling(searchElement);
-        }
-
-        /// <summary>
-        /// Возвращает элемент заданного типа с указанным номером.
-        /// </summary>
-        /// <param name="number">
-        /// Номер элемента.
-        /// </param>
-        /// <typeparam name="T">
-        /// Тип элемента.
-        /// </typeparam>
-        /// <returns>
-        /// Искомый элемент, либо null, если найти не удалось.
-        /// </returns>
-        public T Item<T>(uint number) where T : CruciatusElement, IListElement, new()
-        {
+            // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
                     value => value != true);
-
             if (!isEnabled)
             {
                 this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
-                return null;
+                return false;
+            }
+
+            // Получение шаблона прокрутки у списка
+            var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            if (scrollPattern == null)
+            {
+                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                return false;
             }
 
             var item = new T();
-            var searchElement = this.SearchElement(number, item.GetType);
+            var condition = new AndCondition(
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
 
-            if (searchElement == null)
+            // Стартовый поиск элемента
+            var element = this.Element.FindFirst(TreeScope.Subtree, condition);
+
+            // Вертикальная прокрутка (при необходимости и возможности)
+            if (element == null && scrollPattern.Current.VerticallyScrollable)
             {
-                this.LastErrorMessage = string.Format(
-                    "В {0} количество элементов меньше заданного номера ({1}).",
-                    this.ToString(),
-                    number);
-                return null;
+                // Установка самого верхнего положения прокрутки
+                while (scrollPattern.Current.VerticalScrollPercent > 0.1)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
+                }
+
+                // Установка самого левого положения прокрутки (при возможности)
+                if (scrollPattern.Current.HorizontallyScrollable)
+                {
+                    while (scrollPattern.Current.HorizontalScrollPercent > 0.1)
+                    {
+                        scrollPattern.ScrollHorizontal(ScrollAmount.LargeDecrement);
+                    }
+                }
+
+                // Основная вертикальная прокрутка
+                while (element == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+                    element = this.Element.FindFirst(TreeScope.Subtree, condition);
+                }
             }
 
-            if (!this.Element.GeometricallyContains(searchElement))
+            // Если прокрутив до конца элемент не найден, то его нет (кэп)
+            if (element == null)
             {
-                this.LastErrorMessage = string.Format("В {0} элемент под номером {1} вне видимости.", this.ToString(), number);
-                return null;
+                this.LastErrorMessage = string.Format("В {0} нет элемента с name = {1}.", this.ToString(), name);
+                return false;
             }
 
-            item.Initialize(searchElement);
-            return item;
+            // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
+            while (element.ClickablePointUnder(this.Element, scrollPattern))
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+            }
+
+            // Если точка клика элемента над границей списка - докручиваем по вертикали вверх
+            while (element.ClickablePointOver(this.Element))
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
+            }
+
+            // Если точка клика элемента справа от границы списка - докручиваем по горизонтали вправо
+            while (element.ClickablePointRight(this.Element, scrollPattern))
+            {
+                scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
+            }
+
+            // Если точка клика элемента слева от границы списка - докручиваем по горизонтали влево
+            while (element.ClickablePointLeft(this.Element))
+            {
+                scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -269,7 +205,6 @@ namespace Cruciatus.Elements
             var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
                     value => value != true);
-
             if (!isEnabled)
             {
                 this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
@@ -277,15 +212,23 @@ namespace Cruciatus.Elements
             }
 
             var item = new T();
-            var searchElement = this.SearchElement(name, item.GetType);
+            var condition = new AndCondition(
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
+
+            var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
 
             if (searchElement == null)
             {
-                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                this.LastErrorMessage =
+                    string.Format(
+                        "В {0} элемент с полем name = {1} не существует или вне видимости.",
+                        this.ToString(),
+                        name);
                 return null;
             }
 
-            if (!this.Element.GeometricallyContains(searchElement))
+            if (!this.Element.ContainsClickablePoint(searchElement))
             {
                 this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} вне видимости.", this.ToString(), name);
                 return null;
@@ -303,35 +246,6 @@ namespace Cruciatus.Elements
         /// <summary>
         /// Непосредственный поиск AutomationElement с заданными параметрами.
         /// </summary>
-        /// <param name="number">
-        /// Номер элемента.
-        /// </param>
-        /// <param name="type">
-        /// Тип элемента.
-        /// </param>
-        /// <returns>
-        /// Элемент если найден; в противном случае - null.
-        /// </returns>
-        private AutomationElement SearchElement(uint number, ControlType type)
-        {
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, type);
-
-            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
-                elem => elem.FindAll(TreeScope.Subtree, condition),
-                collection => collection.Count <= number,
-                collection => collection.Count > number ? collection[(int)number] : null);
-
-            if (searchElement == null && !type.Equals(ControlType.ListItem))
-            {
-                searchElement = this.SearchElement(number, ControlType.ListItem);
-            }
-
-            return searchElement;
-        }
-
-        /// <summary>
-        /// Непосредственный поиск AutomationElement с заданными параметрами.
-        /// </summary>
         /// <param name="name">
         /// Имя элемента.
         /// </param>
@@ -343,14 +257,12 @@ namespace Cruciatus.Elements
         /// </returns>
         private AutomationElement SearchElement(string name, ControlType type)
         {
+            // TODO: Это для WinForms надо, но стоит действовать иначе глобально (определяя что это WinForms)
             var condition = new AndCondition(
                     new PropertyCondition(AutomationElement.ControlTypeProperty, type),
                     new PropertyCondition(AutomationElement.NameProperty, name));
 
-            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
-                elem => elem.FindFirst(TreeScope.Subtree, condition),
-                elem => elem == null,
-                elem => elem);
+            var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
 
             if (searchElement == null && !type.Equals(ControlType.ListItem))
             {
@@ -358,27 +270,6 @@ namespace Cruciatus.Elements
             }
 
             return searchElement;
-        }
-
-        /// <summary>
-        /// Непосредственная прокрутка до заданного AutomationElement.
-        /// </summary>
-        /// <param name="innerElement">
-        /// Элемент до которого надо прокрутить.
-        /// </param>
-        /// <returns>
-        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
-        /// </returns>
-        private bool Scrolling(AutomationElement innerElement)
-        {
-            var scrollingResult = this.Element.Scrolling(innerElement);
-            if (!scrollingResult)
-            {
-                this.LastErrorMessage = string.Format("Элемент {0} не поддерживает прокрутку содержимого.", this.ToString());
-                return false;
-            }
-
-            return true;
         }
     }
 }

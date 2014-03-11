@@ -2,6 +2,7 @@
 namespace WpfTestApplication.Tests
 {
     using System;
+    using System.Configuration;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,8 +16,10 @@ namespace WpfTestApplication.Tests
 
         public static void ClassInitialize(out WpfTestApplicationApp application, TestContext testContext)
         {
-            var path = Environment.GetEnvironmentVariable("UITestApps");
-            application = new WpfTestApplicationApp(path + @"\WpfTestApplication\bin\Debug\WpfTestApplication.exe");
+            var appsFolderEnvVar = ConfigurationManager.AppSettings.Get("AppsFolderEnvVar");
+            var appsFolder = Environment.GetEnvironmentVariable(appsFolderEnvVar);
+            var appPath = appsFolder + ConfigurationManager.AppSettings.Get("PathToExe");
+            application = new WpfTestApplicationApp(appPath);
             Assert.IsTrue(application.Start(15000), "Не удалось запустить приложение WpfTestApplication.");
         }
 

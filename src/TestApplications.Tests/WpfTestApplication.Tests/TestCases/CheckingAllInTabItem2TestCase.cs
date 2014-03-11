@@ -90,8 +90,8 @@ namespace WpfTestApplication.Tests.TestCases
             Assert.IsTrue(month.Check(), month.LastErrorMessage);
             Assert.IsTrue(month.IsChecked, "Чекбокс December в uncheck состоянии после check.");
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>(10), this.secondTab.CheckListBox.LastErrorMessage);
-            month = this.secondTab.CheckListBox.Item<CheckBox>(10);
+            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("October"), this.secondTab.CheckListBox.LastErrorMessage);
+            month = this.secondTab.CheckListBox.Item<CheckBox>("October");
             Assert.IsNotNull(month, this.secondTab.CheckListBox.LastErrorMessage);
             Assert.IsTrue(month.Check(), month.LastErrorMessage);
             Assert.IsTrue(month.IsChecked, "Чекбокс 10ый в uncheck состоянии после check.");

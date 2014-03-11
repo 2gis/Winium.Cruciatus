@@ -11,6 +11,7 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Linq;
+    using System.Threading;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -181,11 +182,18 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+                if (this.ExpandCollapseState == ExpandCollapseState.Expanded)
                 {
-                    return this.Click();
+                    return true;
                 }
 
+                var res = this.Click();
+                if (!res)
+                {
+                    return false;
+                }
+
+                Thread.Sleep(250);
                 return true;
             }
             catch (Exception exc)
@@ -220,57 +228,128 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает элемент заданного типа с указанным номером.
+        /// Прокручивает выпадающий список до элемента с указанным именем.
         /// </summary>
-        /// <param name="number">
-        /// Номер элемента.
+        /// <param name="name">
+        /// Имя элемента.
         /// </param>
         /// <typeparam name="T">
         /// Тип элемента.
         /// </typeparam>
         /// <returns>
-        /// Искомый элемент, либо null, если найти не удалось.
+        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
         /// </returns>
-        public T Item<T>(uint number) where T : CruciatusElement, IListElement, new()
+        public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
         {
-            try
+            // Проверка на дурака
+            if (string.IsNullOrEmpty(name))
             {
-                if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
-                {
-                    this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
-                    return null;
-                }
-
-                var item = new T();
-                var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
-
-                var items = this.Element.FindAll(TreeScope.Subtree, condition);
-
-                if (items.Count <= number)
-                {
-                    condition = new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem);
-                    items = this.Element.FindAll(TreeScope.Subtree, condition);
-                }
-
-                if (items.Count <= number)
-                {
-                    this.LastErrorMessage =
-                        string.Format(
-                            "Номер запрошенного элемента ({0}) превышает количество элементов ({1}) в {2}.",
-                            number,
-                            items.Count,
-                            this.ToString());
-                    return null;
-                }
-
-                item.Initialize(items[(int)number]);
-                return item;
+                this.LastErrorMessage = "Параметр name не должен быть пустым.";
+                return false;
             }
-            catch (Exception exc)
+
+            // Проверка, что выпадающий список включен
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+            if (!isEnabled)
             {
-                this.LastErrorMessage = exc.Message;
-                return null;
+                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                return false;
             }
+
+            // Проверка, что выпадающий список раскрыт
+            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
+            {
+                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
+                return false;
+            }
+
+            // Получение шаблона прокрутки у выпадающего списка
+            var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            if (scrollPattern == null)
+            {
+                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                return false;
+            }
+
+            var item = new T();
+            var condition = new AndCondition(
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                    new PropertyCondition(AutomationElement.NameProperty, name));
+
+            // Стартовый поиск элемента
+            var element = this.Element.FindFirst(TreeScope.Subtree, condition);
+
+            // Вертикальная прокрутка (при необходимости и возможности)
+            if (element == null && scrollPattern.Current.VerticallyScrollable)
+            {
+                // Установка самого верхнего положения прокрутки
+                while (scrollPattern.Current.VerticalScrollPercent > 0.1)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
+                }
+
+                // Установка самого левого положения прокрутки (при возможности)
+                if (scrollPattern.Current.HorizontallyScrollable)
+                {
+                    while (scrollPattern.Current.HorizontalScrollPercent > 0.1)
+                    {
+                        scrollPattern.ScrollHorizontal(ScrollAmount.LargeDecrement);
+                    }
+                }
+
+                // Основная вертикальная прокрутка
+                while (element == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+                    element = this.Element.FindFirst(TreeScope.Subtree, condition);
+                }
+            }
+
+            // Если прокрутив до конца элемент не найден, то его нет (кэп)
+            if (element == null)
+            {
+                this.LastErrorMessage = string.Format("В {0} нет элемента с name = {1}.", this.ToString(), name);
+                return false;
+            }
+
+            // Поиск окна, которое является выпавшим списком
+            condition = new AndCondition(
+                new PropertyCondition(AutomationElement.ClassNameProperty, "Popup"),
+                new PropertyCondition(AutomationElement.ProcessIdProperty, this.Element.Current.ProcessId));
+            var popupWindow = AutomationElement.RootElement.FindFirst(TreeScope.Subtree, condition);
+            if (popupWindow == null)
+            {
+                this.LastErrorMessage = string.Format("Попытка прокрутки у элемента {0}, но нет popup окна.", this.ToString());
+                return false;
+            }
+
+            // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
+            while (element.ClickablePointUnder(popupWindow, scrollPattern))
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+            }
+
+            // Если точка клика элемента над границей списка - докручиваем по вертикали вверх
+            while (element.ClickablePointOver(popupWindow))
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
+            }
+
+            // Если точка клика элемента справа от границы списка - докручиваем по горизонтали вправо
+            while (element.ClickablePointRight(popupWindow, scrollPattern))
+            {
+                scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
+            }
+
+            // Если точка клика элемента слева от границы списка - докручиваем по горизонтали влево
+            while (element.ClickablePointLeft(popupWindow))
+            {
+                scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -289,6 +368,15 @@ namespace Cruciatus.Elements
         {
             try
             {
+                var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+                if (!isEnabled)
+                {
+                    this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                    return null;
+                }
+
                 if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
                 {
                     this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
@@ -297,26 +385,39 @@ namespace Cruciatus.Elements
 
                 var item = new T();
                 var condition = new AndCondition(
-                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
-                    new PropertyCondition(AutomationElement.NameProperty, name));
-            
-                var elem = this.Element.FindFirst(TreeScope.Subtree, condition);
-
-                if (elem == null)
-                {
-                    condition = new AndCondition(
-                        new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem),
+                        new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
                         new PropertyCondition(AutomationElement.NameProperty, name));
-                    elem = this.Element.FindFirst(TreeScope.Subtree, condition);
-                }
 
-                if (elem == null)
+                var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+
+                if (searchElement == null)
                 {
-                    this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
+                    this.LastErrorMessage =
+                        string.Format(
+                            "В {0} элемент с полем name = {1} не существует или вне видимости.",
+                            this.ToString(),
+                            name);
                     return null;
                 }
 
-                item.Initialize(elem);
+                // Поиск окна, которое является выпавшим списком
+                condition = new AndCondition(
+                    new PropertyCondition(AutomationElement.ClassNameProperty, "Popup"),
+                    new PropertyCondition(AutomationElement.ProcessIdProperty, this.Element.Current.ProcessId));
+                var popupWindow = AutomationElement.RootElement.FindFirst(TreeScope.Subtree, condition);
+                if (popupWindow == null)
+                {
+                    this.LastErrorMessage = string.Format("У элемента {0} не обнаружено popup окно.", this.ToString());
+                    return null;
+                }
+
+                if (!popupWindow.ContainsClickablePoint(searchElement))
+                {
+                    this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} вне видимости.", this.ToString(), name);
+                    return null;
+                }
+
+                item.Initialize(searchElement);
                 return item;
             }
             catch (Exception exc)
@@ -324,46 +425,6 @@ namespace Cruciatus.Elements
                 this.LastErrorMessage = exc.Message;
                 return null;
             }
-        }
-
-        /// <summary>
-        /// Прокручивает список до элемента заданного типа с указанным именем.
-        /// </summary>
-        /// <param name="name">
-        /// Имя элемента.
-        /// </param>
-        /// <typeparam name="T">
-        /// Тип элемента.
-        /// </typeparam>
-        /// <returns>
-        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
-        /// </returns>
-        public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
-        {
-            var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
-
-            if (!isEnabled)
-            {
-                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить прокрутку.", this.ToString());
-                return false;
-            }
-
-            if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
-            {
-                this.LastErrorMessage = string.Format("Элемент {0} не развернут.", this.ToString());
-                return false;
-            }
-
-            var searchElement = this.SearchElement(name, new T().GetType);
-            if (searchElement == null)
-            {
-                this.LastErrorMessage = string.Format("В {0} нет элемента с полем name = {1}.", this.ToString(), name);
-                return false;
-            }
-
-            return this.Scrolling(searchElement);
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
@@ -388,24 +449,13 @@ namespace Cruciatus.Elements
                     () => this.IsEnabled,
                     value => value != true);
 
-                if (!isEnabled)
+                if (isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
-                    return false;
+                    return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
                 }
 
-                if (!CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance))
-                {
-                    return false;
-                }
-
-                if (!this.Element.WaitForElementReady())
-                {
-                    this.LastErrorMessage = string.Format("Время ожидания готовности для {0} истекло.", this.ToString());
-                    return false;
-                }
-
-                return true;
+                this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
+                return false;
             }
             catch (Exception exc)
             {
@@ -416,6 +466,7 @@ namespace Cruciatus.Elements
 
         private AutomationElement SearchElement(string name, ControlType type)
         {
+            // TODO: Это для WinForms надо, но стоит действовать иначе глобально (определяя что это WinForms)
             var condition = new AndCondition(
                     new PropertyCondition(AutomationElement.ControlTypeProperty, type),
                     new PropertyCondition(AutomationElement.NameProperty, name));
@@ -431,29 +482,6 @@ namespace Cruciatus.Elements
             }
 
             return searchElement;
-        }
-
-        private bool Scrolling(AutomationElement innerElement)
-        {
-            var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ClassNameProperty, "Popup"),
-                new PropertyCondition(AutomationElement.ProcessIdProperty, this.Element.Current.ProcessId));
-            var popupWindow = AutomationElement.RootElement.FindFirst(TreeScope.Subtree, condition);
-
-            if (popupWindow == null)
-            {
-                this.LastErrorMessage = string.Format("Попытка прокрутки у элемента {0}, но нет popup окна.", this.ToString());
-                return false;
-            }
-
-            var scrollingResult = this.Element.ScrollingForComboBox(innerElement, popupWindow);
-            if (!scrollingResult)
-            {
-                this.LastErrorMessage = string.Format("Элемент {0} не поддерживает прокрутку содержимого.", this.ToString());
-                return false;
-            }
-
-            return true;
         }
     }
 }
