@@ -1,6 +1,9 @@
 ﻿
 namespace WindowsFormsTestApplication.Tests
 {
+    using System;
+    using System.Configuration;
+
     using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -32,9 +35,10 @@ namespace WindowsFormsTestApplication.Tests
         [TestInitialize]
         public void MyTestInitialize()
         {
-            this.Application =
-                new WindowsFormsTestApplicationApp(
-                    @"F:\Projects\cruciatus\src\TestApplications\WindowsFormsTestApplication\bin\Debug\WindowsFormsTestApplication.exe");
+            var appsFolderEnvVar = ConfigurationManager.AppSettings.Get("AppsFolderEnvVar");
+            var appsFolder = Environment.GetEnvironmentVariable(appsFolderEnvVar);
+            var appPath = appsFolder + ConfigurationManager.AppSettings.Get("PathToExe");
+            this.Application = new WindowsFormsTestApplicationApp(appPath);
             Assert.IsTrue(this.Application.Start(), "Не удалось запустить приложение WindowsFormsTestApplication.");
         }
 
