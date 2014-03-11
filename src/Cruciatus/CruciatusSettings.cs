@@ -25,6 +25,10 @@ namespace Cruciatus
 
         private const int DefaultMouseMoveSpeed = 2500;
 
+        private const int DefaultScrollBarWidth = 18;
+
+        private const int DefaultScrollBarHeight = 18;
+
         private const MouseButtons DefaultClickButton = MouseButtons.Left;
 
         private static CruciatusSettings instance;
@@ -79,6 +83,16 @@ namespace Cruciatus
         public int MouseMoveSpeed { get; set; }
 
         /// <summary>
+        /// Возвращает или задает ширину полосы прокрутки.
+        /// </summary>
+        public int ScrollBarWidth { get; set; }
+
+        /// <summary>
+        /// Возвращает или задает высоту полосы прокрутки.
+        /// </summary>
+        public int ScrollBarHeight { get; set; }
+
+        /// <summary>
         /// Возвращает или задает кнопку мыши, которой производится нажатие (click).
         /// </summary>
         public MouseButtons ClickButton { get; set; }
@@ -118,6 +132,8 @@ namespace Cruciatus
             this.WaitForReadyTimeout = DefaultWaitForReadyTimeout;
             this.WaitForGetValueTimeout = DefaultWaitForGetValueTimeout;
             this.MouseMoveSpeed = DefaultMouseMoveSpeed;
+            this.ScrollBarWidth = DefaultScrollBarWidth;
+            this.ScrollBarHeight = DefaultScrollBarHeight;
             this.ClickButton = DefaultClickButton;
 
             this.MessageBoxButtonUid = this.defaultMessageBoxButtonUid;

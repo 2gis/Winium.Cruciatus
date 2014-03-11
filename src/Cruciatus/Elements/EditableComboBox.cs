@@ -11,6 +11,7 @@ namespace Cruciatus.Elements
 {
     using System;
     using System.Drawing;
+    using System.Threading;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -116,18 +117,7 @@ namespace Cruciatus.Elements
                 var topRightPoint = this.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
                 var clickablePoint = new Point((int)topRightPoint.X - 5, (int)topRightPoint.Y + 5);
 
-                if (!CruciatusCommand.Click(clickablePoint, mouseButton, out this.LastErrorMessageInstance))
-                {
-                    return false;
-                }
-
-                if (!this.Element.WaitForElementReady())
-                {
-                    this.LastErrorMessage = string.Format("Время ожидания готовности для {0} истекло.", this.ToString());
-                    return false;
-                }
-
-                return true;
+                return CruciatusCommand.Click(clickablePoint, mouseButton, out this.LastErrorMessageInstance);
             }
             catch (Exception exc)
             {

@@ -167,9 +167,25 @@ namespace Cruciatus.Elements
             // Стартовый поиск ячейки
             var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
 
-            // Основная вертикальная прокрутка (при необходимости и возможности)
+            // Вертикальная прокрутка (при необходимости и возможности)
             if (cell == null && scrollPattern.Current.VerticallyScrollable)
             {
+                // Установка самого верхнего положения прокрутки
+                while (scrollPattern.Current.VerticalScrollPercent > 0.1)
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+                }
+
+                // Установка самого левого положения прокрутки (при возможности)
+                if (scrollPattern.Current.HorizontallyScrollable)
+                {
+                    while (scrollPattern.Current.HorizontalScrollPercent > 0.1)
+                    {
+                        scrollPattern.ScrollHorizontal(ScrollAmount.LargeIncrement);
+                    }
+                }
+                
+                // Основная вертикальная прокрутка
                 while (cell == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
                 {
                     scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
@@ -184,11 +200,16 @@ namespace Cruciatus.Elements
                 return false;
             }
 
-            // Докручиваем по вертикали, пока ячейку [row, 0] не станет видно
-            while (!this.Element.GeometricallyContains(cell))
+            // Если точка клика ячейки [row, 0] под границей таблицы - докручиваем по вертикали вниз
+            while (cell.ClickablePointUnder(this.Element, scrollPattern))
             {
-                cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
                 scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+            }
+
+            // Если точка клика ячейки [row, 0] над границей таблицы - докручиваем по вертикали вверх
+            while (cell.ClickablePointOver(this.Element))
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
             }
 
             // Условие для горизонтального поиска ячейки [row, column]
@@ -217,11 +238,16 @@ namespace Cruciatus.Elements
                 return false;
             }
 
-            // Докручиваем по горизонтали, пока ячейку [row, column] не станет видно
-            while (!this.Element.GeometricallyContains(cell))
+            // Если точка клика ячейки [row, column] справа от границы таблицы - докручиваем по горизонтали вправо
+            while (cell.ClickablePointRight(this.Element, scrollPattern))
             {
-                cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
                 scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
+            }
+
+            // Если точка клика ячейки [row, column] слева от границы таблицы - докручиваем по горизонтали влево
+            while (cell.ClickablePointLeft(this.Element))
+            {
+                scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
             }
 
             return true;
@@ -303,7 +329,7 @@ namespace Cruciatus.Elements
             var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
 
             // Проверка, что ячейку видно
-            if (cell == null || !this.Element.GeometricallyContains(cell))
+            if (cell == null || !this.Element.ContainsClickablePoint(cell))
             {
                 this.LastErrorMessage = string.Format(
                     "В {0} ячейка [{1}, {2}] вне видимости или не существует.",
