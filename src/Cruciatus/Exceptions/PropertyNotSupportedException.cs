@@ -66,6 +66,11 @@ namespace Cruciatus.Exceptions
 
         private string Property { get; set; }
 
+        protected new virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+        }
+
         private void Initialize(string message)
         {
             if (message == null)
