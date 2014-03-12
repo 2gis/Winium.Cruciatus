@@ -13,7 +13,7 @@ namespace Cruciatus.Exceptions
     using System.Runtime.Serialization;
 
     [Serializable]
-    public class ElementNotFoundException : Exception
+    public class ElementNotFoundException : CruciatusException
     {
         private readonly string fieldMessage = "Элемент не найден.\n";
 
