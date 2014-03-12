@@ -116,7 +116,7 @@ namespace Cruciatus
             {
                 if (this.process == null)
                 {
-                    throw new NullReferenceException("Приложение не запущено.");
+                    return null;
                 }
 
                 if (this.mainWindow == null)
