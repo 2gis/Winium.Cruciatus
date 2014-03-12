@@ -471,10 +471,7 @@ namespace Cruciatus.Elements
                     new PropertyCondition(AutomationElement.ControlTypeProperty, type),
                     new PropertyCondition(AutomationElement.NameProperty, name));
 
-            var searchElement = this.Element.SearchSpecificElementConsideringScroll(
-                elem => elem.FindFirst(TreeScope.Subtree, condition),
-                elem => elem == null,
-                elem => elem);
+            var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
 
             if (searchElement == null && !type.Equals(ControlType.ListItem))
             {
