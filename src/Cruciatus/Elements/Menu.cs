@@ -70,6 +70,11 @@ namespace Cruciatus.Elements
         /// </returns>
         public virtual bool Select(string headersPath)
         {
+            if (headersPath == null)
+            {
+                throw new ArgumentNullException("headersPath");
+            }
+
             var headers = headersPath.Split('$');
 
             var current = this.Element;

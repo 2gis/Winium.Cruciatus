@@ -11,6 +11,7 @@ namespace Cruciatus.Extensions
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
@@ -192,31 +193,6 @@ namespace Cruciatus.Extensions
         }
 
         /// <summary>
-        /// Перемещение курсора мыши в центр элемента.
-        /// </summary>
-        /// <param name="element">
-        /// Элемент, в центр которого перемещается курсор мыши.
-        /// </param>
-        /// <exception cref="OperationCanceledException">
-        /// Операция прервана из-за ошибки.
-        /// </exception>
-        public static void MoveMouseToCenter(this AutomationElement element)
-        {
-            try
-            {
-                var windowsPoint = element.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
-                var clickablePoint = new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
-
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(clickablePoint);
-            }
-            catch (Exception exc)
-            {
-                throw new OperationCanceledException("Перемещение курсора мыши не удалось.\n", exc);
-            }
-        }
-
-        /// <summary>
         /// Возвращает значение заданного свойства, приведенное к указанному типу.
         /// </summary>
         /// <param name="element">
@@ -237,8 +213,16 @@ namespace Cruciatus.Extensions
         /// <exception cref="InvalidCastException">
         /// Нельзя привести значение свойства к указанному типу.
         /// </exception>
+        [SuppressMessage("Microsoft.Design",
+                         "CA1062:Validate arguments of public methods",
+                         Justification = "First parameter in extension cannot be null.")]
         public static TOut GetPropertyValue<TOut>(this AutomationElement element, AutomationProperty property)
         {
+            if (property == null)
+            {
+                throw new ArgumentNullException("property");
+            }
+
             var obj = element.GetCurrentPropertyValue(property, true);
             if (obj == AutomationElement.NotSupported)
             {
@@ -253,87 +237,6 @@ namespace Cruciatus.Extensions
             }
 
             return (TOut)obj;
-        }
-
-        /// <summary>
-        /// Прокручивает содержимое до заданного элемента.
-        /// </summary>
-        /// <param name="externalElement">
-        /// Текущий элемент, содержимое которого будет прокручивать.
-        /// </param>
-        /// <param name="internalElement">
-        /// Элемент до которого прокурчиваем.
-        /// </param>
-        /// <returns>
-        /// Значение true если прокрутили либо в этом не было необходимости; иначе прокрутка не поддерживается, значение - false.
-        /// </returns>
-        public static bool Scrolling(this AutomationElement externalElement, AutomationElement internalElement)
-        {
-            if (externalElement.ContainsClickablePoint(internalElement))
-            {
-                return true;
-            }
-
-            var scrollPattern = externalElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-            if (scrollPattern == null)
-            {
-                return false;
-            }
-
-            while (scrollPattern.Current.VerticalScrollPercent > 0)
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
-            }
-
-            do
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-            }
-            while (!externalElement.ContainsClickablePoint(internalElement));
-
-            return true;
-        }
-
-        /// <summary>
-        /// Прокручивает содержимое до заданного элемента.
-        /// </summary>
-        /// <param name="externalElement">
-        /// Текущий элемент, содержимое которого будет прокручивать.
-        /// </param>
-        /// <param name="internalElement">
-        /// Элемент до которого прокурчиваем.
-        /// </param>
-        /// <param name="popupWindow">
-        /// sf
-        /// </param>
-        /// <returns>
-        /// Значение true если прокрутили либо в этом не было необходимости; иначе прокрутка не поддерживается, значение - false.
-        /// </returns>
-        public static bool ScrollingForComboBox(this AutomationElement externalElement, AutomationElement internalElement, AutomationElement popupWindow)
-        {
-            if (popupWindow.ContainsClickablePoint(internalElement))
-            {
-                return true;
-            }
-
-            var scrollPattern = externalElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-            if (scrollPattern == null)
-            {
-                return false;
-            }
-
-            while (scrollPattern.Current.VerticalScrollPercent > 0)
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
-            }
-
-            do
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-            }
-            while (!popupWindow.ContainsClickablePoint(internalElement));
-
-            return true;
         }
     }
 }
