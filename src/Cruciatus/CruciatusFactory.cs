@@ -13,6 +13,8 @@ namespace Cruciatus
     using System.Diagnostics;
     using System.Threading;
 
+    using Cruciatus.Settings;
+
     public static class CruciatusFactory
     {
         public static CruciatusSettings Settings

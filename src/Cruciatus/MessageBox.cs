@@ -9,34 +9,43 @@
 
 namespace Cruciatus
 {
+    using System;
     using System.Windows;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
 
-    using Window = Cruciatus.Elements.Window;
-
     public static class MessageBox
     {
-        internal static int NumberOfOpenModalWindow(Window window)
+        public static int NumberOfOpenModalWindow(CruciatusElement parent)
         {
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            return window.Element.FindAll(TreeScope.Children, condition).Count;
+            return parent.Element.FindAll(TreeScope.Children, condition).Count;
         }
 
-        internal static bool ClickButton(Window window, MessageBoxButton buttonsType, MessageBoxResult button)
+        public static bool ClickButton(CruciatusElement parent, MessageBoxButton buttonsType, MessageBoxResult button)
         {
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            var modalwindow = window.Element.FindFirst(TreeScope.Children, condition);
+            var modalwindow = parent.Element.FindFirst(TreeScope.Children, condition);
             if (modalwindow == null)
             {
                 return false;
             }
-
+            
             string uid;
             if (button == MessageBoxResult.None)
             {
-                uid = CruciatusFactory.Settings.MessageBoxButtonUid.CloseButtonUid;
+                uid = CruciatusFactory.Settings.MessageBoxButtonUid.CloseButton;
             }
             else
             {
@@ -46,7 +55,7 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.OK:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkType.OkUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkType.Ok;
                                 break;
                             default:
                                 return false;
@@ -58,10 +67,10 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.OK:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.OkUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.Ok;
                                 break;
                             case MessageBoxResult.Cancel:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.CancelUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.Cancel;
                                 break;
                             default:
                                 return false;
@@ -73,10 +82,10 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.Yes:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.YesUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.Yes;
                                 break;
                             case MessageBoxResult.No:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.NoUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.No;
                                 break;
                             default:
                                 return false;
@@ -88,13 +97,13 @@ namespace Cruciatus
                         switch (button)
                         {
                             case MessageBoxResult.Yes:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.YesUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.Yes;
                                 break;
                             case MessageBoxResult.No:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.NoUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.No;
                                 break;
                             case MessageBoxResult.Cancel:
-                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.CancelUid;
+                                uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.Cancel;
                                 break;
                             default:
                                 return false;
@@ -110,48 +119,5 @@ namespace Cruciatus
             var buttonElement = new Button(modalwindow, uid);
             return buttonElement.Click();
         }
-
-        #region Структуры для описания UID кнопок
-        public struct OkType
-        {
-            public string OkUid;
-        }
-
-        public struct OkCancelType
-        {
-            public string OkUid;
-
-            public string CancelUid;
-        }
-
-        public struct YesNoType
-        {
-            public string YesUid;
-
-            public string NoUid;
-        }
-
-        public struct YesNoCancelType
-        {
-            public string YesUid;
-
-            public string NoUid;
-
-            public string CancelUid;
-        }
-
-        public struct ButtonUid
-        {
-            public string CloseButtonUid;
-
-            public OkType OkType;
-
-            public OkCancelType OkCancelType;
-
-            public YesNoType YesNoType;
-
-            public YesNoCancelType YesNoCancelType;
-        }
-        #endregion
     }
 }

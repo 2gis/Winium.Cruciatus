@@ -9,7 +9,6 @@
 
 namespace Cruciatus.Elements
 {
-    using System;
     using System.Collections.Generic;
     using System.Windows.Automation;
 
