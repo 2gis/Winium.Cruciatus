@@ -167,7 +167,7 @@ namespace Cruciatus.Elements
 
                 return this.SetState(ToggleState.On);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
@@ -191,7 +191,7 @@ namespace Cruciatus.Elements
 
                 return this.SetState(ToggleState.Off);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;

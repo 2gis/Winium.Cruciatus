@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusException.cs" company="2GIS">
+// <copyright file="PropertyInvalidCastException.cs" company="2GIS">
 //   UITestLibrary.Exceptions
 // </copyright>
 // <summary>
-//   Определяет базовый класс исключений CruciatusException.
+//   Определяет класс исключение PropertyInvalidCastException.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -13,23 +13,23 @@ namespace Cruciatus.Exceptions
     using System.Runtime.Serialization;
 
     [Serializable]
-    public class CruciatusException : Exception
+    public class PropertyInvalidCastException : CruciatusException
     {
-        public CruciatusException()
+        public PropertyInvalidCastException()
         {
         }
 
-        public CruciatusException(string message)
+        public PropertyInvalidCastException(string message)
             : base(message)
         {
         }
 
-        public CruciatusException(string message, Exception innerException)
+        public PropertyInvalidCastException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
-        protected CruciatusException(SerializationInfo info, StreamingContext context)
+        protected PropertyInvalidCastException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

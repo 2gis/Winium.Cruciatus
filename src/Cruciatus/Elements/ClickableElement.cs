@@ -89,7 +89,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click()
         {
-            return CruciatusCommand.Click(this.ClickablePoint, out this.LastErrorMessageInstance);
+            return this.Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -103,7 +103,17 @@ namespace Cruciatus.Elements
         /// </returns>
         public virtual bool Click(MouseButtons mouseButton)
         {
-            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
+            try
+            {
+                CruciatusCommand.Click(this.ClickablePoint, mouseButton);
+            }
+            catch (CruciatusException exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)

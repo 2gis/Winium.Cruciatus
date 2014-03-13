@@ -24,7 +24,7 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления выпадающий список.
     /// </summary>
-    public class ComboBox : CruciatusElement, IContainerElement
+    public class ComboBox : CruciatusElement, IContainerElement, IClickable
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
@@ -196,7 +196,7 @@ namespace Cruciatus.Elements
                 Thread.Sleep(250);
                 return true;
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
@@ -220,7 +220,7 @@ namespace Cruciatus.Elements
 
                 return true;
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
@@ -420,28 +420,34 @@ namespace Cruciatus.Elements
                 item.Initialize(searchElement);
                 return item;
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return null;
             }
         }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        
+        /// <summary>
+        /// Выполняет нажатие по выпадающему списку.
+        /// </summary>
+        /// <returns>
+        /// Значение true если нажать на элемент удалось; в противном случае значение - false.
+        /// </returns>
+        public bool Click()
         {
-            this.Initialize(parent, automationId);
+            return this.Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
         /// Выполняет нажатие по выпадающему списку.
         /// </summary>
         /// <param name="mouseButton">
-        /// Задает кнопку мыши, которой будет произведено нажатие; либо кнопка по умолчанию.
+        /// Задает кнопку мыши, которой будет произведено нажатие.
         /// </param>
         /// <returns>
         /// Значение true если нажать на выпадающий список удалось; в противном случае значение - false.
         /// </returns>
-        protected virtual bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        public virtual bool Click(MouseButtons mouseButton)
         {
             try
             {
@@ -451,17 +457,23 @@ namespace Cruciatus.Elements
 
                 if (isEnabled)
                 {
-                    return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
+                    CruciatusCommand.Click(this.ClickablePoint, mouseButton);
+                    return true;
                 }
 
                 this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
                 return false;
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
             }
+        }
+
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            this.Initialize(parent, automationId);
         }
 
         private AutomationElement SearchElement(string name, ControlType type)

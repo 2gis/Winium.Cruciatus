@@ -154,7 +154,7 @@ namespace Cruciatus.Elements
 
                 return base.Click(mouseButton);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;

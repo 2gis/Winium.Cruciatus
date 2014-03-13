@@ -129,7 +129,7 @@ namespace Cruciatus.Elements
                     // Иначе текст получается так
                     return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
                 }
-                catch (Exception exc)
+                catch (CruciatusException exc)
                 {
                     this.LastErrorMessage = exc.Message;
                     return null;
@@ -187,15 +187,12 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
-                if (!CruciatusCommand.Click(this.ClickablePoint, MouseButtons.Left, out this.LastErrorMessageInstance))
-                {
-                    return false;
-                }
+                CruciatusCommand.Click(this.ClickablePoint, MouseButtons.Left);
 
                 Keyboard.SendKeys("^a");
                 Keyboard.SendKeys(text);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;

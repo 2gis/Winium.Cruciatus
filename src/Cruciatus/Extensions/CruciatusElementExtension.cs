@@ -56,7 +56,7 @@ namespace Cruciatus.Extensions
                     cruciatusElement.ToString());
                 err += exc.Message;
 
-                throw new InvalidCastException(err);
+                throw new PropertyInvalidCastException(err);
             }
         }
     }

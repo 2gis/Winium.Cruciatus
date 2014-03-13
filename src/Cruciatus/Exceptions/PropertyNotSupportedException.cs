@@ -26,6 +26,11 @@ namespace Cruciatus.Exceptions
             this.Initialize(message);
         }
 
+        public PropertyNotSupportedException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
         public PropertyNotSupportedException(string element, string property)
         {
             this.Initialize(element, property);
