@@ -11,13 +11,13 @@ namespace WpfTestApplication.Tests.TestCases
         [TestMethod]
         public void RibbonMenuTestMethod1()
         {
-            Assert.IsTrue(this.ribbonMenu.Select("Print$Open"), this.simpleMenu.LastErrorMessage);
+            Assert.IsTrue(this.ribbonMenu.SelectItem("Print$Open"), this.simpleMenu.LastErrorMessage);
         }
 
         [TestMethod]
         public void RibbonMenuTestMethod2()
         {
-            Assert.IsTrue(this.ribbonMenu.Select("Print$New$Save"), this.simpleMenu.LastErrorMessage);
+            Assert.IsTrue(this.ribbonMenu.SelectItem("Print$New$Save"), this.simpleMenu.LastErrorMessage);
         }
     }
 }

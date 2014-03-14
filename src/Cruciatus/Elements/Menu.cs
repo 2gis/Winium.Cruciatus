@@ -60,7 +60,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Выполняет проход по меню.
+        /// Выбирает элемент меню, указанный последним в пути.
         /// </summary>
         /// <param name="headersPath">
         /// Путь из заголовков для прохода (пример: control$view$zoom).
@@ -68,7 +68,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если операция завершена успешна; в противном случае значение - false.
         /// </returns>
-        public virtual bool Select(string headersPath)
+        public virtual bool SelectItem(string headersPath)
         {
             if (headersPath == null)
             {
