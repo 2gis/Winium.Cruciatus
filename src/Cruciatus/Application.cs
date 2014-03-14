@@ -298,18 +298,21 @@ namespace Cruciatus
 
         private bool GetPid(out int pid)
         {
-            using (var sr = new StreamReader(File.Open(this.pidFileName, FileMode.Open)))
+            using (var fs = File.Open(this.pidFileName, FileMode.Open))
             {
-                if (sr.EndOfStream)
+                using (var sr = new StreamReader(fs))
                 {
-                    pid = 0;
-                    return false;
-                }
+                    if (sr.EndOfStream)
+                    {
+                        pid = 0;
+                        return false;
+                    }
 
-                var strPid = sr.ReadLine();
-                if (!int.TryParse(strPid, out pid))
-                {
-                    return false;
+                    var strPid = sr.ReadLine();
+                    if (!int.TryParse(strPid, out pid))
+                    {
+                        return false;
+                    }
                 }
             }
 
