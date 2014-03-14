@@ -122,7 +122,12 @@ namespace Cruciatus.Extensions
             }
         }
 
-        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement, ScrollPattern scrollPattern = null)
+        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement)
+        {
+            return ClickablePointUnder(currentElement, rectElement, null);
+        }
+
+        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement, ScrollPattern scrollPattern)
         {
             try
             {
@@ -157,7 +162,12 @@ namespace Cruciatus.Extensions
             }
         }
 
-        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement, ScrollPattern scrollPattern = null)
+        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement)
+        {
+            return ClickablePointRight(currentElement, rectElement, null);
+        }
+
+        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement, ScrollPattern scrollPattern)
         {
             try
             {
