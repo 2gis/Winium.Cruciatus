@@ -82,7 +82,7 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Прокручивает список до элемента с указанным именем.
+        /// Прокручивает список до элемента с указанным типом и именем.
         /// </summary>
         /// <param name="name">
         /// Имя элемента.
@@ -91,101 +91,110 @@ namespace Cruciatus.Elements
         /// Тип элемента.
         /// </typeparam>
         /// <returns>
-        /// Значение true если прокрутить удалось либо в этом нет необходимости; в противном случае значение - false.
+        /// Интересующий элемент, либо null, если элемент с заданными параметрами отсутствует.
         /// </returns>
-        public bool ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
+        public T ScrollTo<T>(string name) where T : CruciatusElement, IListElement, new()
         {
-            // Проверка на дурака
-            if (string.IsNullOrEmpty(name))
+            try
             {
-                this.LastErrorMessage = "Параметр name не должен быть пустым.";
-                return false;
-            }
+                // Проверка на дурака
+                if (string.IsNullOrEmpty(name))
+                {
+                    this.LastErrorMessage = "Параметр name не должен быть пустым.";
+                    return null;
+                }
 
-            // Проверка, что таблица включена
-            var isEnabled = CruciatusFactory.WaitingValues(
+                // Проверка, что таблица включена
+                var isEnabled = CruciatusFactory.WaitingValues(
                     () => this.IsEnabled,
                     value => value != true);
-            if (!isEnabled)
-            {
-                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
-                return false;
-            }
+                if (!isEnabled)
+                {
+                    this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                    return null;
+                }
 
-            // Получение шаблона прокрутки у списка
-            var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-            if (scrollPattern == null)
-            {
-                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
-                return false;
-            }
+                // Получение шаблона прокрутки у списка
+                var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+                if (scrollPattern == null)
+                {
+                    this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                    return null;
+                }
 
-            var item = new T();
-            var condition = new AndCondition(
+                var item = new T();
+                var condition = new AndCondition(
                     new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
                     new PropertyCondition(AutomationElement.NameProperty, name));
 
-            // Стартовый поиск элемента
-            var element = this.Element.FindFirst(TreeScope.Subtree, condition);
+                // Стартовый поиск элемента
+                var element = this.Element.FindFirst(TreeScope.Subtree, condition);
 
-            // Вертикальная прокрутка (при необходимости и возможности)
-            if (element == null && scrollPattern.Current.VerticallyScrollable)
-            {
-                // Установка самого верхнего положения прокрутки
-                while (scrollPattern.Current.VerticalScrollPercent > 0.1)
+                // Вертикальная прокрутка (при необходимости и возможности)
+                if (element == null && scrollPattern.Current.VerticallyScrollable)
                 {
-                    scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
-                }
-
-                // Установка самого левого положения прокрутки (при возможности)
-                if (scrollPattern.Current.HorizontallyScrollable)
-                {
-                    while (scrollPattern.Current.HorizontalScrollPercent > 0.1)
+                    // Установка самого верхнего положения прокрутки
+                    while (scrollPattern.Current.VerticalScrollPercent > 0.1)
                     {
-                        scrollPattern.ScrollHorizontal(ScrollAmount.LargeDecrement);
+                        scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
+                    }
+
+                    // Установка самого левого положения прокрутки (при возможности)
+                    if (scrollPattern.Current.HorizontallyScrollable)
+                    {
+                        while (scrollPattern.Current.HorizontalScrollPercent > 0.1)
+                        {
+                            scrollPattern.ScrollHorizontal(ScrollAmount.LargeDecrement);
+                        }
+                    }
+
+                    // Основная вертикальная прокрутка
+                    while (element == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
+                    {
+                        scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+                        element = this.Element.FindFirst(TreeScope.Subtree, condition);
                     }
                 }
 
-                // Основная вертикальная прокрутка
-                while (element == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
+                // Если прокрутив до конца элемент не найден, то его нет (кэп)
+                if (element == null)
                 {
-                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-                    element = this.Element.FindFirst(TreeScope.Subtree, condition);
+                    this.LastErrorMessage = string.Format("В {0} нет элемента с name = {1}.", this.ToString(), name);
+                    return null;
                 }
-            }
 
-            // Если прокрутив до конца элемент не найден, то его нет (кэп)
-            if (element == null)
+                // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
+                while (element.ClickablePointUnder(this.Element, scrollPattern))
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+                }
+
+                // Если точка клика элемента над границей списка - докручиваем по вертикали вверх
+                while (element.ClickablePointOver(this.Element))
+                {
+                    scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
+                }
+
+                // Если точка клика элемента справа от границы списка - докручиваем по горизонтали вправо
+                while (element.ClickablePointRight(this.Element, scrollPattern))
+                {
+                    scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
+                }
+
+                // Если точка клика элемента слева от границы списка - докручиваем по горизонтали влево
+                while (element.ClickablePointLeft(this.Element))
+                {
+                    scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
+                }
+
+                item.Initialize(element);
+                return item;
+            }
+            catch (CruciatusException exc)
             {
-                this.LastErrorMessage = string.Format("В {0} нет элемента с name = {1}.", this.ToString(), name);
-                return false;
+                this.LastErrorMessage = exc.Message;
+                return null;
             }
-
-            // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
-            while (element.ClickablePointUnder(this.Element, scrollPattern))
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-            }
-
-            // Если точка клика элемента над границей списка - докручиваем по вертикали вверх
-            while (element.ClickablePointOver(this.Element))
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
-            }
-
-            // Если точка клика элемента справа от границы списка - докручиваем по горизонтали вправо
-            while (element.ClickablePointRight(this.Element, scrollPattern))
-            {
-                scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
-            }
-
-            // Если точка клика элемента слева от границы списка - докручиваем по горизонтали влево
-            while (element.ClickablePointLeft(this.Element))
-            {
-                scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -220,11 +229,7 @@ namespace Cruciatus.Elements
 
             if (searchElement == null)
             {
-                this.LastErrorMessage =
-                    string.Format(
-                        "В {0} элемент с полем name = {1} не существует или вне видимости.",
-                        this.ToString(),
-                        name);
+                this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} не существует или вне видимости.", this.ToString(), name);
                 return null;
             }
 

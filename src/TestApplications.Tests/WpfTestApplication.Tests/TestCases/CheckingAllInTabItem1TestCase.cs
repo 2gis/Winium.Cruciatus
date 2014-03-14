@@ -80,13 +80,11 @@ namespace WpfTestApplication.Tests.TestCases
                 Assert.IsTrue(this.firstTab.CheckBox1.Check(), this.firstTab.CheckBox1.LastErrorMessage);
             }
 
-            Assert.IsTrue(this.firstTab.TextListBox.ScrollTo<TextBlock>("December"), this.firstTab.TextListBox.LastErrorMessage);
-            var month = this.firstTab.TextListBox.Item<TextBlock>("December");
+            var month = this.firstTab.TextListBox.ScrollTo<TextBlock>("December");
             Assert.IsNotNull(month, this.firstTab.TextListBox.LastErrorMessage);
             Assert.IsTrue(month.Click(), month.LastErrorMessage);
 
-            Assert.IsTrue(this.firstTab.TextListBox.ScrollTo<TextBlock>("October"), this.firstTab.TextListBox.LastErrorMessage);
-            month = this.firstTab.TextListBox.Item<TextBlock>("October");
+            month = this.firstTab.TextListBox.ScrollTo<TextBlock>("October");
             Assert.IsNotNull(month, this.firstTab.TextListBox.LastErrorMessage);
             Assert.IsTrue(month.Click(), month.LastErrorMessage);
         }

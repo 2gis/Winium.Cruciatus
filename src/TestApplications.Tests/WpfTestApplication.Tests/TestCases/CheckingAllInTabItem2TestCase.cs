@@ -84,14 +84,12 @@ namespace WpfTestApplication.Tests.TestCases
         {
             Assert.IsTrue(this.secondTab.Select(), this.secondTab.LastErrorMessage);
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("December"), this.secondTab.CheckListBox.LastErrorMessage);
-            var month = this.secondTab.CheckListBox.Item<CheckBox>("December");
+            var month = this.secondTab.CheckListBox.ScrollTo<CheckBox>("December");
             Assert.IsNotNull(month, this.secondTab.CheckListBox.LastErrorMessage);
             Assert.IsTrue(month.Check(), month.LastErrorMessage);
             Assert.IsTrue(month.IsChecked, "Чекбокс December в uncheck состоянии после check.");
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("October"), this.secondTab.CheckListBox.LastErrorMessage);
-            month = this.secondTab.CheckListBox.Item<CheckBox>("October");
+            month = this.secondTab.CheckListBox.ScrollTo<CheckBox>("October");
             Assert.IsNotNull(month, this.secondTab.CheckListBox.LastErrorMessage);
             Assert.IsTrue(month.Check(), month.LastErrorMessage);
             Assert.IsTrue(month.IsChecked, "Чекбокс 10ый в uncheck состоянии после check.");
@@ -118,23 +116,21 @@ namespace WpfTestApplication.Tests.TestCases
             Assert.IsTrue(this.secondTab.CheckBox2.UnCheck(), this.secondTab.CheckBox2.LastErrorMessage);
             Assert.IsFalse(this.secondTab.CheckBox2.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("March"), this.secondTab.CheckListBox.LastErrorMessage);
-            var monthMarch = this.secondTab.CheckListBox.Item<CheckBox>("March");
+            var monthMarch = this.secondTab.CheckListBox.ScrollTo<CheckBox>("March");
             Assert.IsNotNull(monthMarch, this.secondTab.CheckListBox.LastErrorMessage);
             var marchIsChecked = monthMarch.IsChecked;
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("December"), this.secondTab.CheckListBox.LastErrorMessage);
-            var monthDecember = this.secondTab.CheckListBox.Item<CheckBox>("December");
+            var monthDecember = this.secondTab.CheckListBox.ScrollTo<CheckBox>("December");
             Assert.IsNotNull(monthDecember, this.secondTab.CheckListBox.LastErrorMessage);
             var decemberIsChecked = monthDecember.IsChecked;
 
             Assert.IsTrue(this.secondTab.CheckBox2.Check(), this.secondTab.CheckBox2.LastErrorMessage);
             Assert.IsTrue(this.secondTab.CheckBox2.IsChecked, "Чекбокс в uncheck состоянии после check.");
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("March"), this.secondTab.CheckListBox.LastErrorMessage);
+            Assert.IsNotNull(this.secondTab.CheckListBox.ScrollTo<CheckBox>("March"), this.secondTab.CheckListBox.LastErrorMessage);
             Assert.IsTrue(marchIsChecked != monthMarch.IsChecked, "У чекбокса March не изменилась чекнутость.");
 
-            Assert.IsTrue(this.secondTab.CheckListBox.ScrollTo<CheckBox>("December"), this.secondTab.CheckListBox.LastErrorMessage);
+            Assert.IsNotNull(this.secondTab.CheckListBox.ScrollTo<CheckBox>("December"), this.secondTab.CheckListBox.LastErrorMessage);
             Assert.IsTrue(decemberIsChecked != monthDecember.IsChecked, "У чекбокса December не изменилась чекнутость.");
         }
     }
