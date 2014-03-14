@@ -16,6 +16,7 @@ namespace Cruciatus
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
+    using Cruciatus.Exceptions;
     using Cruciatus.Interfaces;
 
     /// <summary>
@@ -167,7 +168,7 @@ namespace Cruciatus
                     // Считывание PID
                     if (!this.GetPid(out pid))
                     {
-                        throw new Exception("Не удалось прочитать PID приложения.");
+                        throw new CruciatusException("Не удалось прочитать PID приложения.");
                     }
 
                     // Завершение процесса
@@ -180,12 +181,12 @@ namespace Cruciatus
                     }
                     catch (Exception e)
                     {
-                        throw new Exception("Системная ошибка при завершении старого экземпляра приложения.", e);
+                        throw new CruciatusException("Системная ошибка при завершении старого экземпляра приложения.", e);
                     }
 
                     if (!isExit)
                     {
-                        throw new Exception("Не удалось завершить старый экземпляр приложения.");
+                        throw new CruciatusException("Не удалось завершить старый экземпляр приложения.");
                     }
 
                     // Ожидание удаления файла с информацией о PID (что так же говорит о завершении приложения)
@@ -195,7 +196,7 @@ namespace Cruciatus
                                        milliseconds);
                     if (isNotClose)
                     {
-                        throw new Exception("Не удалось завершить старый экземпляр приложения (файл с PID не удален).");
+                        throw new CruciatusException("Не удалось завершить старый экземпляр приложения (файл с PID не удален).");
                     }
                 }
 
@@ -203,13 +204,13 @@ namespace Cruciatus
                 var clickOnceApp = Process.Start(this.clickOnceFileName);
                 if (clickOnceApp == null)
                 {
-                    throw new Exception("Не удалось запустить ClickOnce сервис.");
+                    throw new CruciatusException("Не удалось запустить ClickOnce сервис.");
                 }
 
                 // Ожидание завершения ClickOnce сервиса
                 if (!clickOnceApp.WaitForExit(milliseconds))
                 {
-                    throw new Exception("Не удалось завершить ClickOnce сервис.");
+                    throw new CruciatusException("Не удалось завершить ClickOnce сервис.");
                 }
 
                 // Ожидание создания файла с информацией о PID (что так же говорит о запуске приложения)
@@ -219,13 +220,13 @@ namespace Cruciatus
                                    milliseconds);
                 if (isStart == false)
                 {
-                    throw new Exception("Не удалось запустить приложение (файл с PID не создан).");
+                    throw new CruciatusException("Не удалось запустить приложение (файл с PID не создан).");
                 }
 
                 // Считывание PID
                 if (!this.GetPid(out pid))
                 {
-                    throw new Exception("Не удалось прочитать PID приложения.");
+                    throw new CruciatusException("Не удалось прочитать PID приложения.");
                 }
 
                 // Получение процесса приложения по его PID
@@ -235,7 +236,7 @@ namespace Cruciatus
                 }
                 catch (Exception e)
                 {
-                    throw new Exception("Системная ошибка при связывании с экземпляром приложения.", e);
+                    throw new CruciatusException("Системная ошибка при связывании с экземпляром приложения.", e);
                 }
             }
             else
@@ -247,7 +248,7 @@ namespace Cruciatus
             // Проверка, что имеем процесс приложения
             if (this.process == null)
             {
-                throw new Exception("Не удалось запустить приложение.");
+                throw new CruciatusException("Не удалось запустить приложение.");
             }
 
             // Ожидание открытия главного окна
@@ -298,10 +299,13 @@ namespace Cruciatus
 
         private bool GetPid(out int pid)
         {
-            using (var fs = File.Open(this.pidFileName, FileMode.Open))
+            Stream fs = null;
+            try
             {
+                fs = File.Open(this.pidFileName, FileMode.Open);
                 using (var sr = new StreamReader(fs))
                 {
+                    fs = null;
                     if (sr.EndOfStream)
                     {
                         pid = 0;
@@ -309,14 +313,16 @@ namespace Cruciatus
                     }
 
                     var strPid = sr.ReadLine();
-                    if (!int.TryParse(strPid, out pid))
-                    {
-                        return false;
-                    }
+                    return int.TryParse(strPid, out pid);
                 }
             }
-
-            return true;
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Dispose();
+                }
+            }
         }
     }
 }
