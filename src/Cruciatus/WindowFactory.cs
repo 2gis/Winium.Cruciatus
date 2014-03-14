@@ -33,7 +33,7 @@ namespace Cruciatus
         {
             if (processId <= 0)
             {
-                throw new ArgumentException("processId");
+                throw new ArgumentOutOfRangeException("processId");
             }
 
             if (automationId == null)
