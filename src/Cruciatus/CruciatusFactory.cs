@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+[assembly: System.CLSCompliant(false)]
+
 namespace Cruciatus
 {
     using System;
