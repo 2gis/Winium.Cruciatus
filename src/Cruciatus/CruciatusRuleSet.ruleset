@@ -20,7 +20,6 @@
     <Rule Id="CA1017" Action="Warning" />
     <Rule Id="CA1018" Action="Warning" />
     <Rule Id="CA1019" Action="Warning" />
-    <Rule Id="CA1020" Action="Warning" />
     <Rule Id="CA1021" Action="Warning" />
     <Rule Id="CA1023" Action="Warning" />
     <Rule Id="CA1024" Action="Warning" />
@@ -62,6 +61,34 @@
     <Rule Id="CA1063" Action="Warning" />
     <Rule Id="CA1064" Action="Warning" />
     <Rule Id="CA1065" Action="Warning" />
-    <Rule Id="CA2210" Action="Warning" />
+    <Rule Id="CA1500" Action="Warning" />
+    <Rule Id="CA1501" Action="Warning" />
+    <Rule Id="CA1502" Action="Warning" />
+    <Rule Id="CA1504" Action="Warning" />
+    <Rule Id="CA1505" Action="Warning" />
+    <Rule Id="CA1506" Action="Warning" />
+    <Rule Id="CA1700" Action="Warning" />
+    <Rule Id="CA1701" Action="Warning" />
+    <Rule Id="CA1702" Action="Warning" />
+    <Rule Id="CA1703" Action="Warning" />
+    <Rule Id="CA1707" Action="Warning" />
+    <Rule Id="CA1708" Action="Warning" />
+    <Rule Id="CA1709" Action="Warning" />
+    <Rule Id="CA1710" Action="Warning" />
+    <Rule Id="CA1711" Action="Warning" />
+    <Rule Id="CA1712" Action="Warning" />
+    <Rule Id="CA1713" Action="Warning" />
+    <Rule Id="CA1714" Action="Warning" />
+    <Rule Id="CA1715" Action="Warning" />
+    <Rule Id="CA1716" Action="Warning" />
+    <Rule Id="CA1717" Action="Warning" />
+    <Rule Id="CA1719" Action="Warning" />
+    <Rule Id="CA1720" Action="Warning" />
+    <Rule Id="CA1721" Action="Warning" />
+    <Rule Id="CA1722" Action="Warning" />
+    <Rule Id="CA1724" Action="Warning" />
+    <Rule Id="CA1725" Action="Warning" />
+    <Rule Id="CA1726" Action="Warning" />
+    <Rule Id="CA2204" Action="Warning" />
   </Rules>
 </RuleSet>

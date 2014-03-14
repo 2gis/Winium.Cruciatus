@@ -11,7 +11,7 @@ namespace Cruciatus.Settings
 {
     using System.Windows.Forms;
 
-    using Cruciatus.Settings.MessageBox;
+    using Cruciatus.Settings.MessageBoxSettings;
 
     public class CruciatusSettings
     {

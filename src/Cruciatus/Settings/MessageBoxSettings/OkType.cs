@@ -1,5 +1,5 @@
 ﻿
-namespace Cruciatus.Settings.MessageBox
+namespace Cruciatus.Settings.MessageBoxSettings
 {
     using System;
 

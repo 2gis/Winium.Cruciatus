@@ -81,11 +81,11 @@
     <Compile Include="Interfaces\IListElement.cs" />
     <Compile Include="MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\MessageBox\MessageBoxButtonUid.cs" />
-    <Compile Include="Settings\MessageBox\OkCancelType.cs" />
-    <Compile Include="Settings\MessageBox\OkType.cs" />
-    <Compile Include="Settings\MessageBox\YesNoCancelType.cs" />
-    <Compile Include="Settings\MessageBox\YesNoType.cs" />
+    <Compile Include="Settings\MessageBoxSettings\MessageBoxButtonUid.cs" />
+    <Compile Include="Settings\MessageBoxSettings\OkCancelType.cs" />
+    <Compile Include="Settings\MessageBoxSettings\OkType.cs" />
+    <Compile Include="Settings\MessageBoxSettings\YesNoCancelType.cs" />
+    <Compile Include="Settings\MessageBoxSettings\YesNoType.cs" />
     <Compile Include="WindowFactory.cs" />
   </ItemGroup>
   <ItemGroup>
