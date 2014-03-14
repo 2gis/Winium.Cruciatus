@@ -180,7 +180,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если удалось установить состояние; в противном случае значение - false.
         /// </returns>
-        public bool UnCheck()
+        public bool Uncheck()
         {
             try
             {

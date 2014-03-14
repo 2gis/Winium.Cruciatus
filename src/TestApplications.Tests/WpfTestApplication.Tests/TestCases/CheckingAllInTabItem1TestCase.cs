@@ -63,7 +63,7 @@ namespace WpfTestApplication.Tests.TestCases
         {
             Assert.IsTrue(this.firstTab.Select(), this.firstTab.LastErrorMessage);
 
-            Assert.IsTrue(this.firstTab.CheckBox1.UnCheck(), this.firstTab.CheckBox1.LastErrorMessage);
+            Assert.IsTrue(this.firstTab.CheckBox1.Uncheck(), this.firstTab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.firstTab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsTrue(this.firstTab.CheckBox1.Check(), this.firstTab.CheckBox1.LastErrorMessage);
@@ -96,7 +96,7 @@ namespace WpfTestApplication.Tests.TestCases
 
             Assert.IsTrue(this.firstTab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
 
-            Assert.IsTrue(this.firstTab.CheckBox1.UnCheck(), this.firstTab.CheckBox1.LastErrorMessage);
+            Assert.IsTrue(this.firstTab.CheckBox1.Uncheck(), this.firstTab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.firstTab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsFalse(this.firstTab.TextListBox.IsEnabled, "TextListBox не стал включенным.");

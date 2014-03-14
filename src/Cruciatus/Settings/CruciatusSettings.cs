@@ -9,6 +9,7 @@
 
 namespace Cruciatus.Settings
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows.Forms;
 
     using Cruciatus.Settings.MessageBoxSettings;
@@ -71,6 +72,7 @@ namespace Cruciatus.Settings
         /// <summary>
         /// Возвращает или задает время ожидания получения свойств элемента в миллисекундках.
         /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", Justification = "Reviewed.")]
         public int WaitForGetValueTimeout { get; set; }
 
         /// <summary>

@@ -19,17 +19,6 @@ namespace Cruciatus
     internal static class CruciatusCommand
     {
         /// <summary>
-        /// Нажимает кнопку мыши по умолчанию в заданной точке.
-        /// </summary>
-        /// <param name="clickablePoint">
-        /// Точка, которую надо нажать.
-        /// </param>
-        internal static void Click(System.Drawing.Point clickablePoint)
-        {
-            Click(clickablePoint, CruciatusFactory.Settings.ClickButton);
-        }
-
-        /// <summary>
         /// Нажимает заданную кнопку мыши в заданной точке.
         /// </summary>
         /// <param name="clickablePoint">

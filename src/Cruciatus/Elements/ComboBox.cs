@@ -485,21 +485,21 @@ namespace Cruciatus.Elements
             this.Initialize(parent, automationId);
         }
 
-        private AutomationElement SearchElement(string name, ControlType type)
-        {
-            // TODO: Это для WinForms надо, но стоит действовать иначе глобально (определяя что это WinForms)
-            var condition = new AndCondition(
-                    new PropertyCondition(AutomationElement.ControlTypeProperty, type),
-                    new PropertyCondition(AutomationElement.NameProperty, name));
+        //private AutomationElement SearchElement(string name, ControlType type)
+        //{
+        //    // TODO: Это для WinForms надо, но стоит действовать иначе глобально (определяя что это WinForms)
+        //    var condition = new AndCondition(
+        //            new PropertyCondition(AutomationElement.ControlTypeProperty, type),
+        //            new PropertyCondition(AutomationElement.NameProperty, name));
 
-            var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+        //    var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
 
-            if (searchElement == null && !type.Equals(ControlType.ListItem))
-            {
-                searchElement = this.SearchElement(name, ControlType.ListItem);
-            }
+        //    if (searchElement == null && !type.Equals(ControlType.ListItem))
+        //    {
+        //        searchElement = this.SearchElement(name, ControlType.ListItem);
+        //    }
 
-            return searchElement;
-        }
+        //    return searchElement;
+        //}
     }
 }

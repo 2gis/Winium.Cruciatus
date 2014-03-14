@@ -66,7 +66,7 @@ namespace WindowsFormsTestApplication.Tests.TestCases
         [TestMethod]
         public void CheckingCheckBox1()
         {
-            Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
+            Assert.IsTrue(this.tab.CheckBox1.Uncheck(), this.tab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsTrue(this.tab.CheckBox1.Check(), this.tab.CheckBox1.LastErrorMessage);
@@ -105,7 +105,7 @@ namespace WindowsFormsTestApplication.Tests.TestCases
         {
             Assert.IsTrue(this.tab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
 
-            Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
+            Assert.IsTrue(this.tab.CheckBox1.Uncheck(), this.tab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsFalse(this.tab.TextListBox.IsEnabled, "TextListBox не стал включенным.");

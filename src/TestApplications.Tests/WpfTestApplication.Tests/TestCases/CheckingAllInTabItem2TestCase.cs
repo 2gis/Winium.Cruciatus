@@ -72,7 +72,7 @@ namespace WpfTestApplication.Tests.TestCases
         {
             Assert.IsTrue(this.secondTab.Select(), this.secondTab.LastErrorMessage);
 
-            Assert.IsTrue(this.secondTab.CheckBox2.UnCheck(), this.secondTab.CheckBox2.LastErrorMessage);
+            Assert.IsTrue(this.secondTab.CheckBox2.Uncheck(), this.secondTab.CheckBox2.LastErrorMessage);
             Assert.IsFalse(this.secondTab.CheckBox2.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsTrue(this.secondTab.CheckBox2.Check(), this.secondTab.CheckBox2.LastErrorMessage);
@@ -113,7 +113,7 @@ namespace WpfTestApplication.Tests.TestCases
             Assert.IsTrue(this.secondTab.Select(), this.secondTab.LastErrorMessage);
 
             Assert.IsTrue(this.secondTab.CheckBox2.Check(), this.secondTab.CheckBox2.LastErrorMessage);
-            Assert.IsTrue(this.secondTab.CheckBox2.UnCheck(), this.secondTab.CheckBox2.LastErrorMessage);
+            Assert.IsTrue(this.secondTab.CheckBox2.Uncheck(), this.secondTab.CheckBox2.LastErrorMessage);
             Assert.IsFalse(this.secondTab.CheckBox2.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             var monthMarch = this.secondTab.CheckListBox.ScrollTo<CheckBox>("March");
