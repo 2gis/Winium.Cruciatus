@@ -240,8 +240,15 @@ namespace Cruciatus
             }
             else
             {
-                // Запуск приложения через исполняемый файл
-                this.process = Process.Start(this.exeFileName);
+                if (File.Exists(this.exeFileName))
+                {
+                    // Запуск приложения через исполняемый файл
+                    this.process = Process.Start(this.exeFileName);
+                }
+                else
+                {
+                    throw new Exception("Неверно задан путь до исполняемого файла приложения.");
+                }
             }
 
             // Проверка, что имеем процесс приложения
