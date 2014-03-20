@@ -10,6 +10,7 @@
 namespace Cruciatus.Elements
 {
     using System;
+    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
@@ -59,14 +60,28 @@ namespace Cruciatus.Elements
             return string.Format("{0} (uid: {1})", this.ClassName, this.AutomationId ?? "nonUid");
         }
 
+        // TODO: Разобраться с ошибкой "Access to modified closure" у переменной condition
         internal virtual void Find()
         {
-            // Ищем в родителе первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            var list = this.AutomationId.Split('/');
+
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, list[0]);
             this.ElementInstance = CruciatusFactory.WaitingValues(
                 () => this.Parent.FindFirst(TreeScope.Subtree, condition),
                 value => value == null,
                 CruciatusFactory.Settings.SearchTimeout);
+
+            if (list.Count() > 1)
+            {
+                for (var i = 1; i < list.Count(); ++i)
+                {
+                    condition = new PropertyCondition(AutomationElement.AutomationIdProperty, list[i]);
+                    this.ElementInstance = CruciatusFactory.WaitingValues(
+                        () => this.ElementInstance.FindFirst(TreeScope.Subtree, condition),
+                        value => value == null,
+                        CruciatusFactory.Settings.SearchTimeout);
+                }
+            }
 
             // Если не нашли, то загрузить элемент не удалось
             if (this.ElementInstance == null)
