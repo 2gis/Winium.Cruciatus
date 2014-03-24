@@ -20,7 +20,7 @@ namespace Cruciatus.Elements
     /// </summary>
     public class TelerikRadGridView : DataGrid
     {
-         /// <summary>
+        /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TelerikRadGridView"/>.
         /// </summary>
         public TelerikRadGridView()
