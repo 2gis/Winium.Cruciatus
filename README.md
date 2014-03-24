@@ -19,6 +19,13 @@ Working prototype.
 5) Use created map in tests
 
 ## Example
+### Example test applications
+[https://github.com/2gis/cruciatus/tree/master/src/TestApplications](https://github.com/2gis/cruciatus/tree/master/src/TestApplications)
+
+### Example test projects
+[https://github.com/2gis/cruciatus/tree/master/src/TestApplications.Tests](https://github.com/2gis/cruciatus/tree/master/src/TestApplications.Tests)
+
+### Example maps application
 
 TabItem (contains Button, TextBox).
 
@@ -30,7 +37,7 @@ public class ViewRibbonTab : TabItem
     {
         get
         {
-            return this.GetElement<Button>("ZoomInButton");
+            return this.GetElement<Button>("ZoomInButtonUid");
         }
     }
 
@@ -38,13 +45,13 @@ public class ViewRibbonTab : TabItem
     {
         get
         {
-            return this.GetElement<TextBox>("ExtentTextBox");
+            return this.GetElement<TextBox>("ExtentTextBoxUid");
         }
     }
 }
 ```
 
-Window (contains TabItem (...)).
+Window (contains ViewRibbonTab (...)).
 
 ```cs
 using Cruciatus.Elements;
@@ -54,30 +61,30 @@ public class MainWindow : Window
     {
         get
         {
-            return this.GetElement<ViewRibbonTab>("ViewRibbonTab");
+            return this.GetElement<ViewRibbonTab>("ViewRibbonTabUid");
         }
     }
 }
 ```
 
-Application (contains Window (...)).
+Application (contains MainWindow (...)).
 
 ```cs
 using Cruciatus;
 public class App : Application<MainWindow>
 {
     public App(string fullPath)
-        : base(fullPath)
+        : base(fullPath, "MainWindowUid")
     {
     }
 }
 ```
 
-Test.
+### Example test
 
 ```cs
 [TestMethod]
-public void CodedUITestMethod1()
+public void CruciatusUITestMethod()
 {
     var app = new App("D:\\App.exe");
     Assert.IsTrue(app.Start());
@@ -86,6 +93,6 @@ public void CodedUITestMethod1()
     app.MainWindow.ViewRibbonTab.ZoomInButton.Click();
     Assert.AreNotEqual(extent, app.MainWindow.ViewRibbonTab.ExtentTextBox.Text);
 	
-    app.Close();
+    Assert.IsTrue(app.Close());
 }
 ```
