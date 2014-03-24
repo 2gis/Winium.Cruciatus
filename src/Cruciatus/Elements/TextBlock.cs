@@ -84,7 +84,7 @@ namespace Cruciatus.Elements
                 {
                     return this.GetPropertyValue<string>(AutomationElement.NameProperty);
                 }
-                catch (Exception exc)
+                catch (CruciatusException exc)
                 {
                     this.LastErrorMessage = exc.Message;
                     return null;
@@ -133,7 +133,17 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click(MouseButtons mouseButton)
         {
-            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
+            try
+            {
+                CruciatusCommand.Click(this.ClickablePoint, mouseButton);
+            }
+            catch (CruciatusException exc)
+            {
+                this.LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)

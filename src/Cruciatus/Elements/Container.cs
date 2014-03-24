@@ -113,7 +113,7 @@ namespace Cruciatus.Elements
 
                 return (T)this.objects[automationId];
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return null;

@@ -15,6 +15,7 @@ namespace Cruciatus.Elements
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
@@ -91,7 +92,7 @@ namespace Cruciatus.Elements
                 Keyboard.SendKeys("^a");
                 Keyboard.SendKeys(text);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
@@ -100,7 +101,16 @@ namespace Cruciatus.Elements
             return true;
         }
 
-        protected override bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        /// <summary>
+        /// Выполняет нажатие по редактируемому выпадающему списку.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие.
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на редактируемый выпадающий список удалось; в противном случае значение - false.
+        /// </returns>
+        public override bool Click(MouseButtons mouseButton)
         {
             try
             {
@@ -117,13 +127,15 @@ namespace Cruciatus.Elements
                 var topRightPoint = this.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
                 var clickablePoint = new Point((int)topRightPoint.X - 5, (int)topRightPoint.Y + 5);
 
-                return CruciatusCommand.Click(clickablePoint, mouseButton, out this.LastErrorMessageInstance);
+                CruciatusCommand.Click(clickablePoint, mouseButton);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
             }
+
+            return true;
         }
     }
 }

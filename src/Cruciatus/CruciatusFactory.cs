@@ -7,11 +7,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+[assembly: System.CLSCompliant(false)]
+
 namespace Cruciatus
 {
     using System;
     using System.Diagnostics;
     using System.Threading;
+
+    using Cruciatus.Settings;
 
     public static class CruciatusFactory
     {

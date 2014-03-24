@@ -13,7 +13,7 @@ namespace Cruciatus.Exceptions
     using System.Runtime.Serialization;
 
     [Serializable]
-    public class PropertyNotSupportedException : Exception
+    public class PropertyNotSupportedException : CruciatusException
     {
         private string fieldMessage = "Элемент не поддерживает желаемое свойство.\n";
 
@@ -24,6 +24,11 @@ namespace Cruciatus.Exceptions
         public PropertyNotSupportedException(string message)
         {
             this.Initialize(message);
+        }
+
+        public PropertyNotSupportedException(string message, Exception innerException)
+            : base(message, innerException)
+        {
         }
 
         public PropertyNotSupportedException(string element, string property)
@@ -65,6 +70,11 @@ namespace Cruciatus.Exceptions
         private string Element { get; set; }
 
         private string Property { get; set; }
+
+        protected new virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+        }
 
         private void Initialize(string message)
         {

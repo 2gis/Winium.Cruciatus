@@ -12,14 +12,14 @@ namespace WpfTestApplication.Tests.TestCases
         public void SimpleMenuTestMethod1()
         {
             const string HeadersPath = "Level1$MultiLevel2$Level3";
-            Assert.IsTrue(this.simpleMenu.Select(HeadersPath), this.simpleMenu.LastErrorMessage);
+            Assert.IsTrue(this.simpleMenu.SelectItem(HeadersPath), this.simpleMenu.LastErrorMessage);
         }
 
         [TestMethod]
         public void SimpleMenuTestMethod2()
         {
             const string HeadersPath = "Level1$MultiLevel2$MultiLevel3$MultiLevel4$Level5";
-            Assert.IsTrue(this.simpleMenu.Select(HeadersPath), this.simpleMenu.LastErrorMessage);
+            Assert.IsTrue(this.simpleMenu.SelectItem(HeadersPath), this.simpleMenu.LastErrorMessage);
         }
     }
 }

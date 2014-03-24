@@ -12,16 +12,25 @@ namespace Cruciatus
     using System;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
+
     using Microsoft.VisualStudio.TestTools.UITesting;
 
     internal static class CruciatusCommand
     {
-        internal static bool Click(System.Drawing.Point clickablePoint, out string message)
-        {
-            return Click(clickablePoint, CruciatusFactory.Settings.ClickButton, out message);
-        }
-
-        internal static bool Click(System.Drawing.Point clickablePoint, MouseButtons mouseButton, out string message)
+        /// <summary>
+        /// Нажимает заданную кнопку мыши в заданной точке.
+        /// </summary>
+        /// <param name="clickablePoint">
+        /// Точка, которую надо нажать.
+        /// </param>
+        /// <param name="mouseButton">
+        /// Кнопка мыши, используемая для нажатия.
+        /// </param>
+        /// <exception cref="CruciatusException">
+        /// Ошибка при выполнении <c>CruciatusCommand.Click</c>.
+        /// </exception>
+        internal static void Click(System.Drawing.Point clickablePoint, MouseButtons mouseButton)
         {
             try
             {
@@ -31,12 +40,8 @@ namespace Cruciatus
             }
             catch (Exception exc)
             {
-                message = exc.Message;
-                return false;
+                throw new CruciatusException("Ошибка при выполнении CruciatusCommand.Click", exc);
             }
-
-            message = string.Empty;
-            return true;
         }
     }
 }

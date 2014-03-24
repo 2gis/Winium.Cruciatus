@@ -60,19 +60,17 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если операция завершена успешна; в противном случае значение - false.
         /// </returns>
-        public override bool Select(string headersPath)
+        public override bool SelectItem(string headersPath)
         {
             var clickableElement = new ClickableElement();
             ((IListElement)clickableElement).Initialize(this.Element);
-            if (!clickableElement.Click())
+            if (clickableElement.Click())
             {
-                this.LastErrorMessage = string.Format(
-                    "Не удалось открыть меню {0}.",
-                    this.ToString());
-                return false;
+                return base.SelectItem(headersPath);
             }
 
-            return base.Select(headersPath);
+            this.LastErrorMessage = string.Format("Не удалось открыть меню {0}.", this.ToString());
+            return false;
         }
     }
 }

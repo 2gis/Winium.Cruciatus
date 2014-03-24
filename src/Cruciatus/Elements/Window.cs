@@ -9,10 +9,10 @@
 
 namespace Cruciatus.Elements
 {
-    using System;
     using System.Collections.Generic;
     using System.Windows.Automation;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
@@ -101,7 +101,7 @@ namespace Cruciatus.Elements
 
                 return (T)this.objects[automationId];
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return null;

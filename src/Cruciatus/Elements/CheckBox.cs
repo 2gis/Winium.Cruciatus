@@ -167,7 +167,7 @@ namespace Cruciatus.Elements
 
                 return this.SetState(ToggleState.On);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
@@ -180,7 +180,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если удалось установить состояние; в противном случае значение - false.
         /// </returns>
-        public bool UnCheck()
+        public bool Uncheck()
         {
             try
             {
@@ -191,7 +191,7 @@ namespace Cruciatus.Elements
 
                 return this.SetState(ToggleState.Off);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;

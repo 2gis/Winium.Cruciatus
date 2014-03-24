@@ -52,7 +52,7 @@ namespace WindowsFormsTestApplication.Tests.TestCases
         //[TestMethod]
         //public void CheckingCheckBox2()
         //{
-        //    Assert.IsTrue(this.tab.CheckBox2.UnCheck(), this.tab.CheckBox2.LastErrorMessage);
+        //    Assert.IsTrue(this.tab.CheckBox2.Uncheck(), this.tab.CheckBox2.LastErrorMessage);
         //    Assert.IsFalse(this.tab.CheckBox2.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
         //    Assert.IsTrue(this.tab.CheckBox2.Check(), this.tab.CheckBox2.LastErrorMessage);

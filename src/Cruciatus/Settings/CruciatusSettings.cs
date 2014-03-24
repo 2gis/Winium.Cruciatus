@@ -7,9 +7,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Cruciatus
+namespace Cruciatus.Settings
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows.Forms;
+
+    using Cruciatus.Settings.MessageBoxSettings;
 
     public class CruciatusSettings
     {
@@ -33,21 +36,15 @@ namespace Cruciatus
 
         private static CruciatusSettings instance;
 
-        private readonly MessageBox.ButtonUid defaultMessageBoxButtonUid;
-
-        private MessageBox.ButtonUid messageBoxButtonUid;
+        private readonly MessageBoxButtonUid defaultMessageBoxButtonUid = new MessageBoxButtonUid();
 
         private CruciatusSettings()
         {
-            this.defaultMessageBoxButtonUid.CloseButtonUid = "Close";
-            this.defaultMessageBoxButtonUid.OkType.OkUid = "2";
-            this.defaultMessageBoxButtonUid.OkCancelType.OkUid = "1";
-            this.defaultMessageBoxButtonUid.OkCancelType.CancelUid = "2";
-            this.defaultMessageBoxButtonUid.YesNoType.YesUid = "6";
-            this.defaultMessageBoxButtonUid.YesNoType.NoUid = "7";
-            this.defaultMessageBoxButtonUid.YesNoCancelType.YesUid = "6";
-            this.defaultMessageBoxButtonUid.YesNoCancelType.NoUid = "7";
-            this.defaultMessageBoxButtonUid.YesNoCancelType.CancelUid = "2";
+            this.defaultMessageBoxButtonUid.CloseButton = "Close";
+            this.defaultMessageBoxButtonUid.OkType = new OkType { Ok = "2" };
+            this.defaultMessageBoxButtonUid.OkCancelType = new OkCancelType { Ok = "1", Cancel = "2" };
+            this.defaultMessageBoxButtonUid.YesNoType = new YesNoType { Yes = "6", No = "7" };
+            this.defaultMessageBoxButtonUid.YesNoCancelType = new YesNoCancelType { Yes = "6", No = "7", Cancel = "2" };
 
             this.ResetToDefault();
         }
@@ -75,6 +72,7 @@ namespace Cruciatus
         /// <summary>
         /// Возвращает или задает время ожидания получения свойств элемента в миллисекундках.
         /// </summary>
+        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", Justification = "Reviewed.")]
         public int WaitForGetValueTimeout { get; set; }
 
         /// <summary>
@@ -100,18 +98,7 @@ namespace Cruciatus
         /// <summary>
         /// Возвращает или задает информацию о уникальных идентификаторах кнопок в MessageBox.
         /// </summary>
-        public MessageBox.ButtonUid MessageBoxButtonUid
-        {
-            get
-            {
-                return this.messageBoxButtonUid;
-            }
-
-            private set
-            {
-                this.messageBoxButtonUid = value;
-            }
-        }
+        public MessageBoxButtonUid MessageBoxButtonUid { get; set; }
 
         internal static CruciatusSettings Instance
         {
@@ -136,7 +123,7 @@ namespace Cruciatus
             this.ScrollBarHeight = DefaultScrollBarHeight;
             this.ClickButton = DefaultClickButton;
 
-            this.MessageBoxButtonUid = this.defaultMessageBoxButtonUid;
+            this.MessageBoxButtonUid = (MessageBoxButtonUid)this.defaultMessageBoxButtonUid.Clone();
         }
     }
 }

@@ -66,7 +66,7 @@ namespace WindowsFormsTestApplication.Tests.TestCases
         [TestMethod]
         public void CheckingCheckBox1()
         {
-            Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
+            Assert.IsTrue(this.tab.CheckBox1.Uncheck(), this.tab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsTrue(this.tab.CheckBox1.Check(), this.tab.CheckBox1.LastErrorMessage);
@@ -77,13 +77,11 @@ namespace WindowsFormsTestApplication.Tests.TestCases
         public void CheckingTextListBox()
         {
             Assert.Inconclusive("Ручная остановка. В винформс элемент внутри списка который не видно не имеет точки клика.");
-            Assert.IsTrue(this.tab.TextListBox.ScrollTo<TextBlock>("December"), this.tab.TextListBox.LastErrorMessage);
-            var month = this.tab.TextListBox.Item<TextBlock>("December");
+            var month = this.tab.TextListBox.ScrollTo<TextBlock>("December");
             Assert.IsNotNull(month, this.tab.TextListBox.LastErrorMessage);
             Assert.IsTrue(month.Click(), month.LastErrorMessage);
 
-            Assert.IsTrue(this.tab.TextListBox.ScrollTo<TextBlock>("October"), this.tab.TextListBox.LastErrorMessage);
-            month = this.tab.TextListBox.Item<TextBlock>("October");
+            month = this.tab.TextListBox.ScrollTo<TextBlock>("October");
             Assert.IsNotNull(month, this.tab.TextListBox.LastErrorMessage);
             Assert.IsTrue(month.Click(), month.LastErrorMessage);
         }
@@ -107,7 +105,7 @@ namespace WindowsFormsTestApplication.Tests.TestCases
         {
             Assert.IsTrue(this.tab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
 
-            Assert.IsTrue(this.tab.CheckBox1.UnCheck(), this.tab.CheckBox1.LastErrorMessage);
+            Assert.IsTrue(this.tab.CheckBox1.Uncheck(), this.tab.CheckBox1.LastErrorMessage);
             Assert.IsFalse(this.tab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
 
             Assert.IsFalse(this.tab.TextListBox.IsEnabled, "TextListBox не стал включенным.");

@@ -135,25 +135,25 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (!this.IsSelection)
+                if (this.IsSelection)
                 {
-                    if (!this.Click())
-                    {
-                        return false;
-                    }
-
-                    if (!this.Element.WaitForElementReady())
-                    {
-                        this.LastErrorMessage = string.Format(
-                            "Время ожидания готовности вкладки {0} истекло.",
-                            this.ToString());
-                        return false;
-                    }
+                    return true;
                 }
 
-                return true;
+                if (!this.Click())
+                {
+                    return false;
+                }
+
+                if (this.Element.WaitForElementReady())
+                {
+                    return true;
+                }
+
+                this.LastErrorMessage = string.Format("Время ожидания готовности вкладки {0} истекло.", this.ToString());
+                return false;
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
@@ -179,6 +179,11 @@ namespace Cruciatus.Elements
         /// </returns>
         protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
         {
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
             try
             {
                 if (!this.IsSelection)
@@ -196,7 +201,7 @@ namespace Cruciatus.Elements
 
                 return (T)this.objects[automationId];
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return null;
@@ -216,15 +221,12 @@ namespace Cruciatus.Elements
         {
             try
             {
-                var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
+                var isEnabled = CruciatusFactory.WaitingValues(() => this.IsEnabled, value => value != true);
 
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format(
-                        "Вкладка {0} отключена, нельзя выполнить переход.",
-                        this.ToString());
+                    var str = string.Format("Вкладка {0} отключена, нельзя выполнить переход.", this.ToString());
+                    this.LastErrorMessage = str;
                     return false;
                 }
 
@@ -236,7 +238,7 @@ namespace Cruciatus.Elements
 
                 Mouse.Click(mouseButton);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
                 this.LastErrorMessage = exc.Message;
                 return false;
