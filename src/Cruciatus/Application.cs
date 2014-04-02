@@ -46,7 +46,7 @@ namespace Cruciatus
         private AutomationElement mainWindowElement;
 
         /// <summary>
-        /// Инициализирует новый экземпляр приложения.
+        /// Инициализирует новый экземпляр класса <see cref="Application{T}"/>.
         /// </summary>
         /// <param name="exeFileName">
         /// Полный путь к исполняемому файлу приложения.

@@ -75,12 +75,6 @@
     <Compile Include="TestCases\TestClass2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\patronum\Patronum.Actions\Patronum.Actions.csproj">
-      <Project>{f657fcaf-f10a-45b9-885c-492263ea10cf}</Project>
-      <Name>Patronum.Actions</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Actions\" />
   </ItemGroup>
   <ItemGroup>

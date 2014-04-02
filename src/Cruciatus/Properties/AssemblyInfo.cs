@@ -23,13 +23,9 @@ using System.Runtime.InteropServices;
 
 // Version information for an assembly consists of the following four values:
 //
-//      Major Version - увеличение при сделаных обратно несовместимых изменениях
+//      Major Version - увеличение при сделанных обратно несовместимых изменениях
 //      Minor Version - увеличение при добавлении нового функционала, не нарушая обратной совместимости
 //      Build Number - увеличение при обратно совместимых исправлениях
 //      Revision - auto
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.1.0.*")]
 [assembly: AssemblyFileVersion("1.1.0.0")]
