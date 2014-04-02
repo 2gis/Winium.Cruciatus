@@ -68,32 +68,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        public Button IncreaseButton
-        {
-            get
-            {
-                if (this.ElementInstance == null)
-                {
-                    this.Find();
-                }
-
-                return this.increaseButton;
-            }
-        }
-
-        public Button DecreaseButton
-        {
-            get
-            {
-                if (this.ElementInstance == null)
-                {
-                    this.Find();
-                }
-
-                return this.decreaseButton;
-            }
-        }
-
         public string Text
         {
             get
@@ -105,6 +79,57 @@ namespace Cruciatus.Elements
 
                 return this.textBox.Text;
             }
+        }
+
+        public bool SetText(string text)
+        {
+            if (this.ElementInstance == null)
+            {
+                this.Find();
+            }
+
+            if (this.textBox.SetText(text))
+            {
+                return true;
+            }
+
+            // TODO: информация об ошибке должна быть более точной
+            this.LastErrorMessage = string.Format("Не удалось установить текст элементу {0}.", this.ToString());
+            return false;
+        }
+
+        public bool ClickIncreaseButton()
+        {
+            if (this.ElementInstance == null)
+            {
+                this.Find();
+            }
+
+            if (this.increaseButton.Click())
+            {
+                return true;
+            }
+
+            // TODO: информация об ошибке должна быть более точной
+            this.LastErrorMessage = string.Format("Не удалось нажать по увеличивающей значение кнопке {0}.", this.ToString());
+            return false;
+        }
+
+        public bool ClickDecreaseButton()
+        {
+            if (this.ElementInstance == null)
+            {
+                this.Find();
+            }
+
+            if (this.decreaseButton.Click())
+            {
+                return true;
+            }
+
+            // TODO: информация об ошибке должна быть более точной
+            this.LastErrorMessage = string.Format("Не удалось нажать по уменьшающей значение кнопке {0}.", this.ToString());
+            return false;
         }
 
         /// <summary>
@@ -124,16 +149,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.Spinner;
             }
-        }
-
-        public bool SetText(string text)
-        {
-            if (this.ElementInstance == null)
-            {
-                this.Find();
-            }
-
-            return this.textBox.SetText(text);
         }
 
         internal override void Find()
