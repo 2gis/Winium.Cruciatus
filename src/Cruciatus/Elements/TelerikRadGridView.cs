@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataGrid.cs" company="2GIS">
+// <copyright file="TelerikRadGridView.cs" company="2GIS">
 //   Cruciatus
 // </copyright>
 // <summary>
-//   Представляет элемент управления таблица.
+//   Представляет элемент управления таблица (from Telerik).
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -12,24 +12,23 @@ namespace Cruciatus.Elements
     using System;
     using System.Windows.Automation;
 
-    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
     /// <summary>
-    /// Представляет элемент управления таблица.
+    /// Представляет элемент управления таблица (from Telerik).
     /// </summary>
-    public class DataGrid : CruciatusElement, IContainerElement
+    public class TelerikRadGridView : DataGrid
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
+        /// Инициализирует новый экземпляр класса <see cref="TelerikRadGridView"/>.
         /// </summary>
-        public DataGrid()
+        public TelerikRadGridView()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
+        /// Инициализирует новый экземпляр класса <see cref="TelerikRadGridView"/>.
         /// </summary>
         /// <param name="parent">
         /// Элемент, являющийся родителем для таблицы.
@@ -40,60 +39,9 @@ namespace Cruciatus.Elements
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public DataGrid(AutomationElement parent, string automationId)
+        public TelerikRadGridView(AutomationElement parent, string automationId)
+            : base(parent, automationId)
         {
-            this.Initialize(parent, automationId);
-        }
-
-        /// <summary>
-        /// Возвращает значение, указывающее, включена ли таблица.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Таблица не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public bool IsEnabled
-        {
-            get
-            {
-                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
-            }
-        }
-
-        /// <summary>
-        /// Возвращает количество строк в таблице.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Таблица не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public int RowCount
-        {
-            get
-            {
-                return this.GetPropertyValue<int>(GridPattern.RowCountProperty);
-            }
-        }
-
-        /// <summary>
-        /// Возвращает количество столбцов в таблице.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Таблица не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public int ColumnCount
-        {
-            get
-            {
-                return this.GetPropertyValue<int>(GridPattern.ColumnCountProperty);
-            }
         }
 
         /// <summary>
@@ -103,18 +51,10 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return "DataGrid";
+                return "TelerikRadGridView";
             }
         }
-
-        internal override ControlType GetType
-        {
-            get
-            {
-                return ControlType.DataGrid;
-            }
-        }
-
+        
         /// <summary>
         /// Выполняет прокрутку до ячейки с указанным номером строки и колонки.
         /// </summary>
@@ -128,7 +68,7 @@ namespace Cruciatus.Elements
         /// Значение true если прокрутить удалось либо в этом нет необходимости;
         /// в противном случае значение - false.
         /// </returns>
-        public virtual bool ScrollTo(int row, int column)
+        public override bool ScrollTo(int row, int column)
         {
             // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
@@ -160,9 +100,7 @@ namespace Cruciatus.Elements
             }
 
             // Условие для вертикального поиска ячейки [row, 0] (через строку)
-            var cellCondition = new AndCondition(
-                new PropertyCondition(AutomationElement.IsGridItemPatternAvailableProperty, true),
-                new PropertyCondition(GridItemPattern.RowProperty, row));
+            var cellCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_0", row));
 
             // Стартовый поиск ячейки
             var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
@@ -184,7 +122,7 @@ namespace Cruciatus.Elements
                         scrollPattern.ScrollHorizontal(ScrollAmount.LargeIncrement);
                     }
                 }
-                
+
                 // Основная вертикальная прокрутка
                 while (cell == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
                 {
@@ -213,10 +151,7 @@ namespace Cruciatus.Elements
             }
 
             // Условие для горизонтального поиска ячейки [row, column]
-            cellCondition = new AndCondition(
-                new PropertyCondition(AutomationElement.IsGridItemPatternAvailableProperty, true),
-                new PropertyCondition(GridItemPattern.RowProperty, row),
-                new PropertyCondition(GridItemPattern.ColumnProperty, column));
+            cellCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_{1}", row, column));
 
             // Стартовый поиск ячейки
             cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
@@ -265,14 +200,48 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Значение true если выбрать удалось; в противном случае значение - false.
         /// </returns>
-        public virtual bool SelectCell(int row, int column)
+        public override bool SelectCell(int row, int column)
         {
-            var cell = this.Item<ClickableElement>(row, column);
-            if (cell == null)
+            // Проверка, что таблица включена
+            var isEnabled = CruciatusFactory.WaitingValues(
+                    () => this.IsEnabled,
+                    value => value != true);
+            if (!isEnabled)
             {
+                this.LastErrorMessage = string.Format("{0} отключена.", this.ToString());
                 return false;
             }
 
+            // Проверка на дурака
+            if (row < 0 || column < 0)
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.",
+                    this.ToString(),
+                    row,
+                    column);
+                return false;
+            }
+
+            // Поиск подходящей ячейки [row, column]
+            var cell = new ClickableElement();
+            var cellCondition = new AndCondition(
+                new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_{1}", row, column)),
+                new PropertyCondition(AutomationElement.ControlTypeProperty, cell.GetType));
+            var elem = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+
+            // Проверка, что ячейку видно
+            if (elem == null || !this.Element.ContainsClickablePoint(elem))
+            {
+                this.LastErrorMessage = string.Format(
+                    "В {0} елемент ячейки [{1}, {2}] вне видимости или не существует.",
+                    this.ToString(),
+                    row,
+                    column);
+                return false;
+            }
+
+            ((IListElement)cell).Initialize(elem);
             var result = cell.Click();
             if (result)
             {
@@ -298,7 +267,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        public virtual T Item<T>(int row, int column) where T : CruciatusElement, IListElement, new()
+        public override T Item<T>(int row, int column)
         {
             // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
@@ -321,32 +290,18 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            // Условие для поиска ячейки [row, column]
-            var cellCondition = new AndCondition(
-                new PropertyCondition(AutomationElement.IsGridItemPatternAvailableProperty, true),
-                new PropertyCondition(GridItemPattern.RowProperty, row),
-                new PropertyCondition(GridItemPattern.ColumnProperty, column));
-            var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
-
-            // Проверка, что ячейку видно
-            if (cell == null || !this.Element.ContainsClickablePoint(cell))
-            {
-                this.LastErrorMessage = string.Format(
-                    "В {0} ячейка [{1}, {2}] вне видимости или не существует.",
-                    this.ToString(),
-                    row,
-                    column);
-                return null;
-            }
-
-            // Поиск подходящего элемента в ячейке
+            // Поиск подходящего элемента [row, column]
             var item = new T();
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType);
-            var elem = cell.FindFirst(TreeScope.Subtree, condition);
-            if (elem == null)
+            var cellCondition = new AndCondition(
+                new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("CellElement_{0}_{1}", row, column)),
+                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType));
+            var elem = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+
+            // Проверка, что элемент видно
+            if (elem == null || !this.Element.ContainsClickablePoint(elem))
             {
                 this.LastErrorMessage = string.Format(
-                    "В {0}, ячейка [{1}, {2}], нет элемента желаемого типа.",
+                    "В {0} елемент ячейки [{1}, {2}] вне видимости или не существует.",
                     this.ToString(),
                     row,
                     column);
@@ -355,11 +310,6 @@ namespace Cruciatus.Elements
 
             item.Initialize(elem);
             return item;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            this.Initialize(parent, automationId);
         }
     }
 }

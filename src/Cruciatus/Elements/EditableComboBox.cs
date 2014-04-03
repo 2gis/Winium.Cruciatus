@@ -90,7 +90,9 @@ namespace Cruciatus.Elements
                 Mouse.Move(this.ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");
-                Keyboard.SendKeys(text);
+                Keyboard.SendKeys(string.IsNullOrEmpty(text)
+                                      ? "{Back}"
+                                      : text);
             }
             catch (CruciatusException exc)
             {
