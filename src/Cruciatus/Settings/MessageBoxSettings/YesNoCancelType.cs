@@ -1,7 +1,10 @@
-﻿
-namespace Cruciatus.Settings.MessageBoxSettings
+﻿namespace Cruciatus.Settings.MessageBoxSettings
 {
+    #region using
+
     using System;
+
+    #endregion
 
     public class YesNoCancelType : ICloneable
     {
@@ -13,7 +16,7 @@ namespace Cruciatus.Settings.MessageBoxSettings
 
         public object Clone()
         {
-            return new YesNoCancelType { Yes = this.Yes, No = this.No, Cancel = this.Cancel };
+            return new YesNoCancelType { Yes = Yes, No = No, Cancel = Cancel };
         }
     }
 }

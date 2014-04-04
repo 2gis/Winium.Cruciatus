@@ -6,14 +6,17 @@
 //   Представляет элемент управления таблица (from Telerik).
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
 
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления таблица (from Telerik).
@@ -54,7 +57,7 @@ namespace Cruciatus.Elements
                 return "TelerikRadGridView";
             }
         }
-        
+
         /// <summary>
         /// Выполняет прокрутку до ячейки с указанным номером строки и колонки.
         /// </summary>
@@ -72,38 +75,39 @@ namespace Cruciatus.Elements
         {
             // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
+                () => IsEnabled, 
+                value => value != true);
             if (!isEnabled)
             {
-                this.LastErrorMessage = string.Format("{0} отключена.", this.ToString());
+                LastErrorMessage = string.Format("{0} отключена.", ToString());
                 return false;
             }
 
             // Проверка на дурака
             if (row < 0 || column < 0)
             {
-                this.LastErrorMessage = string.Format(
-                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.",
-                    this.ToString(),
-                    row,
+                LastErrorMessage = string.Format(
+                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.", 
+                    ToString(), 
+                    row, 
                     column);
                 return false;
             }
 
             // Получение шаблона прокрутки у таблицы
-            var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+            var scrollPattern = Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern == null)
             {
-                this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", ToString());
                 return false;
             }
 
             // Условие для вертикального поиска ячейки [row, 0] (через строку)
-            var cellCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_0", row));
+            var cellCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, 
+                                                      string.Format("Cell_{0}_0", row));
 
             // Стартовый поиск ячейки
-            var cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+            var cell = Element.FindFirst(TreeScope.Subtree, cellCondition);
 
             // Вертикальная прокрутка (при необходимости и возможности)
             if (cell == null && scrollPattern.Current.VerticallyScrollable)
@@ -127,34 +131,35 @@ namespace Cruciatus.Elements
                 while (cell == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
                 {
                     scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-                    cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+                    cell = Element.FindFirst(TreeScope.Subtree, cellCondition);
                 }
             }
 
             // Если прокрутив до конца ячейка не найдена, то номер строки не действительный
             if (cell == null)
             {
-                this.LastErrorMessage = string.Format("В {0} нет строки с номером {1}.", this.ToString(), row);
+                LastErrorMessage = string.Format("В {0} нет строки с номером {1}.", ToString(), row);
                 return false;
             }
 
             // Если точка клика ячейки [row, 0] под границей таблицы - докручиваем по вертикали вниз
-            while (cell.ClickablePointUnder(this.Element, scrollPattern))
+            while (cell.ClickablePointUnder(Element, scrollPattern))
             {
                 scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
             }
 
             // Если точка клика ячейки [row, 0] над границей таблицы - докручиваем по вертикали вверх
-            while (cell.ClickablePointOver(this.Element))
+            while (cell.ClickablePointOver(Element))
             {
                 scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
             }
 
             // Условие для горизонтального поиска ячейки [row, column]
-            cellCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_{1}", row, column));
+            cellCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, 
+                                                  string.Format("Cell_{0}_{1}", row, column));
 
             // Стартовый поиск ячейки
-            cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+            cell = Element.FindFirst(TreeScope.Subtree, cellCondition);
 
             // Основная горизонтальная прокрутка (при необходимости и возможности)
             if (cell == null && scrollPattern.Current.HorizontallyScrollable)
@@ -162,25 +167,25 @@ namespace Cruciatus.Elements
                 while (cell == null && scrollPattern.Current.HorizontalScrollPercent < 99.9)
                 {
                     scrollPattern.ScrollHorizontal(ScrollAmount.LargeIncrement);
-                    cell = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+                    cell = Element.FindFirst(TreeScope.Subtree, cellCondition);
                 }
             }
 
             // Если прокрутив до конца ячейка не найдена, то номер колонки не действительный
             if (cell == null)
             {
-                this.LastErrorMessage = string.Format("В {0} нет колонки с номером {1}.", this.ToString(), column);
+                LastErrorMessage = string.Format("В {0} нет колонки с номером {1}.", ToString(), column);
                 return false;
             }
 
             // Если точка клика ячейки [row, column] справа от границы таблицы - докручиваем по горизонтали вправо
-            while (cell.ClickablePointRight(this.Element, scrollPattern))
+            while (cell.ClickablePointRight(Element, scrollPattern))
             {
                 scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
             }
 
             // Если точка клика ячейки [row, column] слева от границы таблицы - докручиваем по горизонтали влево
-            while (cell.ClickablePointLeft(this.Element))
+            while (cell.ClickablePointLeft(Element))
             {
                 scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
             }
@@ -204,21 +209,21 @@ namespace Cruciatus.Elements
         {
             // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
+                () => IsEnabled, 
+                value => value != true);
             if (!isEnabled)
             {
-                this.LastErrorMessage = string.Format("{0} отключена.", this.ToString());
+                LastErrorMessage = string.Format("{0} отключена.", ToString());
                 return false;
             }
 
             // Проверка на дурака
             if (row < 0 || column < 0)
             {
-                this.LastErrorMessage = string.Format(
-                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.",
-                    this.ToString(),
-                    row,
+                LastErrorMessage = string.Format(
+                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.", 
+                    ToString(), 
+                    row, 
                     column);
                 return false;
             }
@@ -226,17 +231,17 @@ namespace Cruciatus.Elements
             // Поиск подходящей ячейки [row, column]
             var cell = new ClickableElement();
             var cellCondition = new AndCondition(
-                new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_{1}", row, column)),
+                new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("Cell_{0}_{1}", row, column)), 
                 new PropertyCondition(AutomationElement.ControlTypeProperty, cell.GetType));
-            var elem = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+            var elem = Element.FindFirst(TreeScope.Subtree, cellCondition);
 
             // Проверка, что ячейку видно
-            if (elem == null || !this.Element.ContainsClickablePoint(elem))
+            if (elem == null || !Element.ContainsClickablePoint(elem))
             {
-                this.LastErrorMessage = string.Format(
-                    "В {0} елемент ячейки [{1}, {2}] вне видимости или не существует.",
-                    this.ToString(),
-                    row,
+                LastErrorMessage = string.Format(
+                    "В {0} елемент ячейки [{1}, {2}] вне видимости или не существует.", 
+                    ToString(), 
+                    row, 
                     column);
                 return false;
             }
@@ -248,7 +253,7 @@ namespace Cruciatus.Elements
                 return true;
             }
 
-            this.LastErrorMessage = cell.LastErrorMessage;
+            LastErrorMessage = cell.LastErrorMessage;
             return false;
         }
 
@@ -271,21 +276,21 @@ namespace Cruciatus.Elements
         {
             // Проверка, что таблица включена
             var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
+                () => IsEnabled, 
+                value => value != true);
             if (!isEnabled)
             {
-                this.LastErrorMessage = string.Format("{0} отключена.", this.ToString());
+                LastErrorMessage = string.Format("{0} отключена.", ToString());
                 return null;
             }
 
             // Проверка на дурака
             if (row < 0 || column < 0)
             {
-                this.LastErrorMessage = string.Format(
-                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.",
-                    this.ToString(),
-                    row,
+                LastErrorMessage = string.Format(
+                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.", 
+                    ToString(), 
+                    row, 
                     column);
                 return null;
             }
@@ -293,17 +298,18 @@ namespace Cruciatus.Elements
             // Поиск подходящего элемента [row, column]
             var item = new T();
             var cellCondition = new AndCondition(
-                new PropertyCondition(AutomationElement.AutomationIdProperty, string.Format("CellElement_{0}_{1}", row, column)),
+                new PropertyCondition(AutomationElement.AutomationIdProperty, 
+                                      string.Format("CellElement_{0}_{1}", row, column)), 
                 new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType));
-            var elem = this.Element.FindFirst(TreeScope.Subtree, cellCondition);
+            var elem = Element.FindFirst(TreeScope.Subtree, cellCondition);
 
             // Проверка, что элемент видно
-            if (elem == null || !this.Element.ContainsClickablePoint(elem))
+            if (elem == null || !Element.ContainsClickablePoint(elem))
             {
-                this.LastErrorMessage = string.Format(
-                    "В {0} елемент ячейки [{1}, {2}] вне видимости или не существует.",
-                    this.ToString(),
-                    row,
+                LastErrorMessage = string.Format(
+                    "В {0} елемент ячейки [{1}, {2}] вне видимости или не существует.", 
+                    ToString(), 
+                    row, 
                     column);
                 return null;
             }

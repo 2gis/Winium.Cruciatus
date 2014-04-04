@@ -1,20 +1,19 @@
-﻿
-namespace WpfTestApplication.Tests
+﻿namespace WpfTestApplication.Tests
 {
+    #region using
+
     using System;
     using System.Configuration;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using WpfTestApplication.Tests.Map;
 
-    [CodedUITest]
-    public class BaseTestClass
-    {
-        public TestContext TestContext { get; set; }
+    #endregion
 
-        public static void ClassInitialize(out WpfTestApplicationApp application, TestContext testContext)
+    public static class TestClassHelper
+    {
+        public static void ClassInitialize(out WpfTestApplicationApp application)
         {
             var appsFolderEnvVar = ConfigurationManager.AppSettings.Get("AppsFolderEnvVar");
             var appsFolder = Environment.GetEnvironmentVariable(appsFolderEnvVar);
@@ -25,13 +24,7 @@ namespace WpfTestApplication.Tests
 
         public static void ClassCleanup(WpfTestApplicationApp application)
         {
-            //var additionalMessage = string.Empty;
-            //if (testContextInstance.CurrentTestOutcome != UnitTestOutcome.Passed)
-            //{
-            //    additionalMessage = " A так же была ошибка внутри теста.";
-            //}
-
-            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WpfTestApplication."); //+ additionalMessage);
+            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WpfTestApplication.");
         }
     }
 }

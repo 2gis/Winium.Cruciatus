@@ -1,19 +1,20 @@
-﻿
-namespace WpfTestApplication.Tests.Map
+﻿namespace WpfTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using Patronum.Actions.Intarfaces;
+    #endregion
 
-    public class MainWindow : Window, IApplicationUnderTest
+    public class MainWindow : Window
     {
         public FirstTab TabItem1
         {
             get
             {
-                return this.GetElement<FirstTab>("TabItem1");
+                return GetElement<FirstTab>("TabItem1");
             }
         }
 
@@ -21,7 +22,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<SecondTab>("TabItem2");
+                return GetElement<SecondTab>("TabItem2");
             }
         }
 
@@ -29,7 +30,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<FirstRibbonTab>("RibbonTabItem1");
+                return GetElement<FirstRibbonTab>("RibbonTabItem1");
             }
         }
 
@@ -37,7 +38,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<SecondRibbonTab>("RibbonTabItem2");
+                return GetElement<SecondRibbonTab>("RibbonTabItem2");
             }
         }
 
@@ -45,7 +46,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<RibbonApplicationMenu>("RibbonMenu");
+                return GetElement<RibbonApplicationMenu>("RibbonMenu");
             }
         }
 
@@ -53,14 +54,14 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<Menu>("SimpleMenu");
+                return GetElement<Menu>("SimpleMenu");
             }
         }
 
         protected override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, this.LastErrorMessage);
+            Assert.IsNotNull(element, LastErrorMessage);
             return element;
         }
     }

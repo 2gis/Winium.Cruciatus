@@ -6,20 +6,24 @@
 //   Представляет контейнер для элементов.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
+    #endregion
+
     public class Container : CruciatusElement, IContainerElement
     {
-        private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="Container"/>.
@@ -42,7 +46,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public Container(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -54,13 +58,13 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public System.Drawing.Point ClickablePoint
+        public Point ClickablePoint
         {
             get
             {
                 var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -85,7 +89,7 @@ namespace Cruciatus.Elements
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -104,18 +108,18 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (!this.objects.ContainsKey(automationId))
+                if (!_childrenDictionary.ContainsKey(automationId))
                 {
                     var item = new T();
-                    item.Initialize(this.Element, automationId);
-                    this.objects.Add(automationId, item);
+                    item.Initialize(Element, automationId);
+                    _childrenDictionary.Add(automationId, item);
                 }
 
-                return (T)this.objects[automationId];
+                return (T)_childrenDictionary[automationId];
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return null;
             }
         }

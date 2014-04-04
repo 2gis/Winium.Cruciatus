@@ -6,11 +6,14 @@
 //   Представляет WindowFactory.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
+
+    #endregion
 
     internal static class WindowFactory
     {
@@ -42,7 +45,7 @@ namespace Cruciatus
             }
 
             var condition = new AndCondition(
-                new PropertyCondition(AutomationElement.ProcessIdProperty, processId),
+                new PropertyCondition(AutomationElement.ProcessIdProperty, processId), 
                 new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
             var mainWindow = AutomationElement.RootElement.FindFirst(TreeScope.Children, condition);
             return mainWindow;

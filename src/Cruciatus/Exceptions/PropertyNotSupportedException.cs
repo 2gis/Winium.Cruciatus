@@ -6,16 +6,19 @@
 //   Определяет класс исключение PropertyNotSupportedException.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Exceptions
 {
+    #region using
+
     using System;
     using System.Runtime.Serialization;
+
+    #endregion
 
     [Serializable]
     public class PropertyNotSupportedException : CruciatusException
     {
-        private string fieldMessage = "Элемент не поддерживает желаемое свойство.\n";
+        private string _fieldMessage = "Элемент не поддерживает желаемое свойство.\n";
 
         public PropertyNotSupportedException()
         {
@@ -23,7 +26,7 @@ namespace Cruciatus.Exceptions
 
         public PropertyNotSupportedException(string message)
         {
-            this.Initialize(message);
+            Initialize(message);
         }
 
         public PropertyNotSupportedException(string message, Exception innerException)
@@ -33,19 +36,19 @@ namespace Cruciatus.Exceptions
 
         public PropertyNotSupportedException(string element, string property)
         {
-            this.Initialize(element, property);
+            Initialize(element, property);
         }
 
         public PropertyNotSupportedException(string element, string property, string message)
             : this(element, property)
         {
-            this.Initialize(message);
+            Initialize(message);
         }
 
         public PropertyNotSupportedException(string element, string property, Exception innerException)
             : base(string.Empty, innerException)
         {
-            this.Initialize(element, property);
+            Initialize(element, property);
         }
 
         protected PropertyNotSupportedException(SerializationInfo info, StreamingContext context)
@@ -57,12 +60,12 @@ namespace Cruciatus.Exceptions
         {
             get
             {
-                if (this.Element == null)
+                if (Element == null)
                 {
-                    return this.fieldMessage;
+                    return _fieldMessage;
                 }
 
-                var str = this.fieldMessage + string.Format("Подробности: {0}, свойство {1}.\n", this.Element, this.Property);
+                var str = _fieldMessage + string.Format("Подробности: {0}, свойство {1}.\n", Element, Property);
                 return str;
             }
         }
@@ -83,7 +86,7 @@ namespace Cruciatus.Exceptions
                 throw new ArgumentNullException("message");
             }
 
-            this.fieldMessage = message;
+            _fieldMessage = message;
         }
 
         private void Initialize(string element, string property)
@@ -98,8 +101,8 @@ namespace Cruciatus.Exceptions
                 throw new ArgumentNullException("property");
             }
 
-            this.Element = element;
-            this.Property = property;
+            Element = element;
+            Property = property;
         }
     }
 }

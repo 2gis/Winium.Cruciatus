@@ -6,10 +6,13 @@
 //   Интерфейс элементов, которые могут располагаться в списках.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Interfaces
 {
+    #region using
+
     using System.Windows.Automation;
+
+    #endregion
 
     public interface IListElement
     {

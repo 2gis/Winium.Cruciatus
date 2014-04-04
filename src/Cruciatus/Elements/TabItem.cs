@@ -6,11 +6,13 @@
 //   Представляет элемент управления вкладка.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -20,14 +22,14 @@ namespace Cruciatus.Elements
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления вкладка.
     /// </summary>
     public abstract class TabItem : CruciatusElement, IContainerElement
     {
-        private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
@@ -50,7 +52,7 @@ namespace Cruciatus.Elements
         /// </exception>
         protected TabItem(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -96,13 +98,13 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public System.Drawing.Point ClickablePoint
+        public Point ClickablePoint
         {
             get
             {
                 var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -125,6 +127,11 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
+        }
+
         /// <summary>
         /// Выбирает вкладку текущей.
         /// </summary>
@@ -135,34 +142,29 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (this.IsSelection)
+                if (IsSelection)
                 {
                     return true;
                 }
 
-                if (!this.Click())
+                if (!Click())
                 {
                     return false;
                 }
 
-                if (this.Element.WaitForElementReady())
+                if (Element.WaitForElementReady())
                 {
                     return true;
                 }
 
-                this.LastErrorMessage = string.Format("Время ожидания готовности вкладки {0} истекло.", this.ToString());
+                LastErrorMessage = string.Format("Время ожидания готовности вкладки {0} истекло.", ToString());
                 return false;
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            this.Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -186,24 +188,24 @@ namespace Cruciatus.Elements
 
             try
             {
-                if (!this.IsSelection)
+                if (!IsSelection)
                 {
-                    this.LastErrorMessage = string.Format("Вкладка {0} не выбрана.", this.ToString());
+                    LastErrorMessage = string.Format("Вкладка {0} не выбрана.", ToString());
                     return null;
                 }
 
-                if (!this.objects.ContainsKey(automationId))
+                if (!_childrenDictionary.ContainsKey(automationId))
                 {
                     var item = new T();
-                    item.Initialize(this.Element, automationId);
-                    this.objects.Add(automationId, item);
+                    item.Initialize(Element, automationId);
+                    _childrenDictionary.Add(automationId, item);
                 }
 
-                return (T)this.objects[automationId];
+                return (T)_childrenDictionary[automationId];
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return null;
             }
         }
@@ -221,26 +223,26 @@ namespace Cruciatus.Elements
         {
             try
             {
-                var isEnabled = CruciatusFactory.WaitingValues(() => this.IsEnabled, value => value != true);
+                var isEnabled = CruciatusFactory.WaitingValues(() => IsEnabled, value => value != true);
 
                 if (!isEnabled)
                 {
-                    var str = string.Format("Вкладка {0} отключена, нельзя выполнить переход.", this.ToString());
-                    this.LastErrorMessage = str;
+                    var str = string.Format("Вкладка {0} отключена, нельзя выполнить переход.", ToString());
+                    LastErrorMessage = str;
                     return false;
                 }
 
                 Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
+                Mouse.Move(ClickablePoint);
 
                 // Костыльное дело, но без этой строки не работает на "чистой" Telerek-вкладке 
-                Mouse.Move(new System.Drawing.Point(Mouse.Location.X + 1, Mouse.Location.Y));
+                Mouse.Move(new Point(Mouse.Location.X + 1, Mouse.Location.Y));
 
                 Mouse.Click(mouseButton);
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 

@@ -6,13 +6,16 @@
 //   Представляет элемент управления вкладка (библиотеки AvalonDock).
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
+
+    #endregion
 
     public abstract class AvalonDockTabItem : TabItem
     {
@@ -23,7 +26,7 @@ namespace Cruciatus.Elements
         {
         }
 
-         /// <summary>
+        /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AvalonDockTabItem"/>.
         /// </summary>
         /// <param name="parent">
@@ -57,25 +60,25 @@ namespace Cruciatus.Elements
         internal override void Find()
         {
             // Сначала ищем дочерний элемент искомой вкладки по заданному AutomationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, AutomationId);
             var elementChild = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
+                () => Parent.FindFirst(TreeScope.Subtree, condition), 
+                value => value == null, 
                 CruciatusFactory.Settings.SearchTimeout);
 
             // Если не нашли его, то и вкладку загрузить не удалось
             if (elementChild == null)
             {
-                throw new ElementNotFoundException(this.ToString());
+                throw new ElementNotFoundException(ToString());
             }
 
             var walker = new TreeWalker(Condition.TrueCondition);
-            this.ElementInstance = walker.GetParent(elementChild);
+            ElementInstance = walker.GetParent(elementChild);
 
             // На всякий случай проверяем, что родитель успешно получен
-            if (this.ElementInstance == null)
+            if (ElementInstance == null)
             {
-                throw new ElementNotFoundException(this.ToString());
+                throw new ElementNotFoundException(ToString());
             }
         }
     }

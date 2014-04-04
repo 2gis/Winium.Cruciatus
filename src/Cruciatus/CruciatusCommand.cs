@@ -6,15 +6,19 @@
 //   Представляет внутренние команды фреймворка Cruciatus.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Forms;
 
     using Cruciatus.Exceptions;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
+
+    #endregion
 
     internal static class CruciatusCommand
     {
@@ -30,7 +34,7 @@ namespace Cruciatus
         /// <exception cref="CruciatusException">
         /// Ошибка при выполнении <c>CruciatusCommand.Click</c>.
         /// </exception>
-        internal static void Click(System.Drawing.Point clickablePoint, MouseButtons mouseButton)
+        internal static void Click(Point clickablePoint, MouseButtons mouseButton)
         {
             try
             {

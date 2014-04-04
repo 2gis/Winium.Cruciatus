@@ -1,7 +1,10 @@
-﻿
-namespace Cruciatus.Settings.MessageBoxSettings
+﻿namespace Cruciatus.Settings.MessageBoxSettings
 {
+    #region using
+
     using System;
+
+    #endregion
 
     public class MessageBoxButtonUid : ICloneable
     {
@@ -18,13 +21,13 @@ namespace Cruciatus.Settings.MessageBoxSettings
         public object Clone()
         {
             return new MessageBoxButtonUid
-                       {
-                           CloseButton = this.CloseButton,
-                           OkType = (OkType)this.OkType.Clone(),
-                           OkCancelType = (OkCancelType)this.OkCancelType.Clone(),
-                           YesNoType = (YesNoType)this.YesNoType.Clone(),
-                           YesNoCancelType = (YesNoCancelType)this.YesNoCancelType.Clone()
-                       };
+            {
+                CloseButton = CloseButton, 
+                OkType = (OkType)OkType.Clone(), 
+                OkCancelType = (OkCancelType)OkCancelType.Clone(), 
+                YesNoType = (YesNoType)YesNoType.Clone(), 
+                YesNoCancelType = (YesNoCancelType)YesNoCancelType.Clone()
+            };
         }
     }
 }

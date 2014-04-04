@@ -6,16 +6,20 @@
 //   Представляет элемент управления переключатель.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
     using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления переключатель.
@@ -43,28 +47,9 @@ namespace Cruciatus.Elements
         /// </exception>
         public RadioButton(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
-        /// <summary>
-        /// Возвращает координаты точки, внутри переключателя, которые можно использовать для нажатия.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Переключатель не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public System.Drawing.Point ClickablePoint
-        {
-            get
-            {
-                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
-
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
-            }
-        }
-        
         /// <summary>
         /// Возвращает текстовое представление имени класса.
         /// </summary>
@@ -85,6 +70,25 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает координаты точки, внутри переключателя, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Переключатель не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public Point ClickablePoint
+        {
+            get
+            {
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
+
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
+            }
+        }
+
+        /// <summary>
         /// Выполняет нажатие по переключателю кнопкой по умолчанию.
         /// </summary>
         /// <returns>
@@ -92,7 +96,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click()
         {
-            return this.Click(CruciatusFactory.Settings.ClickButton);
+            return Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -108,11 +112,11 @@ namespace Cruciatus.Elements
         {
             try
             {
-                CruciatusCommand.Click(this.ClickablePoint, mouseButton);
+                CruciatusCommand.Click(ClickablePoint, mouseButton);
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 
@@ -121,12 +125,12 @@ namespace Cruciatus.Elements
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         void IListElement.Initialize(AutomationElement element)
         {
-            this.Initialize(element);
+            Initialize(element);
         }
     }
 }

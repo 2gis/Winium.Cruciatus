@@ -6,10 +6,12 @@
 //   Представляет элемент управления чекбокс.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
@@ -18,7 +20,7 @@ namespace Cruciatus.Elements
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления чекбокс.
@@ -48,7 +50,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public CheckBox(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -77,13 +79,13 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public System.Drawing.Point ClickablePoint
+        public Point ClickablePoint
         {
             get
             {
                 var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -100,7 +102,7 @@ namespace Cruciatus.Elements
         {
             get
             {
-                switch (this.ToggleState)
+                switch (ToggleState)
                 {
                     case ToggleState.On:
                         return true;
@@ -150,6 +152,16 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
+        }
+
+        void IListElement.Initialize(AutomationElement element)
+        {
+            Initialize(element);
+        }
+
         /// <summary>
         /// Устанавливает чекбокс в состояние чекнут.
         /// </summary>
@@ -160,16 +172,16 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (this.IsChecked)
+                if (IsChecked)
                 {
                     return true;
                 }
 
-                return this.SetState(ToggleState.On);
+                return SetState(ToggleState.On);
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
         }
@@ -184,28 +196,18 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (!this.IsChecked)
+                if (!IsChecked)
                 {
                     return true;
                 }
 
-                return this.SetState(ToggleState.Off);
+                return SetState(ToggleState.Off);
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            this.Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            this.Initialize(element);
         }
 
         /// <summary>
@@ -225,19 +227,19 @@ namespace Cruciatus.Elements
         /// </exception>
         private bool SetState(ToggleState newState)
         {
-            if (!this.IsEnabled)
+            if (!IsEnabled)
             {
-                this.LastErrorMessage = string.Format("{0} отключен, нельзя изменить состояние.", this.ToString());
+                LastErrorMessage = string.Format("{0} отключен, нельзя изменить состояние.", ToString());
                 return false;
             }
 
             Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-            Mouse.Move(this.ClickablePoint);
+            Mouse.Move(ClickablePoint);
 
             int maxClickCount = MaxClickCount;
-            while (this.ToggleState != newState && maxClickCount != 0)
+            while (ToggleState != newState && maxClickCount != 0)
             {
-                Mouse.Click(this.ClickablePoint);
+                Mouse.Click(ClickablePoint);
                 --maxClickCount;
             }
 

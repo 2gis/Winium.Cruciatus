@@ -6,13 +6,16 @@
 //   Представляет элемент меню.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
 
     using Cruciatus.Interfaces;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления меню.
@@ -40,7 +43,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public Menu(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         internal override string ClassName
@@ -57,6 +60,11 @@ namespace Cruciatus.Elements
             {
                 return ControlType.Menu;
             }
+        }
+
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -77,16 +85,16 @@ namespace Cruciatus.Elements
 
             var headers = headersPath.Split('$');
 
-            var current = this.Element;
+            var current = Element;
             foreach (var header in headers)
             {
                 var condition = new PropertyCondition(AutomationElement.NameProperty, header);
                 current = current.FindFirst(TreeScope.Children, condition);
                 if (current == null)
                 {
-                    this.LastErrorMessage = string.Format(
-                        "В {0} нет меню с заголовком {1}.",
-                        this.ToString(),
+                    LastErrorMessage = string.Format(
+                        "В {0} нет меню с заголовком {1}.", 
+                        ToString(), 
                         header);
                     return false;
                 }
@@ -95,20 +103,15 @@ namespace Cruciatus.Elements
                 ((IListElement)clickableElement).Initialize(current);
                 if (!clickableElement.Click())
                 {
-                    this.LastErrorMessage = string.Format(
-                        "Не удалось кликнуть по меню {0}. Подробности: {1}",
-                        header,
+                    LastErrorMessage = string.Format(
+                        "Не удалось кликнуть по меню {0}. Подробности: {1}", 
+                        header, 
                         clickableElement.LastErrorMessage);
                     return false;
                 }
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            this.Initialize(parent, automationId);
         }
     }
 }

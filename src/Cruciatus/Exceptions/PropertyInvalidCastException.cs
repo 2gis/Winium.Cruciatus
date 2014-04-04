@@ -6,11 +6,14 @@
 //   Определяет класс исключение PropertyInvalidCastException.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Exceptions
 {
+    #region using
+
     using System;
     using System.Runtime.Serialization;
+
+    #endregion
 
     [Serializable]
     public class PropertyInvalidCastException : CruciatusException

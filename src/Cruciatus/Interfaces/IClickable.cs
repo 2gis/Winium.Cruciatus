@@ -6,14 +6,18 @@
 //   Интерфейс элементов, по которым можно кликнуть.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Interfaces
 {
+    #region using
+
+    using System.Drawing;
     using System.Windows.Forms;
+
+    #endregion
 
     public interface IClickable
     {
-        System.Drawing.Point ClickablePoint { get; }
+        Point ClickablePoint { get; }
 
         bool Click();
 
