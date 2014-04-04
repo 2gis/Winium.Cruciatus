@@ -1,7 +1,10 @@
-﻿
-namespace Cruciatus.Settings.MessageBoxSettings
+﻿namespace Cruciatus.Settings.MessageBoxSettings
 {
+    #region using
+
     using System;
+
+    #endregion
 
     public class OkType : ICloneable
     {
@@ -9,7 +12,7 @@ namespace Cruciatus.Settings.MessageBoxSettings
 
         public object Clone()
         {
-            return new OkType { Ok = this.Ok };
+            return new OkType { Ok = Ok };
         }
     }
 }

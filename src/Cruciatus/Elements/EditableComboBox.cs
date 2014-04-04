@@ -6,12 +6,12 @@
 //   Представляет элемент управления редактируемый выпадающий список.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
-    using System.Drawing;
-    using System.Threading;
+    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -19,6 +19,10 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
+
+    using Point = System.Drawing.Point;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления редактируемый выпадающий список.
@@ -77,17 +81,17 @@ namespace Cruciatus.Elements
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
+                    () => IsEnabled, 
                     value => value != true);
 
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен, нельзя установить текст.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключен, нельзя установить текст.", ToString());
                     return false;
                 }
 
                 Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
+                Mouse.Move(ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");
                 Keyboard.SendKeys(string.IsNullOrEmpty(text)
@@ -96,7 +100,7 @@ namespace Cruciatus.Elements
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 
@@ -117,23 +121,23 @@ namespace Cruciatus.Elements
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
+                    () => IsEnabled, 
                     value => value != true);
 
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", ToString());
                     return false;
                 }
 
-                var topRightPoint = this.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
+                var topRightPoint = this.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
                 var clickablePoint = new Point((int)topRightPoint.X - 5, (int)topRightPoint.Y + 5);
 
                 CruciatusCommand.Click(clickablePoint, mouseButton);
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 

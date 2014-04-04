@@ -6,10 +6,12 @@
 //   Представляет элемент управления текстовый блок.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -17,7 +19,7 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления текстовый блок.
@@ -45,26 +47,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public TextBlock(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
-        }
-
-        /// <summary>
-        /// Возвращает координаты точки, внутри текстового блока, которые можно использовать для нажатия.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Текстовый блок не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public System.Drawing.Point ClickablePoint
-        {
-            get
-            {
-                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
-
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
-            }
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -86,7 +69,7 @@ namespace Cruciatus.Elements
                 }
                 catch (CruciatusException exc)
                 {
-                    this.LastErrorMessage = exc.Message;
+                    LastErrorMessage = exc.Message;
                     return null;
                 }
             }
@@ -112,6 +95,25 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает координаты точки, внутри текстового блока, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовый блок не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public Point ClickablePoint
+        {
+            get
+            {
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
+
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
+            }
+        }
+
+        /// <summary>
         /// Выполняет нажатие по текстовому блоку кнопкой по умолчанию.
         /// </summary>
         /// <returns>
@@ -119,7 +121,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click()
         {
-            return this.Click(CruciatusFactory.Settings.ClickButton);
+            return Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -135,11 +137,11 @@ namespace Cruciatus.Elements
         {
             try
             {
-                CruciatusCommand.Click(this.ClickablePoint, mouseButton);
+                CruciatusCommand.Click(ClickablePoint, mouseButton);
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 
@@ -148,12 +150,12 @@ namespace Cruciatus.Elements
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         void IListElement.Initialize(AutomationElement element)
         {
-            this.Initialize(element);
+            Initialize(element);
         }
     }
 }

@@ -1,9 +1,13 @@
-﻿
-namespace WpfTestApplication
+﻿namespace WpfTestApplication
 {
+    #region using
+
     using System.Linq;
+    using System.Windows;
     using System.Windows.Automation.Peers;
     using System.Windows.Controls.Ribbon;
+
+    #endregion
 
     public class RibbonTabExt : RibbonTab
     {
@@ -21,15 +25,16 @@ namespace WpfTestApplication
             }
 
             // Меняем только возврат точки клика
-            protected override System.Windows.Point GetClickablePointCore()
+            protected override Point GetClickablePointCore()
             {
                 // Получаем детей элемента
-                var childs = this.GetChildrenCore();
+                var childs = GetChildrenCore();
 
                 if (childs != null)
                 {
                     // В детях ищем заголовок
-                    var header = childs.FirstOrDefault(peer => peer.GetAutomationControlType() == AutomationControlType.Header);
+                    var header =
+                        childs.FirstOrDefault(peer => peer.GetAutomationControlType() == AutomationControlType.Header);
 
                     // Если заголовок нашелся (а теоретически он должен быть всегда), возвращаем его точку клика
                     if (header != null)
@@ -37,7 +42,7 @@ namespace WpfTestApplication
                         return header.GetClickablePoint();
                     }
                 }
-                
+
                 // Если с заголовком что-то пошло не так, то...по дефолту
                 return base.GetClickablePointCore();
             }

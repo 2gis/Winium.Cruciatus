@@ -6,9 +6,11 @@
 //   Представляет элемент управления поле с датой.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -17,7 +19,7 @@ namespace Cruciatus.Elements
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     public class DateTimePicker : CruciatusElement, IContainerElement
     {
@@ -30,13 +32,13 @@ namespace Cruciatus.Elements
             Initialize(parent, automationId);
         }
 
-        public System.Drawing.Point ClickablePoint
+        public Point ClickablePoint
         {
             get
             {
                 var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -57,19 +59,19 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
+        }
+
         public void SetDateTime(string value)
         {
             Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-            Mouse.Move(this.ClickablePoint);
+            Mouse.Move(ClickablePoint);
             Mouse.Click(MouseButtons.Left);
             Keyboard.SendKeys("^a");
             Keyboard.SendKeys(value);
             Keyboard.SendKeys("{Enter}");
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
     }
 }

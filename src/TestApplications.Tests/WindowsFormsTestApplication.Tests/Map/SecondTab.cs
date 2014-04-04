@@ -1,9 +1,12 @@
-﻿
-namespace WindowsFormsTestApplication.Tests.Map
+﻿namespace WindowsFormsTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    #endregion
 
     public class SecondTab : TabItem
     {
@@ -11,7 +14,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<Button>("ChangeEnabledButton");
+                return GetElement<Button>("ChangeEnabledButton");
             }
         }
 
@@ -19,7 +22,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<TextBox>("TextBox2");
+                return GetElement<TextBox>("TextBox2");
             }
         }
 
@@ -27,7 +30,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<CheckBox>("CheckBox2");
+                return GetElement<CheckBox>("CheckBox2");
             }
         }
 
@@ -35,14 +38,14 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<ListBox>("CheckListBox");
+                return GetElement<ListBox>("CheckListBox");
             }
         }
 
         protected override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, this.LastErrorMessage);
+            Assert.IsNotNull(element, LastErrorMessage);
             return element;
         }
     }

@@ -1,9 +1,12 @@
-﻿
-namespace WindowsFormsTestApplication.Tests.Map
+﻿namespace WindowsFormsTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    #endregion
 
     public class MainWindow : Window
     {
@@ -11,7 +14,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<FirstTab>("TabItem1");
+                return GetElement<FirstTab>("TabItem1");
             }
         }
 
@@ -19,16 +22,17 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<SecondTab>("TabItem2");
+                return GetElement<SecondTab>("TabItem2");
             }
         }
 
         #region Временно, пока проблемы с вкладками.
+
         public Button SetTextButton
         {
             get
             {
-                return this.GetElement<Button>("SetTextButton");
+                return GetElement<Button>("SetTextButton");
             }
         }
 
@@ -36,7 +40,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<TextBox>("TextBox1");
+                return GetElement<TextBox>("TextBox1");
             }
         }
 
@@ -44,7 +48,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<ComboBox>("TextComboBox");
+                return GetElement<ComboBox>("TextComboBox");
             }
         }
 
@@ -52,7 +56,7 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<CheckBox>("CheckBox1");
+                return GetElement<CheckBox>("CheckBox1");
             }
         }
 
@@ -60,15 +64,16 @@ namespace WindowsFormsTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<ListBox>("TextListBox");
+                return GetElement<ListBox>("TextListBox");
             }
         }
+
         #endregion
 
         protected override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, this.LastErrorMessage);
+            Assert.IsNotNull(element, LastErrorMessage);
             return element;
         }
     }

@@ -6,15 +6,18 @@
 //   Представляет элемент управления список.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления список.
@@ -42,7 +45,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public ListBox(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -81,6 +84,11 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
+        }
+
         /// <summary>
         /// Прокручивает список до элемента с указанным типом и именем.
         /// </summary>
@@ -100,35 +108,35 @@ namespace Cruciatus.Elements
                 // Проверка на дурака
                 if (string.IsNullOrEmpty(name))
                 {
-                    this.LastErrorMessage = "Параметр name не должен быть пустым.";
+                    LastErrorMessage = "Параметр name не должен быть пустым.";
                     return null;
                 }
 
                 // Проверка, что таблица включена
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
+                    () => IsEnabled, 
                     value => value != true);
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключен.", ToString());
                     return null;
                 }
 
                 // Получение шаблона прокрутки у списка
-                var scrollPattern = this.Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+                var scrollPattern = Element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
                 if (scrollPattern == null)
                 {
-                    this.LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                    LastErrorMessage = string.Format("{0} не поддерживает шаблон прокрутки.", ToString());
                     return null;
                 }
 
                 var item = new T();
                 var condition = new AndCondition(
-                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
+                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType), 
                     new PropertyCondition(AutomationElement.NameProperty, name));
 
                 // Стартовый поиск элемента
-                var element = this.Element.FindFirst(TreeScope.Subtree, condition);
+                var element = Element.FindFirst(TreeScope.Subtree, condition);
 
                 // Вертикальная прокрутка (при необходимости и возможности)
                 if (element == null && scrollPattern.Current.VerticallyScrollable)
@@ -152,37 +160,37 @@ namespace Cruciatus.Elements
                     while (element == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
                     {
                         scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-                        element = this.Element.FindFirst(TreeScope.Subtree, condition);
+                        element = Element.FindFirst(TreeScope.Subtree, condition);
                     }
                 }
 
                 // Если прокрутив до конца элемент не найден, то его нет (кэп)
                 if (element == null)
                 {
-                    this.LastErrorMessage = string.Format("В {0} нет элемента с name = {1}.", this.ToString(), name);
+                    LastErrorMessage = string.Format("В {0} нет элемента с name = {1}.", ToString(), name);
                     return null;
                 }
 
                 // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
-                while (element.ClickablePointUnder(this.Element, scrollPattern))
+                while (element.ClickablePointUnder(Element, scrollPattern))
                 {
                     scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
                 }
 
                 // Если точка клика элемента над границей списка - докручиваем по вертикали вверх
-                while (element.ClickablePointOver(this.Element))
+                while (element.ClickablePointOver(Element))
                 {
                     scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
                 }
 
                 // Если точка клика элемента справа от границы списка - докручиваем по горизонтали вправо
-                while (element.ClickablePointRight(this.Element, scrollPattern))
+                while (element.ClickablePointRight(Element, scrollPattern))
                 {
                     scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
                 }
 
                 // Если точка клика элемента слева от границы списка - докручиваем по горизонтали влево
-                while (element.ClickablePointLeft(this.Element))
+                while (element.ClickablePointLeft(Element))
                 {
                     scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
                 }
@@ -192,7 +200,7 @@ namespace Cruciatus.Elements
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return null;
             }
         }
@@ -212,30 +220,31 @@ namespace Cruciatus.Elements
         public T Item<T>(string name) where T : CruciatusElement, IListElement, new()
         {
             var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true);
+                () => IsEnabled, 
+                value => value != true);
             if (!isEnabled)
             {
-                this.LastErrorMessage = string.Format("{0} отключен.", this.ToString());
+                LastErrorMessage = string.Format("{0} отключен.", ToString());
                 return null;
             }
 
             var item = new T();
             var condition = new AndCondition(
-                    new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType),
-                    new PropertyCondition(AutomationElement.NameProperty, name));
+                new PropertyCondition(AutomationElement.ControlTypeProperty, item.GetType), 
+                new PropertyCondition(AutomationElement.NameProperty, name));
 
-            var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+            var searchElement = Element.FindFirst(TreeScope.Subtree, condition);
 
             if (searchElement == null)
             {
-                this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} не существует или вне видимости.", this.ToString(), name);
+                LastErrorMessage = string.Format("В {0} элемент с полем name = {1} не существует или вне видимости.", 
+                                                 ToString(), name);
                 return null;
             }
 
-            if (!this.Element.ContainsClickablePoint(searchElement))
+            if (!Element.ContainsClickablePoint(searchElement))
             {
-                this.LastErrorMessage = string.Format("В {0} элемент с полем name = {1} вне видимости.", this.ToString(), name);
+                LastErrorMessage = string.Format("В {0} элемент с полем name = {1} вне видимости.", ToString(), name);
                 return null;
             }
 
@@ -243,26 +252,18 @@ namespace Cruciatus.Elements
             return item;
         }
 
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            this.Initialize(parent, automationId);
-        }
-
-        //private AutomationElement SearchElement(string name, ControlType type)
-        //{
-        //    // TODO: Это для WinForms надо, но стоит действовать иначе глобально (определяя что это WinForms)
-        //    var condition = new AndCondition(
-        //            new PropertyCondition(AutomationElement.ControlTypeProperty, type),
-        //            new PropertyCondition(AutomationElement.NameProperty, name));
-
-        //    var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
-
-        //    if (searchElement == null && !type.Equals(ControlType.ListItem))
-        //    {
-        //        searchElement = this.SearchElement(name, ControlType.ListItem);
-        //    }
-
-        //    return searchElement;
-        //}
+        ////private AutomationElement SearchElement(string name, ControlType type)
+        ////{
+        ////    // TODO: Это для WinForms надо, но стоит действовать иначе глобально (определяя что это WinForms)
+        ////    var condition = new AndCondition(
+        ////            new PropertyCondition(AutomationElement.ControlTypeProperty, type),
+        ////            new PropertyCondition(AutomationElement.NameProperty, name));
+        ////    var searchElement = this.Element.FindFirst(TreeScope.Subtree, condition);
+        ////    if (searchElement == null && !type.Equals(ControlType.ListItem))
+        ////    {
+        ////        searchElement = this.SearchElement(name, ControlType.ListItem);
+        ////    }
+        ////    return searchElement;
+        ////}
     }
 }

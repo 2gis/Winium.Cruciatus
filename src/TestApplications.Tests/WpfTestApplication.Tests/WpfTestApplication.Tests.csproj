@@ -63,16 +63,11 @@
     <Compile Include="Map\SecondRibbonTab.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WpfTestApplicationApp.cs" />
-    <Compile Include="TestCases\CheckingAllInRibbonTabItem1TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInRibbonTabItem2TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem1TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem2TestCase.cs" />
-    <Compile Include="TestCases\CheckingRibbonMenu.cs" />
-    <Compile Include="TestCases\CheckingSimpleMenu.cs" />
-    <Compile Include="TestCases\TestClass1.cs" />
-    <Compile Include="BaseTestClass.cs" />
+    <Compile Include="TestCases\CheckRibbon.cs" />
+    <Compile Include="TestCases\CheckSecondTab.cs" />
+    <Compile Include="TestCases\CheckFirstTab.cs" />
+    <Compile Include="TestClassHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestCases\TestClass2.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Actions\" />

@@ -6,9 +6,10 @@
 //   Представляет объект приложение.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus
 {
+    #region using
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -19,6 +20,8 @@ namespace Cruciatus
     using Cruciatus.Exceptions;
     using Cruciatus.Interfaces;
 
+    #endregion
+
     /// <summary>
     /// Представляет объект приложение.
     /// </summary>
@@ -27,23 +30,23 @@ namespace Cruciatus
     /// </typeparam>
     public abstract class Application<T> where T : Window, IContainerElement, new()
     {
-        private readonly bool isClickOnceApplication;
+        private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
-        private readonly string exeFileName;
+        private readonly string _clickOnceFileName;
 
-        private readonly string clickOnceFileName;
+        private readonly string _exeFileName;
 
-        private readonly string pidFileName;
+        private readonly bool _isClickOnceApplication;
 
-        private readonly string mainWindowAutomationId;
+        private readonly string _mainWindowAutomationId;
 
-        private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
+        private readonly string _pidFileName;
 
-        private Process process;
+        private T _mainWindow;
 
-        private T mainWindow;
+        private AutomationElement _mainWindowElement;
 
-        private AutomationElement mainWindowElement;
+        private Process _process;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="Application{T}"/>.
@@ -69,8 +72,8 @@ namespace Cruciatus
                 throw new ArgumentNullException("mainWindowAutomationId");
             }
 
-            this.exeFileName = exeFileName;
-            this.mainWindowAutomationId = mainWindowAutomationId;
+            _exeFileName = exeFileName;
+            _mainWindowAutomationId = mainWindowAutomationId;
         }
 
         /// <summary>
@@ -105,28 +108,28 @@ namespace Cruciatus
                 throw new ArgumentNullException("mainWindowAutomationId");
             }
 
-            this.clickOnceFileName = clickOnceFileName;
-            this.pidFileName = pidFileName;
-            this.mainWindowAutomationId = mainWindowAutomationId;
-            this.isClickOnceApplication = true;
+            _clickOnceFileName = clickOnceFileName;
+            _pidFileName = pidFileName;
+            _mainWindowAutomationId = mainWindowAutomationId;
+            _isClickOnceApplication = true;
         }
 
         public T MainWindow
         {
             get
             {
-                if (this.process == null)
+                if (_process == null)
                 {
                     return null;
                 }
 
-                if (this.mainWindow == null)
+                if (_mainWindow == null)
                 {
-                    this.mainWindow = new T();
-                    this.mainWindow.Initialize(this.mainWindowElement, this.mainWindowAutomationId);
+                    _mainWindow = new T();
+                    _mainWindow.Initialize(_mainWindowElement, _mainWindowAutomationId);
                 }
 
-                return this.mainWindow;
+                return _mainWindow;
             }
         }
 
@@ -141,7 +144,7 @@ namespace Cruciatus
         /// </exception>
         public bool Start()
         {
-            return this.Start(CruciatusFactory.Settings.SearchTimeout);
+            return Start(CruciatusFactory.Settings.SearchTimeout);
         }
 
         /// <summary>
@@ -158,15 +161,15 @@ namespace Cruciatus
         /// </exception>
         public bool Start(int milliseconds)
         {
-            if (this.isClickOnceApplication)
+            if (_isClickOnceApplication)
             {
                 int pid;
 
                 // Если файл с PID есть, то приложение запущено и его надо завершить
-                if (File.Exists(this.pidFileName))
+                if (File.Exists(_pidFileName))
                 {
                     // Считывание PID
-                    if (!this.GetPid(out pid))
+                    if (!GetPid(out pid))
                     {
                         throw new CruciatusException("Не удалось прочитать PID приложения.");
                     }
@@ -179,9 +182,10 @@ namespace Cruciatus
                         proc.CloseMainWindow();
                         isExit = proc.WaitForExit(milliseconds);
                     }
-                    catch (Exception e)
+                    catch (Exception exc)
                     {
-                        throw new CruciatusException("Системная ошибка при завершении старого экземпляра приложения.", e);
+                        throw new CruciatusException("Системная ошибка при завершении старого экземпляра приложения.", 
+                                                     exc);
                     }
 
                     if (!isExit)
@@ -191,17 +195,18 @@ namespace Cruciatus
 
                     // Ожидание удаления файла с информацией о PID (что так же говорит о завершении приложения)
                     var isNotClose = CruciatusFactory.WaitingValues(
-                                       () => File.Exists(this.pidFileName),
-                                       value => value,
-                                       milliseconds);
+                        () => File.Exists(_pidFileName), 
+                        value => value, 
+                        milliseconds);
                     if (isNotClose)
                     {
-                        throw new CruciatusException("Не удалось завершить старый экземпляр приложения (файл с PID не удален).");
+                        throw new CruciatusException(
+                            "Не удалось завершить старый экземпляр приложения (файл с PID не удален).");
                     }
                 }
 
                 // Запуск ClickOnce сервиса
-                var clickOnceApp = Process.Start(this.clickOnceFileName);
+                var clickOnceApp = Process.Start(_clickOnceFileName);
                 if (clickOnceApp == null)
                 {
                     throw new CruciatusException("Не удалось запустить ClickOnce сервис.");
@@ -215,16 +220,16 @@ namespace Cruciatus
 
                 // Ожидание создания файла с информацией о PID (что так же говорит о запуске приложения)
                 var isStart = CruciatusFactory.WaitingValues(
-                                   () => File.Exists(this.pidFileName),
-                                   value => value == false,
-                                   milliseconds);
+                    () => File.Exists(_pidFileName), 
+                    value => value == false, 
+                    milliseconds);
                 if (isStart == false)
                 {
                     throw new CruciatusException("Не удалось запустить приложение (файл с PID не создан).");
                 }
 
                 // Считывание PID
-                if (!this.GetPid(out pid))
+                if (!GetPid(out pid))
                 {
                     throw new CruciatusException("Не удалось прочитать PID приложения.");
                 }
@@ -232,19 +237,19 @@ namespace Cruciatus
                 // Получение процесса приложения по его PID
                 try
                 {
-                    this.process = Process.GetProcessById(pid);
+                    _process = Process.GetProcessById(pid);
                 }
-                catch (Exception e)
+                catch (Exception exc)
                 {
-                    throw new CruciatusException("Системная ошибка при связывании с экземпляром приложения.", e);
+                    throw new CruciatusException("Системная ошибка при связывании с экземпляром приложения.", exc);
                 }
             }
             else
             {
-                if (File.Exists(this.exeFileName))
+                if (File.Exists(_exeFileName))
                 {
                     // Запуск приложения через исполняемый файл
-                    this.process = Process.Start(this.exeFileName);
+                    _process = Process.Start(_exeFileName);
                 }
                 else
                 {
@@ -253,55 +258,55 @@ namespace Cruciatus
             }
 
             // Проверка, что имеем процесс приложения
-            if (this.process == null)
+            if (_process == null)
             {
                 throw new CruciatusException("Не удалось запустить приложение.");
             }
 
             // Ожидание открытия главного окна
-            this.mainWindowElement = CruciatusFactory.WaitingValues(
-                    () => WindowFactory.GetMainWindowElement(this.process.Id, this.mainWindowAutomationId),
-                    value => value == null,
-                    milliseconds);
-            return this.mainWindowElement != null;
+            _mainWindowElement = CruciatusFactory.WaitingValues(
+                () => WindowFactory.GetMainWindowElement(_process.Id, _mainWindowAutomationId), 
+                value => value == null, 
+                milliseconds);
+            return _mainWindowElement != null;
         }
 
         public bool Close()
         {
             var isClosed = CruciatusFactory.WaitingValues(
-                    () => this.process.CloseMainWindow(),
-                    value => value == false);
+                () => _process.CloseMainWindow(), 
+                value => value == false);
 
             if (!isClosed)
             {
                 return false;
             }
 
-            if (!this.process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout))
+            if (!_process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout))
             {
                 return false;
             }
 
-            this.process.Close();
+            _process.Close();
             return true;
         }
 
         public bool Kill()
         {
-            this.process.Kill();
-            return this.process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout);
+            _process.Kill();
+            return _process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout);
         }
 
         protected TU GetElement<TU>(string headerName) where TU : Window, IContainerElement, new()
         {
-            if (!this.objects.ContainsKey(headerName))
+            if (!_childrenDictionary.ContainsKey(headerName))
             {
                 var item = new TU();
-                item.Initialize(this.mainWindowElement, headerName);
-                this.objects.Add(headerName, item);
+                item.Initialize(_mainWindowElement, headerName);
+                _childrenDictionary.Add(headerName, item);
             }
 
-            return (TU)this.objects[headerName];
+            return (TU)_childrenDictionary[headerName];
         }
 
         private bool GetPid(out int pid)
@@ -309,7 +314,7 @@ namespace Cruciatus
             Stream fs = null;
             try
             {
-                fs = File.Open(this.pidFileName, FileMode.Open);
+                fs = File.Open(_pidFileName, FileMode.Open);
                 using (var sr = new StreamReader(fs))
                 {
                     fs = null;

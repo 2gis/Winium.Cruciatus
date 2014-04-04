@@ -6,9 +6,10 @@
 //   Представляет расширения для элементов, наследующихся от CruciatusElement.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Extensions
 {
+    #region using
+
     using System;
     using System.Windows;
     using System.Windows.Automation;
@@ -17,6 +18,8 @@ namespace Cruciatus.Extensions
     using Cruciatus.Exceptions;
 
     using MessageBox = Cruciatus.MessageBox;
+
+    #endregion
 
     public static class CruciatusElementExtension
     {
@@ -35,7 +38,8 @@ namespace Cruciatus.Extensions
         /// <returns>
         /// Значение true если закрыть удалось; в противном случае значение - false.
         /// </returns>
-        public static bool CloseMessageBox(this CruciatusElement parent, MessageBoxButton buttonsType, MessageBoxResult button)
+        public static bool CloseMessageBox(this CruciatusElement parent, MessageBoxButton buttonsType, 
+                                           MessageBoxResult button)
         {
             return MessageBox.ClickButton(parent, buttonsType, button);
         }
@@ -74,8 +78,8 @@ namespace Cruciatus.Extensions
             catch (InvalidCastException exc)
             {
                 var err = string.Format(
-                    "При получении значения свойства {0} у элемента {1} произошла ошибка. ",
-                    property,
+                    "При получении значения свойства {0} у элемента {1} произошла ошибка. ", 
+                    property, 
                     cruciatusElement.ToString());
                 err += exc.Message;
 

@@ -6,9 +6,10 @@
 //   Представляет элемент управления числовое поле (from Telerik).
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
 
@@ -16,16 +17,18 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
+    #endregion
+
     /// <summary>
     /// Представляет элемент управления числовое поле (from Telerik).
     /// </summary>
     public class TelerikRadNumericUpDown : CruciatusElement, IContainerElement, IListElement
     {
-        private TextBox textBox;
+        private Button _decreaseButton = new Button();
 
-        private Button increaseButton = new Button();
+        private Button _increaseButton = new Button();
 
-        private Button decreaseButton = new Button();
+        private TextBox _textBox;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="TelerikRadNumericUpDown"/>.
@@ -48,7 +51,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public TelerikRadNumericUpDown(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -72,64 +75,13 @@ namespace Cruciatus.Elements
         {
             get
             {
-                if (this.ElementInstance == null)
+                if (ElementInstance == null)
                 {
-                    this.Find();
+                    Find();
                 }
 
-                return this.textBox.Text;
+                return _textBox.Text;
             }
-        }
-
-        public bool SetText(string text)
-        {
-            if (this.ElementInstance == null)
-            {
-                this.Find();
-            }
-
-            if (this.textBox.SetText(text))
-            {
-                return true;
-            }
-
-            // TODO: информация об ошибке должна быть более точной
-            this.LastErrorMessage = string.Format("Не удалось установить текст элементу {0}.", this.ToString());
-            return false;
-        }
-
-        public bool ClickIncreaseButton()
-        {
-            if (this.ElementInstance == null)
-            {
-                this.Find();
-            }
-
-            if (this.increaseButton.Click())
-            {
-                return true;
-            }
-
-            // TODO: информация об ошибке должна быть более точной
-            this.LastErrorMessage = string.Format("Не удалось нажать по увеличивающей значение кнопке {0}.", this.ToString());
-            return false;
-        }
-
-        public bool ClickDecreaseButton()
-        {
-            if (this.ElementInstance == null)
-            {
-                this.Find();
-            }
-
-            if (this.decreaseButton.Click())
-            {
-                return true;
-            }
-
-            // TODO: информация об ошибке должна быть более точной
-            this.LastErrorMessage = string.Format("Не удалось нажать по уменьшающей значение кнопке {0}.", this.ToString());
-            return false;
         }
 
         /// <summary>
@@ -151,23 +103,74 @@ namespace Cruciatus.Elements
             }
         }
 
-        internal override void Find()
-        {
-            base.Find();
-
-            this.textBox = new TextBox(this.ElementInstance, "textbox");
-            this.increaseButton = new Button(this.ElementInstance, "increase");
-            this.decreaseButton = new Button(this.ElementInstance, "decrease");
-        }
-
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         void IListElement.Initialize(AutomationElement element)
         {
-            this.Initialize(element);
+            Initialize(element);
+        }
+
+        public bool SetText(string text)
+        {
+            if (ElementInstance == null)
+            {
+                Find();
+            }
+
+            if (_textBox.SetText(text))
+            {
+                return true;
+            }
+
+            // TODO: информация об ошибке должна быть более точной
+            LastErrorMessage = string.Format("Не удалось установить текст элементу {0}.", ToString());
+            return false;
+        }
+
+        public bool ClickIncreaseButton()
+        {
+            if (ElementInstance == null)
+            {
+                Find();
+            }
+
+            if (_increaseButton.Click())
+            {
+                return true;
+            }
+
+            // TODO: информация об ошибке должна быть более точной
+            LastErrorMessage = string.Format("Не удалось нажать по увеличивающей значение кнопке {0}.", ToString());
+            return false;
+        }
+
+        public bool ClickDecreaseButton()
+        {
+            if (ElementInstance == null)
+            {
+                Find();
+            }
+
+            if (_decreaseButton.Click())
+            {
+                return true;
+            }
+
+            // TODO: информация об ошибке должна быть более точной
+            LastErrorMessage = string.Format("Не удалось нажать по уменьшающей значение кнопке {0}.", ToString());
+            return false;
+        }
+
+        internal override void Find()
+        {
+            base.Find();
+
+            _textBox = new TextBox(ElementInstance, "textbox");
+            _increaseButton = new Button(ElementInstance, "increase");
+            _decreaseButton = new Button(ElementInstance, "decrease");
         }
     }
 }

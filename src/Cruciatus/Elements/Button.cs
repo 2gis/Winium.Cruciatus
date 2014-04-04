@@ -6,17 +6,19 @@
 //   Представляет элемент управления кнопка.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
     using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления кнопка.
@@ -73,7 +75,7 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public new System.Drawing.Point ClickablePoint
+        public new Point ClickablePoint
         {
             get
             {
@@ -108,7 +110,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public new bool Click()
         {
-            return this.Click(CruciatusFactory.Settings.WaitForGetValueTimeout, CruciatusFactory.Settings.ClickButton);
+            return Click(CruciatusFactory.Settings.WaitForGetValueTimeout, CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -122,7 +124,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click(int waitingTime)
         {
-            return this.Click(waitingTime, CruciatusFactory.Settings.ClickButton);
+            return Click(waitingTime, CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -142,13 +144,13 @@ namespace Cruciatus.Elements
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
-                    value => value != true,
+                    () => IsEnabled, 
+                    value => value != true, 
                     waitingTime);
 
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключена, нельзя выполнить нажатие.", ToString());
                     return false;
                 }
 
@@ -156,7 +158,7 @@ namespace Cruciatus.Elements
             }
             catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
         }

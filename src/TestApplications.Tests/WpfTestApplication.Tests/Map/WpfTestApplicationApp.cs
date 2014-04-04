@@ -1,7 +1,10 @@
-﻿
-namespace WpfTestApplication.Tests.Map
+﻿namespace WpfTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus;
+
+    #endregion
 
     public class WpfTestApplicationApp : Application<MainWindow>
     {

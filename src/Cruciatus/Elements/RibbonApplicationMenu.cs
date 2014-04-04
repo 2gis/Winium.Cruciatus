@@ -6,13 +6,16 @@
 //   Представляет элемент меню ленты.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Windows.Automation;
 
     using Cruciatus.Interfaces;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления меню ленты.
@@ -40,7 +43,7 @@ namespace Cruciatus.Elements
         /// </exception>
         public RibbonApplicationMenu(AutomationElement parent, string automationId)
         {
-            this.Initialize(parent, automationId);
+            Initialize(parent, automationId);
         }
 
         internal override string ClassName
@@ -63,13 +66,13 @@ namespace Cruciatus.Elements
         public override bool SelectItem(string headersPath)
         {
             var clickableElement = new ClickableElement();
-            ((IListElement)clickableElement).Initialize(this.Element);
+            ((IListElement)clickableElement).Initialize(Element);
             if (clickableElement.Click())
             {
                 return base.SelectItem(headersPath);
             }
 
-            this.LastErrorMessage = string.Format("Не удалось открыть меню {0}.", this.ToString());
+            LastErrorMessage = string.Format("Не удалось открыть меню {0}.", ToString());
             return false;
         }
     }

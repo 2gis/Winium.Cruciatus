@@ -6,14 +6,17 @@
 //   Представляет класс для работы с диалогом MessageBox.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus
 {
+    #region using
+
     using System;
     using System.Windows;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
+
+    #endregion
 
     public static class MessageBox
     {
@@ -41,7 +44,7 @@ namespace Cruciatus
             {
                 return false;
             }
-            
+
             string uid;
             if (button == MessageBoxResult.None)
             {

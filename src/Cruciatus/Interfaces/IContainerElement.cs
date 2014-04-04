@@ -6,10 +6,13 @@
 //   Интерфейс элементов, которые могут располагаться внутри элемента-контейнера.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Interfaces
 {
+    #region using
+
     using System.Windows.Automation;
+
+    #endregion
 
     public interface IContainerElement
     {

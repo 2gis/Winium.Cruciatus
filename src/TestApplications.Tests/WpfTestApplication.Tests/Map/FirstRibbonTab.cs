@@ -1,9 +1,12 @@
-﻿
-namespace WpfTestApplication.Tests.Map
+﻿namespace WpfTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    #endregion
 
     public class FirstRibbonTab : TabItem
     {
@@ -11,7 +14,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<Button>("RibbonButton");
+                return GetElement<Button>("RibbonButton");
             }
         }
 
@@ -19,7 +22,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<ComboBox>("RibbonTextComboBox");
+                return GetElement<ComboBox>("RibbonTextComboBox");
             }
         }
 
@@ -27,14 +30,14 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<ComboBox>("RibbonCheckComboBox");
+                return GetElement<ComboBox>("RibbonCheckComboBox");
             }
         }
 
         protected override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, this.LastErrorMessage);
+            Assert.IsNotNull(element, LastErrorMessage);
             return element;
         }
     }

@@ -60,9 +60,9 @@
     <Compile Include="Map\MainWindow.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WindowsFormsTestApplicationApp.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem1TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem2TestCase.cs" />
-    <Compile Include="WindowsFormsTestApplicationTestCase.cs" />
+    <Compile Include="TestCases\CheckFirstTab.cs" />
+    <Compile Include="TestCases\CheckSecondTab.cs" />
+    <Compile Include="TestClassHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

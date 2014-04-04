@@ -6,13 +6,16 @@
 //   Представляет класс настроек Cruciatus.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Settings
 {
+    #region using
+
     using System.Diagnostics.CodeAnalysis;
     using System.Windows.Forms;
 
     using Cruciatus.Settings.MessageBoxSettings;
+
+    #endregion
 
     public class CruciatusSettings
     {
@@ -34,19 +37,19 @@ namespace Cruciatus.Settings
 
         private const MouseButtons DefaultClickButton = MouseButtons.Left;
 
-        private static CruciatusSettings instance;
+        private static readonly MessageBoxButtonUid DefaultMessageBoxButtonUid = new MessageBoxButtonUid();
 
-        private readonly MessageBoxButtonUid defaultMessageBoxButtonUid = new MessageBoxButtonUid();
+        private static CruciatusSettings _instance;
 
         private CruciatusSettings()
         {
-            this.defaultMessageBoxButtonUid.CloseButton = "Close";
-            this.defaultMessageBoxButtonUid.OkType = new OkType { Ok = "2" };
-            this.defaultMessageBoxButtonUid.OkCancelType = new OkCancelType { Ok = "1", Cancel = "2" };
-            this.defaultMessageBoxButtonUid.YesNoType = new YesNoType { Yes = "6", No = "7" };
-            this.defaultMessageBoxButtonUid.YesNoCancelType = new YesNoCancelType { Yes = "6", No = "7", Cancel = "2" };
+            DefaultMessageBoxButtonUid.CloseButton = "Close";
+            DefaultMessageBoxButtonUid.OkType = new OkType { Ok = "2" };
+            DefaultMessageBoxButtonUid.OkCancelType = new OkCancelType { Ok = "1", Cancel = "2" };
+            DefaultMessageBoxButtonUid.YesNoType = new YesNoType { Yes = "6", No = "7" };
+            DefaultMessageBoxButtonUid.YesNoCancelType = new YesNoCancelType { Yes = "6", No = "7", Cancel = "2" };
 
-            this.ResetToDefault();
+            ResetToDefault();
         }
 
         /// <summary>
@@ -104,7 +107,7 @@ namespace Cruciatus.Settings
         {
             get
             {
-                return instance ?? (instance = new CruciatusSettings());
+                return _instance ?? (_instance = new CruciatusSettings());
             }
         }
 
@@ -113,17 +116,17 @@ namespace Cruciatus.Settings
         /// </summary>
         public void ResetToDefault()
         {
-            this.WaitingPeriod = DefaultWaitingPeriod;
-            this.SearchTimeout = DefaultSearchTimeout;
-            this.WaitForExitTimeout = DefaultWaitForExitTimeout;
-            this.WaitForReadyTimeout = DefaultWaitForReadyTimeout;
-            this.WaitForGetValueTimeout = DefaultWaitForGetValueTimeout;
-            this.MouseMoveSpeed = DefaultMouseMoveSpeed;
-            this.ScrollBarWidth = DefaultScrollBarWidth;
-            this.ScrollBarHeight = DefaultScrollBarHeight;
-            this.ClickButton = DefaultClickButton;
+            WaitingPeriod = DefaultWaitingPeriod;
+            SearchTimeout = DefaultSearchTimeout;
+            WaitForExitTimeout = DefaultWaitForExitTimeout;
+            WaitForReadyTimeout = DefaultWaitForReadyTimeout;
+            WaitForGetValueTimeout = DefaultWaitForGetValueTimeout;
+            MouseMoveSpeed = DefaultMouseMoveSpeed;
+            ScrollBarWidth = DefaultScrollBarWidth;
+            ScrollBarHeight = DefaultScrollBarHeight;
+            ClickButton = DefaultClickButton;
 
-            this.MessageBoxButtonUid = (MessageBoxButtonUid)this.defaultMessageBoxButtonUid.Clone();
+            MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
         }
     }
 }
