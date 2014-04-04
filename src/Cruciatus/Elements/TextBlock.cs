@@ -6,10 +6,12 @@
 //   Представляет элемент управления текстовый блок.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -17,7 +19,7 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления текстовый блок.
@@ -49,25 +51,6 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает координаты точки, внутри текстового блока, которые можно использовать для нажатия.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Текстовый блок не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public System.Drawing.Point ClickablePoint
-        {
-            get
-            {
-                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
-
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
-            }
-        }
-
-        /// <summary>
         /// Возвращает текст из текстового блока.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
@@ -84,9 +67,9 @@ namespace Cruciatus.Elements
                 {
                     return this.GetPropertyValue<string>(AutomationElement.NameProperty);
                 }
-                catch (Exception exc)
+                catch (CruciatusException exc)
                 {
-                    this.LastErrorMessage = exc.Message;
+                    LastErrorMessage = exc.Message;
                     return null;
                 }
             }
@@ -112,6 +95,25 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает координаты точки, внутри текстового блока, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Текстовый блок не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public Point ClickablePoint
+        {
+            get
+            {
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
+
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
+            }
+        }
+
+        /// <summary>
         /// Выполняет нажатие по текстовому блоку кнопкой по умолчанию.
         /// </summary>
         /// <returns>
@@ -119,7 +121,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click()
         {
-            return this.Click(CruciatusFactory.Settings.ClickButton);
+            return Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -133,7 +135,17 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click(MouseButtons mouseButton)
         {
-            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
+            try
+            {
+                CruciatusCommand.Click(ClickablePoint, mouseButton);
+            }
+            catch (CruciatusException exc)
+            {
+                LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)

@@ -6,17 +6,23 @@
 //   Представляет элемент управления редактируемый выпадающий список.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
-    using System.Drawing;
+    using System.Windows;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
+
+    using Point = System.Drawing.Point;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления редактируемый выпадающий список.
@@ -75,65 +81,67 @@ namespace Cruciatus.Elements
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
+                    () => IsEnabled, 
                     value => value != true);
 
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен, нельзя установить текст.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключен, нельзя установить текст.", ToString());
                     return false;
                 }
 
                 Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(this.ClickablePoint);
+                Mouse.Move(ClickablePoint);
                 Mouse.Click(MouseButtons.Left);
                 Keyboard.SendKeys("^a");
-                Keyboard.SendKeys(text);
+                Keyboard.SendKeys(string.IsNullOrEmpty(text)
+                                      ? "{Back}"
+                                      : text);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 
             return true;
         }
 
-        protected override bool Click(MouseButtons mouseButton = MouseButtons.Left)
+        /// <summary>
+        /// Выполняет нажатие по редактируемому выпадающему списку.
+        /// </summary>
+        /// <param name="mouseButton">
+        /// Задает кнопку мыши, которой будет произведено нажатие.
+        /// </param>
+        /// <returns>
+        /// Значение true если нажать на редактируемый выпадающий список удалось; в противном случае значение - false.
+        /// </returns>
+        public override bool Click(MouseButtons mouseButton)
         {
             try
             {
                 var isEnabled = CruciatusFactory.WaitingValues(
-                    () => this.IsEnabled,
+                    () => IsEnabled, 
                     value => value != true);
 
                 if (!isEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключен, нельзя выполнить нажатие.", ToString());
                     return false;
                 }
 
-                var topRightPoint = this.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
+                var topRightPoint = this.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty).TopRight;
                 var clickablePoint = new Point((int)topRightPoint.X - 5, (int)topRightPoint.Y + 5);
 
-                if (!CruciatusCommand.Click(clickablePoint, mouseButton, out this.LastErrorMessageInstance))
-                {
-                    return false;
-                }
-
-                if (!this.Element.WaitForElementReady())
-                {
-                    this.LastErrorMessage = string.Format("Время ожидания готовности для {0} истекло.", this.ToString());
-                    return false;
-                }
-
-                return true;
+                CruciatusCommand.Click(clickablePoint, mouseButton);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
+
+            return true;
         }
     }
 }

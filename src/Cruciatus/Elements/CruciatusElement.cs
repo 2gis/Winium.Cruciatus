@@ -1,56 +1,82 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BaseElement.cs" company="2GIS">
+// <copyright file="CruciatusElement.cs" company="2GIS">
 //   Cruciatus
 // </copyright>
 // <summary>
 //   Представляет базу для элементов управления.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
 
+    #endregion
+
     public abstract class CruciatusElement
     {
-        internal AutomationElement ElementInstance;
+        public string LastErrorMessage { get; internal set; }
 
-        internal string LastErrorMessageInstance;
-
-        public string LastErrorMessage
-        {
-            get
-            {
-                return LastErrorMessageInstance;
-            }
-
-            internal set
-            {
-                LastErrorMessageInstance = value;
-            }
-        }
-
-        internal abstract string ClassName { get; }
-
-        internal new abstract ControlType GetType { get; }
+        internal AutomationElement ElementInstance { get; set; }
 
         internal AutomationElement Parent { get; set; }
 
         internal string AutomationId { get; set; }
 
+        internal abstract string ClassName { get; }
+
+        internal new abstract ControlType GetType { get; }
+
         internal virtual AutomationElement Element
         {
             get
             {
-                if (this.ElementInstance == null)
+                if (ElementInstance == null)
                 {
-                    this.Find();
+                    Find();
                 }
 
-                return this.ElementInstance;
+                return ElementInstance;
+            }
+        }
+
+        public new string ToString()
+        {
+            return string.Format("{0} (uid: {1})", ClassName, AutomationId ?? "nonUid");
+        }
+
+        // TODO: Разобраться с ошибкой "Access to modified closure" у переменной condition
+        internal virtual void Find()
+        {
+            var list = AutomationId.Split('/');
+
+            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, list[0]);
+            ElementInstance = CruciatusFactory.WaitingValues(
+                () => Parent.FindFirst(TreeScope.Subtree, condition), 
+                value => value == null, 
+                CruciatusFactory.Settings.SearchTimeout);
+
+            if (list.Count() > 1)
+            {
+                for (var i = 1; i < list.Count(); ++i)
+                {
+                    condition = new PropertyCondition(AutomationElement.AutomationIdProperty, list[i]);
+                    ElementInstance = CruciatusFactory.WaitingValues(
+                        () => ElementInstance.FindFirst(TreeScope.Subtree, condition), 
+                        value => value == null, 
+                        CruciatusFactory.Settings.SearchTimeout);
+                }
+            }
+
+            // Если не нашли, то загрузить элемент не удалось
+            if (ElementInstance == null)
+            {
+                throw new ElementNotFoundException(ToString());
             }
         }
 
@@ -78,27 +104,6 @@ namespace Cruciatus.Elements
             }
 
             ElementInstance = element;
-        }
-
-        internal virtual void Find()
-        {
-            // Ищем в родителе первый встретившийся контрол с заданным automationId
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, this.AutomationId);
-            this.ElementInstance = CruciatusFactory.WaitingValues(
-                () => this.Parent.FindFirst(TreeScope.Subtree, condition),
-                value => value == null,
-                CruciatusFactory.Settings.SearchTimeout);
-
-            // Если не нашли, то загрузить элемент не удалось
-            if (this.ElementInstance == null)
-            {
-                throw new ElementNotFoundException(this.ToString());
-            }
-        }
-
-        public new string ToString()
-        {
-            return string.Format("{0} (uid: {1})", this.ClassName, this.AutomationId ?? "nonUid");
         }
     }
 }

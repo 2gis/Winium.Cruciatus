@@ -6,10 +6,12 @@
 //   Представляет кликабельный элемент управления.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -17,7 +19,9 @@ namespace Cruciatus.Elements
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
 
-    public class ClickableElement : CruciatusElement, IContainerElement, IClickable
+    #endregion
+
+    public class ClickableElement : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ClickableElement"/>.
@@ -44,25 +48,6 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает координаты точки, внутри кликабельного элемента, которые можно использовать для нажатия.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Элемент не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public System.Drawing.Point ClickablePoint
-        {
-            get
-            {
-                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
-
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
-            }
-        }
-
-        /// <summary>
         /// Возвращает текстовое представление имени класса.
         /// </summary>
         internal override string ClassName
@@ -82,6 +67,25 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Возвращает координаты точки, внутри кликабельного элемента, которые можно использовать для нажатия.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Элемент не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public Point ClickablePoint
+        {
+            get
+            {
+                var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
+
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
+            }
+        }
+
+        /// <summary>
         /// Выполняет нажатие по кликабельному элементу кнопкой по умолчанию.
         /// </summary>
         /// <returns>
@@ -89,7 +93,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public bool Click()
         {
-            return CruciatusCommand.Click(this.ClickablePoint, out this.LastErrorMessageInstance);
+            return Click(CruciatusFactory.Settings.ClickButton);
         }
 
         /// <summary>
@@ -103,12 +107,27 @@ namespace Cruciatus.Elements
         /// </returns>
         public virtual bool Click(MouseButtons mouseButton)
         {
-            return CruciatusCommand.Click(this.ClickablePoint, mouseButton, out this.LastErrorMessageInstance);
+            try
+            {
+                CruciatusCommand.Click(ClickablePoint, mouseButton);
+            }
+            catch (CruciatusException exc)
+            {
+                LastErrorMessage = exc.Message;
+                return false;
+            }
+
+            return true;
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
         {
             Initialize(parent, automationId);
+        }
+
+        void IListElement.Initialize(AutomationElement element)
+        {
+            Initialize(element);
         }
     }
 }

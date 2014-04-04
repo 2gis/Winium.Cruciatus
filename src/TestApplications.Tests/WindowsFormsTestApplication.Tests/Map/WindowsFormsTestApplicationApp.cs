@@ -1,7 +1,10 @@
-﻿
-namespace WindowsFormsTestApplication.Tests.Map
+﻿namespace WindowsFormsTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus;
+
+    #endregion
 
     public class WindowsFormsTestApplicationApp : Application<MainWindow>
     {

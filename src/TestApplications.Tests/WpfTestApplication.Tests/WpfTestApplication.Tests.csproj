@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -62,14 +63,18 @@
     <Compile Include="Map\SecondRibbonTab.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WpfTestApplicationApp.cs" />
-    <Compile Include="TestCases\CheckingAllInRibbonTabItem1TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInRibbonTabItem2TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem1TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem2TestCase.cs" />
-    <Compile Include="WpfTestApplicationTestCase.cs" />
+    <Compile Include="TestCases\CheckRibbon.cs" />
+    <Compile Include="TestCases\CheckSecondTab.cs" />
+    <Compile Include="TestCases\CheckFirstTab.cs" />
+    <Compile Include="TestClassHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Actions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

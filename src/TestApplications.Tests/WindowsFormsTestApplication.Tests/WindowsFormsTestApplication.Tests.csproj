@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -59,12 +60,14 @@
     <Compile Include="Map\MainWindow.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WindowsFormsTestApplicationApp.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem1TestCase.cs" />
-    <Compile Include="TestCases\CheckingAllInTabItem2TestCase.cs" />
-    <Compile Include="WindowsFormsTestApplicationTestCase.cs" />
+    <Compile Include="TestCases\CheckFirstTab.cs" />
+    <Compile Include="TestCases\CheckSecondTab.cs" />
+    <Compile Include="TestClassHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

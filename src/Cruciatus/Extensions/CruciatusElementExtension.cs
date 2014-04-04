@@ -6,17 +6,44 @@
 //   Представляет расширения для элементов, наследующихся от CruciatusElement.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Extensions
 {
+    #region using
+
     using System;
+    using System.Windows;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
     using Cruciatus.Exceptions;
 
+    using MessageBox = Cruciatus.MessageBox;
+
+    #endregion
+
     public static class CruciatusElementExtension
     {
+        /// <summary>
+        /// Закрывает диалоговое окно MessageBox.
+        /// </summary>
+        /// <param name="parent">
+        /// Элемент, являющийся родительским для диалогового окна.
+        /// </param>
+        /// <param name="buttonsType">
+        /// Тип набора кнопок в диалоговом окне.
+        /// </param>
+        /// <param name="button">
+        /// Кнопка, которой будет производиться закрытие диалогового окна.
+        /// </param>
+        /// <returns>
+        /// Значение true если закрыть удалось; в противном случае значение - false.
+        /// </returns>
+        public static bool CloseMessageBox(this CruciatusElement parent, MessageBoxButton buttonsType, 
+                                           MessageBoxResult button)
+        {
+            return MessageBox.ClickButton(parent, buttonsType, button);
+        }
+
         /// <summary>
         /// Возвращает значение заданного свойства, приведенное к указанному типу.
         /// </summary>
@@ -51,12 +78,12 @@ namespace Cruciatus.Extensions
             catch (InvalidCastException exc)
             {
                 var err = string.Format(
-                    "При получении значения свойства {0} у элемента {1} произошла ошибка. ",
-                    property,
+                    "При получении значения свойства {0} у элемента {1} произошла ошибка. ", 
+                    property, 
                     cruciatusElement.ToString());
                 err += exc.Message;
 
-                throw new InvalidCastException(err);
+                throw new PropertyInvalidCastException(err);
             }
         }
     }

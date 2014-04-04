@@ -1,8 +1,12 @@
-﻿
-namespace WindowsFormsTestApplication
+﻿namespace WindowsFormsTestApplication
 {
+    #region using
+
+    using System;
     using System.Collections.Generic;
     using System.Windows.Forms;
+
+    #endregion
 
     /// <summary>
     /// The form 1.
@@ -10,72 +14,74 @@ namespace WindowsFormsTestApplication
     public partial class Form1 : Form
     {
         #region monthsList, timeSizeList
-        private readonly List<string> monthsList = new List<string>
-                                                       {
-                                                           "January",
-                                                           "February",
-                                                           "March",
-                                                           "April",
-                                                           "May",
-                                                           "June",
-                                                           "July",
-                                                           "August",
-                                                           "September",
-                                                           "October",
-                                                           "November",
-                                                           "December"
-                                                       };
 
-        private readonly List<string> timeSizeList = new List<string>
-                                                       {
-                                                           "Day",
-                                                           "Week",
-                                                           "Decade",
-                                                           "Month",
-                                                           "Quarter",
-                                                           "Year"
-                                                       };
+        private readonly List<string> _monthsList = new List<string>
+        {
+            "January", 
+            "February", 
+            "March", 
+            "April", 
+            "May", 
+            "June", 
+            "July", 
+            "August", 
+            "September", 
+            "October", 
+            "November", 
+            "December"
+        };
+
+        private readonly List<string> _timeSizeList = new List<string>
+        {
+            "Day", 
+            "Week", 
+            "Decade", 
+            "Month", 
+            "Quarter", 
+            "Year"
+        };
+
         #endregion
 
         public Form1()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            this.CheckBox1.Checked = true;
+            CheckBox1.Checked = true;
 
             // Fill TextkComboBox
-            this.TextComboBox.DataSource = this.timeSizeList;
-            this.TextComboBox.SelectedIndex = -1;
+            TextComboBox.DataSource = _timeSizeList;
+            TextComboBox.SelectedIndex = -1;
 
             // Fill TextkListBox
-            this.TextListBox.DataSource = this.monthsList;
-            this.TextListBox.SelectedIndex = -1;
+            TextListBox.DataSource = _monthsList;
+            TextListBox.SelectedIndex = -1;
 
             // Fill CheckListBox
-            this.CheckListBox.DataSource = this.monthsList;
+            CheckListBox.DataSource = _monthsList;
         }
 
-        private void SetTextButtonClick(object sender, System.EventArgs e)
+        private void SetTextButtonClick(object sender, EventArgs e)
         {
-            this.TextBox1.Text = @"CARAMBA";
+            TextBox1.Text = @"CARAMBA";
         }
 
-        private void CheckBox1CheckedChanged(object sender, System.EventArgs e)
+        private void CheckBox1CheckedChanged(object sender, EventArgs e)
         {
-            this.TextListBox.Enabled = this.CheckBox1.Checked;
+            TextListBox.Enabled = CheckBox1.Checked;
         }
 
-        private void ChangeEnabledButtonClick(object sender, System.EventArgs e)
+        private void ChangeEnabledButtonClick(object sender, EventArgs e)
         {
-            this.TextBox2.Enabled = !this.TextBox2.Enabled;
+            TextBox2.Enabled = !TextBox2.Enabled;
         }
 
-        private void CheckBox2CheckedChanged(object sender, System.EventArgs e)
+        private void CheckBox2CheckedChanged(object sender, EventArgs e)
         {
-            var check = this.CheckBox2.Checked;
-            for (int i = 0; i < this.CheckListBox.Items.Count; ++i)
+            var check = CheckBox2.Checked;
+            for (int i = 0; i < CheckListBox.Items.Count; ++i)
             {
-                this.CheckListBox.SetItemChecked(i, check);
+                CheckListBox.SetItemChecked(i, check);
             }
         }
     }

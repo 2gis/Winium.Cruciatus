@@ -6,11 +6,13 @@
 //   Представляет элемент управления текстовое поле.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
+    #region using
+
     using System;
     using System.Data;
+    using System.Drawing;
     using System.Windows.Automation;
     using System.Windows.Forms;
 
@@ -20,7 +22,7 @@ namespace Cruciatus.Elements
 
     using Microsoft.VisualStudio.TestTools.UITesting;
 
-    using ControlType = System.Windows.Automation.ControlType;
+    #endregion
 
     /// <summary>
     /// Представляет элемент управления текстовое поле.
@@ -77,13 +79,13 @@ namespace Cruciatus.Elements
         /// <exception cref="InvalidCastException">
         /// При получении значения свойства не удалось привести его к ожидаемому типу.
         /// </exception>
-        public System.Drawing.Point ClickablePoint
+        public Point ClickablePoint
         {
             get
             {
                 var windowsPoint = this.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
 
-                return new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                return new Point((int)windowsPoint.X, (int)windowsPoint.Y);
             }
         }
 
@@ -120,7 +122,7 @@ namespace Cruciatus.Elements
                 try
                 {
                     object pattern;
-                    if (this.Element.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
+                    if (Element.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
                     {
                         // Если текстовый шаблон поддерживается, то вернее получить текст так
                         return ((TextPattern)pattern).DocumentRange.GetText(-1);
@@ -129,9 +131,9 @@ namespace Cruciatus.Elements
                     // Иначе текст получается так
                     return this.GetPropertyValue<string>(ValuePattern.ValueProperty);
                 }
-                catch (Exception exc)
+                catch (CruciatusException exc)
                 {
-                    this.LastErrorMessage = exc.Message;
+                    LastErrorMessage = exc.Message;
                     return null;
                 }
             }
@@ -156,6 +158,16 @@ namespace Cruciatus.Elements
             }
         }
 
+        void IContainerElement.Initialize(AutomationElement parent, string automationId)
+        {
+            Initialize(parent, automationId);
+        }
+
+        void IListElement.Initialize(AutomationElement element)
+        {
+            Initialize(element);
+        }
+
         /// <summary>
         /// Устанавливает текст в текстовое поле.
         /// </summary>
@@ -175,43 +187,32 @@ namespace Cruciatus.Elements
         {
             try
             {
-                if (!this.IsEnabled)
+                if (!IsEnabled)
                 {
-                    this.LastErrorMessage = string.Format("{0} отключен, нельзя заполнить текстом.", this.ToString());
+                    LastErrorMessage = string.Format("{0} отключен, нельзя заполнить текстом.", ToString());
                     return false;
                 }
 
-                if (this.IsReadOnly)
+                if (IsReadOnly)
                 {
-                    this.LastErrorMessage = string.Format("{0} доступен только для чтения.", this.ToString());
+                    LastErrorMessage = string.Format("{0} доступен только для чтения.", ToString());
                     return false;
                 }
 
-                if (!CruciatusCommand.Click(this.ClickablePoint, MouseButtons.Left, out this.LastErrorMessageInstance))
-                {
-                    return false;
-                }
+                CruciatusCommand.Click(ClickablePoint, MouseButtons.Left);
 
                 Keyboard.SendKeys("^a");
-                Keyboard.SendKeys(text);
+                Keyboard.SendKeys(string.IsNullOrEmpty(text)
+                                      ? "{Back}"
+                                      : text);
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return false;
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
     }
 }

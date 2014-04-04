@@ -1,9 +1,12 @@
-﻿
-namespace WpfTestApplication.Tests.Map
+﻿namespace WpfTestApplication.Tests.Map
 {
+    #region using
+
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    #endregion
 
     public class MainWindow : Window
     {
@@ -11,7 +14,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<FirstTab>("TabItem1");
+                return GetElement<FirstTab>("TabItem1");
             }
         }
 
@@ -19,7 +22,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<SecondTab>("TabItem2");
+                return GetElement<SecondTab>("TabItem2");
             }
         }
 
@@ -27,7 +30,7 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<FirstRibbonTab>("RibbonTabItem1");
+                return GetElement<FirstRibbonTab>("RibbonTabItem1");
             }
         }
 
@@ -35,14 +38,30 @@ namespace WpfTestApplication.Tests.Map
         {
             get
             {
-                return this.GetElement<SecondRibbonTab>("RibbonTabItem2");
+                return GetElement<SecondRibbonTab>("RibbonTabItem2");
+            }
+        }
+
+        public RibbonApplicationMenu RibbonMenu
+        {
+            get
+            {
+                return GetElement<RibbonApplicationMenu>("RibbonMenu");
+            }
+        }
+
+        public Menu SimpleMenu
+        {
+            get
+            {
+                return GetElement<Menu>("SimpleMenu");
             }
         }
 
         protected override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, this.LastErrorMessage);
+            Assert.IsNotNull(element, LastErrorMessage);
             return element;
         }
     }

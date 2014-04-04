@@ -6,12 +6,17 @@
 //   Представляет фабрику Cruciatus.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus
 {
+    #region using
+
     using System;
     using System.Diagnostics;
     using System.Threading;
+
+    using Cruciatus.Settings;
+
+    #endregion
 
     public static class CruciatusFactory
     {
@@ -24,15 +29,15 @@ namespace Cruciatus
         }
 
         internal static TOut WaitingValues<TOut>(
-            Func<TOut> getValueFunc,
+            Func<TOut> getValueFunc, 
             Func<TOut, bool> compareFunc)
         {
             return WaitingValues(getValueFunc, compareFunc, Settings.WaitForGetValueTimeout);
         }
 
         internal static TOut WaitingValues<TOut>(
-            Func<TOut> getValueFunc,
-            Func<TOut, bool> compareFunc,
+            Func<TOut> getValueFunc, 
+            Func<TOut, bool> compareFunc, 
             int waitingTime)
         {
             var stopwatch = new Stopwatch();

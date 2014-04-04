@@ -12,6 +12,27 @@
         </Grid.RowDefinitions>
 
         <Ribbon Grid.Row="0">
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu Uid="RibbonMenu">
+                    <RibbonApplicationMenuItem Header="New"/>
+                    <RibbonApplicationMenuItem Header="Open"/>
+                    <RibbonSeparator/>
+                    <RibbonApplicationMenuItem Header="Save"/>
+                    <RibbonApplicationMenuItem Header="Save as ..."/>
+                    <RibbonSeparator/>
+                    <RibbonApplicationMenuItem Header="Print">
+                        <RibbonApplicationMenuItem Header="Open"/>
+                        <RibbonApplicationMenuItem Header="New">
+                            <RibbonApplicationMenuItem Header="Save"/>
+                            <RibbonApplicationMenuItem Header="Save as ..."/>
+                        </RibbonApplicationMenuItem>
+                        <RibbonApplicationMenuItem Header="Open"/>
+                    </RibbonApplicationMenuItem>
+                    <RibbonSeparator/>
+                    <RibbonApplicationMenuItem Header="Exit"/>
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+            
             <local:RibbonTabExt Uid="RibbonTabItem1" Header="RibbonTabItem1">
                 <RibbonGroup Header="Group1">
                     <RibbonButton Uid="RibbonButton" Label="RibbonButton" Margin="2"/>
@@ -39,6 +60,21 @@
                     <RibbonToggleButton Uid="RibbonToggleButton" Label="RibbonToggleButton" Margin="2"/>
                 </RibbonGroup>
             </local:RibbonTabExt>
+            
+            <Menu Uid="SimpleMenu">
+                <MenuItem Header="Level1">
+                    <MenuItem Header="Level2"/>
+                    <MenuItem Header="MultiLevel2">
+                        <MenuItem Header="Level3"/>
+                        <MenuItem Header="MultiLevel3">
+                            <MenuItem Header="Level4"/>
+                            <MenuItem Header="MultiLevel4">
+                                <MenuItem Header="Level5"/>
+                            </MenuItem>
+                        </MenuItem>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
         </Ribbon>
 
         <TabControl Grid.Row="1">

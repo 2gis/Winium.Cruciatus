@@ -6,16 +6,19 @@
 //   Определяет класс исключение ElementNotFoundException.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Exceptions
 {
+    #region using
+
     using System;
     using System.Runtime.Serialization;
 
+    #endregion
+
     [Serializable]
-    public class ElementNotFoundException : Exception
+    public class ElementNotFoundException : CruciatusException
     {
-        private string fieldMessage = "Элемент не найден.\n";
+        private readonly string _fieldMessage = "Элемент не найден.\n";
 
         public ElementNotFoundException()
         {
@@ -23,7 +26,7 @@ namespace Cruciatus.Exceptions
 
         public ElementNotFoundException(string element)
         {
-            this.Initialize(element);
+            Initialize(element);
         }
 
         public ElementNotFoundException(string element, string message)
@@ -34,13 +37,13 @@ namespace Cruciatus.Exceptions
                 throw new ArgumentNullException("message");
             }
 
-            this.fieldMessage = message;
+            _fieldMessage = message;
         }
 
         public ElementNotFoundException(string element, Exception innerException)
             : base(string.Empty, innerException)
         {
-            this.Initialize(element);
+            Initialize(element);
         }
 
         protected ElementNotFoundException(SerializationInfo info, StreamingContext context)
@@ -52,17 +55,22 @@ namespace Cruciatus.Exceptions
         {
             get
             {
-                if (this.Element == null)
+                if (Element == null)
                 {
-                    return this.fieldMessage;
+                    return _fieldMessage;
                 }
 
-                var str = this.fieldMessage + string.Format("Подробности: {0}.\n", this.Element);
+                var str = _fieldMessage + string.Format("Подробности: {0}.\n", Element);
                 return str;
             }
         }
 
         private string Element { get; set; }
+
+        protected new virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+        }
 
         private void Initialize(string element)
         {
@@ -71,7 +79,7 @@ namespace Cruciatus.Exceptions
                 throw new ArgumentNullException("element");
             }
 
-            this.Element = element;
+            Element = element;
         }
     }
 }

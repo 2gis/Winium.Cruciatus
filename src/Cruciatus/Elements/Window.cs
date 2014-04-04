@@ -6,22 +6,25 @@
 //   Представляет элемент окно.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Elements
 {
-    using System;
+    #region using
+
     using System.Collections.Generic;
     using System.Windows.Automation;
 
+    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
     using Cruciatus.Interfaces;
+
+    #endregion
 
     /// <summary>
     /// Представляет элемент окно.
     /// </summary>
     public abstract class Window : CruciatusElement, IContainerElement
     {
-        private readonly Dictionary<string, object> objects = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
         /// <summary>
         /// Возвращает текстовое представление имени класса.
@@ -49,38 +52,24 @@ namespace Cruciatus.Elements
         {
             get
             {
-                if (this.ElementInstance == null)
+                if (ElementInstance == null)
                 {
-                    this.Find();
+                    Find();
 
-                    //// TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
-                    //object objectPattern;
-                    //if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
-                    //{
-                    //    ((WindowPattern)objectPattern).WaitForInputIdle(1500);
-                    //}
-                    //else
-                    //{
-                    //    Thread.Sleep(500);
-                    //}
+                    // TODO: Нужны приложения с окнами для улучшения этих костыльных строчек
+                    ////object objectPattern;
+                    ////if (this.element.TryGetCurrentPattern(WindowPattern.Pattern, out objectPattern))
+                    ////{
+                    ////((WindowPattern)objectPattern).WaitForInputIdle(1500);
+                    ////}
+                    ////else
+                    ////{
+                    ////Thread.Sleep(500);
+                    ////}
                 }
 
-                return this.ElementInstance;
+                return ElementInstance;
             }
-        }
-
-        /// <summary>
-        /// Делает пометку, что окно закрыто (удаляет ссылки на дочерние элементы окна).
-        /// </summary>
-        public void Closed()
-        {
-            this.ElementInstance = null;
-            this.objects.Clear();
-        }
-
-        public bool WaitForReady()
-        {
-            return this.Element.WaitForElementReady();
         }
 
         void IContainerElement.Initialize(AutomationElement parent, string automationId)
@@ -88,22 +77,36 @@ namespace Cruciatus.Elements
             Initialize(parent, automationId);
         }
 
+        /// <summary>
+        /// Делает пометку, что окно закрыто (удаляет ссылки на дочерние элементы окна).
+        /// </summary>
+        public void Closed()
+        {
+            ElementInstance = null;
+            _childrenDictionary.Clear();
+        }
+
+        public bool WaitForReady()
+        {
+            return Element.WaitForElementReady();
+        }
+
         protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
         {
             try
             {
-                if (!this.objects.ContainsKey(automationId))
+                if (!_childrenDictionary.ContainsKey(automationId))
                 {
                     var item = new T();
-                    item.Initialize(this.Element, automationId);
-                    this.objects.Add(automationId, item);
+                    item.Initialize(Element, automationId);
+                    _childrenDictionary.Add(automationId, item);
                 }
 
-                return (T)this.objects[automationId];
+                return (T)_childrenDictionary[automationId];
             }
-            catch (Exception exc)
+            catch (CruciatusException exc)
             {
-                this.LastErrorMessage = exc.Message;
+                LastErrorMessage = exc.Message;
                 return null;
             }
         }

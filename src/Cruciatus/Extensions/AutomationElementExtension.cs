@@ -6,14 +6,21 @@
 //   Представляет расширения для AutomationElement.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Cruciatus.Extensions
 {
+    #region using
+
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Windows;
     using System.Windows.Automation;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
+
+    using Condition = System.Windows.Automation.Condition;
+
+    #endregion
 
     public static class AutomationElementExtension
     {
@@ -92,7 +99,7 @@ namespace Cruciatus.Extensions
         }
 
         /// <summary>
-        /// Проверка предположения, что заданный элемент геометрически внутри текущего.
+        /// Определяет, включает ли элемент точку клика заданного элемента.
         /// </summary>
         /// <param name="externalElement">
         /// Текущий элемент.
@@ -101,22 +108,18 @@ namespace Cruciatus.Extensions
         /// Проверяемый элемент.
         /// </param>
         /// <returns>
-        /// Значение true если предположение верно; в противном случае значение - false.
+        /// Значение true если элемент включает точку клика заданного элемента; в противном случае значение - false.
         /// </returns>
         /// <exception cref="OperationCanceledException">
         /// Операция прервана из-за ошибки.
         /// </exception>
-        public static bool GeometricallyContains(this AutomationElement externalElement, AutomationElement internalElement)
+        public static bool ContainsClickablePoint(this AutomationElement externalElement, 
+                                                  AutomationElement internalElement)
         {
             try
             {
-                var externalRect = externalElement.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty);
-                var internaleRect = internalElement.GetPropertyValue<System.Windows.Rect>(AutomationElement.BoundingRectangleProperty);
-
-                if (externalRect.Width < internaleRect.Width)
-                {
-                    internaleRect.Width = externalRect.Width - (internaleRect.X - externalRect.X);
-                }
+                var externalRect = externalElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+                var internaleRect = internalElement.GetPropertyValue<Point>(AutomationElement.ClickablePointProperty);
 
                 return externalRect.Contains(internaleRect);
             }
@@ -126,71 +129,90 @@ namespace Cruciatus.Extensions
             }
         }
 
-        /// <summary>
-        /// Перемещение курсора мыши в центр элемента.
-        /// </summary>
-        /// <param name="element">
-        /// Элемент, в центр которого перемещается курсор мыши.
-        /// </param>
-        /// <exception cref="OperationCanceledException">
-        /// Операция прервана из-за ошибки.
-        /// </exception>
-        public static void MoveMouseToCenter(this AutomationElement element)
+        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement)
+        {
+            return ClickablePointUnder(currentElement, rectElement, null);
+        }
+
+        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement, 
+                                               ScrollPattern scrollPattern)
         {
             try
             {
-                var windowsPoint = element.GetPropertyValue<System.Windows.Point>(AutomationElement.ClickablePointProperty);
-                var clickablePoint = new System.Drawing.Point((int)windowsPoint.X, (int)windowsPoint.Y);
+                var point = currentElement.GetPropertyValue<Point>(AutomationElement.ClickablePointProperty);
+                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
 
-                Mouse.MouseMoveSpeed = CruciatusFactory.Settings.MouseMoveSpeed;
-                Mouse.Move(clickablePoint);
+                if (scrollPattern == null || scrollPattern.Current.HorizontalScrollPercent < 0)
+                {
+                    return point.Y > rect.Bottom;
+                }
+
+                return point.Y > rect.Bottom - CruciatusFactory.Settings.ScrollBarHeight;
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException("Перемещение курсора мыши не удалось.\n", exc);
+                throw new OperationCanceledException(
+                    "Не удалось определить расположение элемента относительно точки.\n", exc);
             }
         }
 
-        public static AutomationElement SearchSpecificElementConsideringScroll<T>(
-            this AutomationElement element,
-            Func<AutomationElement, T> findFunc,
-            Func<T, bool> compareFunc,
-            Func<T, AutomationElement> getAutomationElementFunc)
-            where T : class
+        public static bool ClickablePointOver(this AutomationElement currentElement, AutomationElement rectElement)
         {
-            T searchElement;
-            var scrollPattern = element.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-            if (scrollPattern != null)
+            try
             {
-                element.MoveMouseToCenter();
+                var point = currentElement.GetPropertyValue<Point>(AutomationElement.ClickablePointProperty);
+                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
 
-                searchElement = findFunc(element);
-                if (compareFunc(searchElement))
+                return point.Y < rect.Top;
+            }
+            catch (Exception exc)
+            {
+                throw new OperationCanceledException(
+                    "Не удалось определить расположение элемента относительно точки.\n", exc);
+            }
+        }
+
+        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement)
+        {
+            return ClickablePointRight(currentElement, rectElement, null);
+        }
+
+        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement, 
+                                               ScrollPattern scrollPattern)
+        {
+            try
+            {
+                var point = currentElement.GetPropertyValue<Point>(AutomationElement.ClickablePointProperty);
+                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+
+                if (scrollPattern == null || scrollPattern.Current.HorizontalScrollPercent < 0)
                 {
-                    while (scrollPattern.Current.VerticalScrollPercent > 0)
-                    {
-                        scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
-                    }
-
-                    searchElement = findFunc(element);
+                    return point.X > rect.Right;
                 }
 
-                while (compareFunc(searchElement) && scrollPattern.Current.VerticalScrollPercent < 100)
-                {
-                    scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-
-                    // TODO: Делать что-нибудь если false?
-                    element.WaitForElementReady();
-
-                    searchElement = findFunc(element);
-                }
+                return point.X > rect.Right - CruciatusFactory.Settings.ScrollBarWidth;
             }
-            else
+            catch (Exception exc)
             {
-                searchElement = findFunc(element);
+                throw new OperationCanceledException(
+                    "Не удалось определить расположение элемента относительно точки.\n", exc);
             }
+        }
 
-            return getAutomationElementFunc(searchElement);
+        public static bool ClickablePointLeft(this AutomationElement currentElement, AutomationElement rectElement)
+        {
+            try
+            {
+                var point = currentElement.GetPropertyValue<Point>(AutomationElement.ClickablePointProperty);
+                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+
+                return point.X < rect.Left;
+            }
+            catch (Exception exc)
+            {
+                throw new OperationCanceledException(
+                    "Не удалось определить расположение элемента относительно точки.\n", exc);
+            }
         }
 
         /// <summary>
@@ -214,8 +236,16 @@ namespace Cruciatus.Extensions
         /// <exception cref="InvalidCastException">
         /// Нельзя привести значение свойства к указанному типу.
         /// </exception>
+        [SuppressMessage("Microsoft.Design", 
+            "CA1062:Validate arguments of public methods", 
+            Justification = "First parameter in extension cannot be null.")]
         public static TOut GetPropertyValue<TOut>(this AutomationElement element, AutomationProperty property)
         {
+            if (property == null)
+            {
+                throw new ArgumentNullException("property");
+            }
+
             var obj = element.GetCurrentPropertyValue(property, true);
             if (obj == AutomationElement.NotSupported)
             {
@@ -230,87 +260,6 @@ namespace Cruciatus.Extensions
             }
 
             return (TOut)obj;
-        }
-
-        /// <summary>
-        /// Прокручивает содержимое до заданного элемента.
-        /// </summary>
-        /// <param name="externalElement">
-        /// Текущий элемент, содержимое которого будет прокручивать.
-        /// </param>
-        /// <param name="internalElement">
-        /// Элемент до которого прокурчиваем.
-        /// </param>
-        /// <returns>
-        /// Значение true если прокрутили либо в этом не было необходимости; иначе прокрутка не поддерживается, значение - false.
-        /// </returns>
-        public static bool Scrolling(this AutomationElement externalElement, AutomationElement internalElement)
-        {
-            if (externalElement.GeometricallyContains(internalElement))
-            {
-                return true;
-            }
-
-            var scrollPattern = externalElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-            if (scrollPattern == null)
-            {
-                return false;
-            }
-
-            while (scrollPattern.Current.VerticalScrollPercent > 0)
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
-            }
-
-            do
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-            }
-            while (!externalElement.GeometricallyContains(internalElement));
-
-            return true;
-        }
-
-        /// <summary>
-        /// Прокручивает содержимое до заданного элемента.
-        /// </summary>
-        /// <param name="externalElement">
-        /// Текущий элемент, содержимое которого будет прокручивать.
-        /// </param>
-        /// <param name="internalElement">
-        /// Элемент до которого прокурчиваем.
-        /// </param>
-        /// <param name="popupWindow">
-        /// sf
-        /// </param>
-        /// <returns>
-        /// Значение true если прокрутили либо в этом не было необходимости; иначе прокрутка не поддерживается, значение - false.
-        /// </returns>
-        public static bool ScrollingForComboBox(this AutomationElement externalElement, AutomationElement internalElement, AutomationElement popupWindow)
-        {
-            if (popupWindow.GeometricallyContains(internalElement))
-            {
-                return true;
-            }
-
-            var scrollPattern = externalElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-            if (scrollPattern == null)
-            {
-                return false;
-            }
-
-            while (scrollPattern.Current.VerticalScrollPercent > 0)
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.LargeDecrement);
-            }
-
-            do
-            {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
-            }
-            while (!popupWindow.GeometricallyContains(internalElement));
-
-            return true;
         }
     }
 }
