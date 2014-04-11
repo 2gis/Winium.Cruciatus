@@ -14,7 +14,6 @@ namespace Cruciatus.Elements
     using System.Windows.Automation;
 
     using Cruciatus.Extensions;
-    using Cruciatus.Interfaces;
 
     #endregion
 
@@ -24,25 +23,25 @@ namespace Cruciatus.Elements
     public class TelerikRadGridView : DataGrid
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TelerikRadGridView"/>.
+        /// Создает новый экземпляр класса <see cref="TelerikRadGridView"/>.
         /// </summary>
         public TelerikRadGridView()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TelerikRadGridView"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="TelerikRadGridView"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для таблицы.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор таблицы.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public TelerikRadGridView(AutomationElement parent, string automationId)
+        public TelerikRadGridView(CruciatusElement parent, string automationId)
             : base(parent, automationId)
         {
         }
@@ -246,7 +245,7 @@ namespace Cruciatus.Elements
                 return false;
             }
 
-            ((IListElement)cell).Initialize(elem);
+            cell.ElementInstance = elem;
             var result = cell.Click();
             if (result)
             {
@@ -314,7 +313,7 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            item.Initialize(elem);
+            item.ElementInstance = elem;
             return item;
         }
     }

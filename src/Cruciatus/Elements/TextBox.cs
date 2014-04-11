@@ -30,25 +30,25 @@ namespace Cruciatus.Elements
     public class TextBox : CruciatusElement, IContainerElement, IListElement
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TextBox"/>.
+        /// Создает новый экземпляр класса <see cref="TextBox"/>.
         /// </summary>
         public TextBox()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TextBox"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="TextBox"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для текстового поля.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор текстового поля.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public TextBox(AutomationElement parent, string automationId)
+        public TextBox(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -156,16 +156,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.Edit;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
 
         /// <summary>

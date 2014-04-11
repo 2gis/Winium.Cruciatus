@@ -25,25 +25,25 @@ namespace Cruciatus.Elements
     public class ListBox : CruciatusElement, IContainerElement
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
+        /// Создает новый экземпляр класса <see cref="ListBox"/>.
         /// </summary>
         public ListBox()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ListBox"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="ListBox"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для списка.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор списка.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public ListBox(AutomationElement parent, string automationId)
+        public ListBox(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -82,11 +82,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.List;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -195,7 +190,7 @@ namespace Cruciatus.Elements
                     scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
                 }
 
-                item.Initialize(element);
+                item.ElementInstance = element;
                 return item;
             }
             catch (CruciatusException exc)
@@ -248,7 +243,7 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            item.Initialize(searchElement);
+            item.ElementInstance = searchElement;
             return item;
         }
 

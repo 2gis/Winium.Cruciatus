@@ -10,12 +10,12 @@ namespace Cruciatus.Interfaces
 {
     #region using
 
-    using System.Windows.Automation;
+    using System.Diagnostics.CodeAnalysis;
 
     #endregion
 
+    [SuppressMessage("Microsoft.Design", "CA1040:AvoidEmptyInterfaces", Justification = "Интерфейс-маркер")]
     public interface IListElement
     {
-        void Initialize(AutomationElement element);
     }
 }

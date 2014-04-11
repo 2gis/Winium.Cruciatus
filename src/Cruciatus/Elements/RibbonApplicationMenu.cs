@@ -11,9 +11,6 @@ namespace Cruciatus.Elements
     #region using
 
     using System;
-    using System.Windows.Automation;
-
-    using Cruciatus.Interfaces;
 
     #endregion
 
@@ -23,25 +20,25 @@ namespace Cruciatus.Elements
     public class RibbonApplicationMenu : Menu
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="RibbonApplicationMenu"/>.
+        /// Создает новый экземпляр класса <see cref="RibbonApplicationMenu"/>.
         /// </summary>
         public RibbonApplicationMenu()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="RibbonApplicationMenu"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="RibbonApplicationMenu"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для меню ленты.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор меню ленты.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public RibbonApplicationMenu(AutomationElement parent, string automationId)
+        public RibbonApplicationMenu(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -65,8 +62,7 @@ namespace Cruciatus.Elements
         /// </returns>
         public override bool SelectItem(string headersPath)
         {
-            var clickableElement = new ClickableElement();
-            ((IListElement)clickableElement).Initialize(Element);
+            var clickableElement = new ClickableElement { ElementInstance = Element };
             if (clickableElement.Click())
             {
                 return base.SelectItem(headersPath);

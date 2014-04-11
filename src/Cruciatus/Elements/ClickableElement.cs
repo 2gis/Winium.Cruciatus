@@ -24,25 +24,25 @@ namespace Cruciatus.Elements
     public class ClickableElement : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ClickableElement"/>.
+        /// Создает новый экземпляр класса <see cref="ClickableElement"/>.
         /// </summary>
         public ClickableElement()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ClickableElement"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="ClickableElement"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для кликабельного элемента.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор кликабельного элемента.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public ClickableElement(AutomationElement parent, string automationId)
+        public ClickableElement(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -118,16 +118,6 @@ namespace Cruciatus.Elements
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
     }
 }

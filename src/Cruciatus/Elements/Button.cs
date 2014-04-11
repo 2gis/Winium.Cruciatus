@@ -26,25 +26,25 @@ namespace Cruciatus.Elements
     public class Button : ClickableElement
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Button"/>.
+        /// Создает новый экземпляр класса <see cref="Button"/>.
         /// </summary>
         public Button()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Button"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="Button"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для кнопки.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор кнопки.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public Button(AutomationElement parent, string automationId)
+        public Button(CruciatusElement parent, string automationId)
             : base(parent, automationId)
         {
         }

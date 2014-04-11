@@ -26,7 +26,7 @@
             }
         }
 
-        protected override T GetElement<T>(string automationId)
+        public override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
             Assert.IsNotNull(element, LastErrorMessage);

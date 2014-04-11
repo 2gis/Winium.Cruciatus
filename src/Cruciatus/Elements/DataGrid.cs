@@ -25,25 +25,25 @@ namespace Cruciatus.Elements
     public class DataGrid : CruciatusElement, IContainerElement
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
+        /// Создает новый экземпляр класса <see cref="DataGrid"/>.
         /// </summary>
         public DataGrid()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="DataGrid"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="DataGrid"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для таблицы.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор таблицы.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public DataGrid(AutomationElement parent, string automationId)
+        public DataGrid(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -116,11 +116,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.DataGrid;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -361,7 +356,7 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            item.Initialize(elem);
+            item.ElementInstance = elem;
             return item;
         }
     }

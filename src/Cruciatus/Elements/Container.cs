@@ -26,25 +26,25 @@ namespace Cruciatus.Elements
         private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Container"/>.
+        /// Создает новый экземпляр класса <see cref="Container"/>.
         /// </summary>
         public Container()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Container"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="Container"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для кликабельного элемента.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор кликабельного элемента.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public Container(AutomationElement parent, string automationId)
+        public Container(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -87,11 +87,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
         /// <summary>
         /// Возвращает элемент заданного типа с указанным уникальным идентификатором.
         /// </summary>
@@ -104,14 +99,14 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
+        public virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
         {
             try
             {
                 if (!_childrenDictionary.ContainsKey(automationId))
                 {
                     var item = new T();
-                    item.Initialize(Element, automationId);
+                    item.Initialize(this, automationId);
                     _childrenDictionary.Add(automationId, item);
                 }
 

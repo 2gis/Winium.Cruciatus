@@ -23,25 +23,25 @@ namespace Cruciatus.Elements
     public class Menu : CruciatusElement, IContainerElement
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Menu"/>.
+        /// Создает новый экземпляр класса <see cref="Menu"/>.
         /// </summary>
         public Menu()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Menu"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="Menu"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для меню.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор меню.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public Menu(AutomationElement parent, string automationId)
+        public Menu(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -60,11 +60,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.Menu;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -99,8 +94,7 @@ namespace Cruciatus.Elements
                     return false;
                 }
 
-                var clickableElement = new ClickableElement();
-                ((IListElement)clickableElement).Initialize(current);
+                var clickableElement = new ClickableElement { ElementInstance = current };
                 if (!clickableElement.Click())
                 {
                     LastErrorMessage = string.Format(

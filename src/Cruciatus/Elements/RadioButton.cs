@@ -27,25 +27,25 @@ namespace Cruciatus.Elements
     public class RadioButton : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="RadioButton"/>.
+        /// Создает новый экземпляр класса <see cref="RadioButton"/>.
         /// </summary>
         public RadioButton()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="RadioButton"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="RadioButton"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для переключателя.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор переключателя.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public RadioButton(AutomationElement parent, string automationId)
+        public RadioButton(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -121,16 +121,6 @@ namespace Cruciatus.Elements
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
     }
 }
