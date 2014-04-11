@@ -29,25 +29,25 @@ namespace Cruciatus.Elements
     public class ComboBox : CruciatusElement, IContainerElement, IClickable
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
+        /// Создает новый экземпляр класса <see cref="ComboBox"/>.
         /// </summary>
         public ComboBox()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ComboBox"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="ComboBox"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для выпадающего списка.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор выпадающего списка.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public ComboBox(AutomationElement parent, string automationId)
+        public ComboBox(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -216,11 +216,6 @@ namespace Cruciatus.Elements
                 LastErrorMessage = exc.Message;
                 return false;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
 
         /// <summary>
@@ -402,7 +397,7 @@ namespace Cruciatus.Elements
                     scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
                 }
 
-                item.Initialize(element);
+                item.ElementInstance = element;
                 return item;
             }
             catch (CruciatusException exc)
@@ -477,7 +472,7 @@ namespace Cruciatus.Elements
                     return null;
                 }
 
-                item.Initialize(searchElement);
+                item.ElementInstance = searchElement;
                 return item;
             }
             catch (CruciatusException exc)

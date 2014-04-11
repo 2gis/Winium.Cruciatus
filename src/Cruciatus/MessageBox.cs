@@ -119,7 +119,7 @@ namespace Cruciatus
                 }
             }
 
-            var buttonElement = new Button(modalwindow, uid);
+            var buttonElement = new Button { Parent = modalwindow, AutomationId = uid };
             return buttonElement.Click();
         }
     }

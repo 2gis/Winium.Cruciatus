@@ -28,7 +28,7 @@ namespace Cruciatus
     /// <typeparam name="T">
     /// Главное окно.
     /// </typeparam>
-    public abstract class Application<T> where T : Window, IContainerElement, new()
+    public class Application<T> where T : Window, IContainerElement, new()
     {
         private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
@@ -60,7 +60,7 @@ namespace Cruciatus
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        protected Application(string exeFileName, string mainWindowAutomationId)
+        public Application(string exeFileName, string mainWindowAutomationId)
         {
             if (exeFileName == null)
             {
@@ -91,7 +91,7 @@ namespace Cruciatus
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        protected Application(string clickOnceFileName, string pidFileName, string mainWindowAutomationId)
+        public Application(string clickOnceFileName, string pidFileName, string mainWindowAutomationId)
         {
             if (clickOnceFileName == null)
             {
@@ -125,8 +125,7 @@ namespace Cruciatus
 
                 if (_mainWindow == null)
                 {
-                    _mainWindow = new T();
-                    _mainWindow.Initialize(_mainWindowElement, _mainWindowAutomationId);
+                    _mainWindow = new T { ElementInstance = _mainWindowElement, AutomationId = _mainWindowAutomationId };
                 }
 
                 return _mainWindow;
@@ -184,8 +183,8 @@ namespace Cruciatus
                     }
                     catch (Exception exc)
                     {
-                        throw new CruciatusException("Системная ошибка при завершении старого экземпляра приложения.", 
-                                                     exc);
+                        const string message = "Системная ошибка при завершении старого экземпляра приложения.";
+                        throw new CruciatusException(message, exc);
                     }
 
                     if (!isExit)
@@ -297,12 +296,11 @@ namespace Cruciatus
             return _process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout);
         }
 
-        protected TU GetElement<TU>(string headerName) where TU : Window, IContainerElement, new()
+        public TU GetElement<TU>(string headerName) where TU : Window, new()
         {
             if (!_childrenDictionary.ContainsKey(headerName))
             {
-                var item = new TU();
-                item.Initialize(_mainWindowElement, headerName);
+                var item = new TU { Parent = _mainWindowElement, AutomationId = headerName };
                 _childrenDictionary.Add(headerName, item);
             }
 

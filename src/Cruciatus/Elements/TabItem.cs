@@ -27,30 +27,30 @@ namespace Cruciatus.Elements
     /// <summary>
     /// Представляет элемент управления вкладка.
     /// </summary>
-    public abstract class TabItem : CruciatusElement, IContainerElement
+    public class TabItem : CruciatusElement, IContainerElement
     {
         private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
+        /// Создает новый экземпляр класса <see cref="TabItem"/>.
         /// </summary>
-        protected TabItem()
+        public TabItem()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TabItem"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="TabItem"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для вкладки.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор вкладки.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        protected TabItem(AutomationElement parent, string automationId)
+        public TabItem(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -127,11 +127,6 @@ namespace Cruciatus.Elements
             }
         }
 
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
         /// <summary>
         /// Выбирает вкладку текущей.
         /// </summary>
@@ -179,7 +174,7 @@ namespace Cruciatus.Elements
         /// <returns>
         /// Искомый элемент, либо null, если найти не удалось.
         /// </returns>
-        protected virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
+        public virtual T GetElement<T>(string automationId) where T : CruciatusElement, IContainerElement, new()
         {
             if (automationId == null)
             {
@@ -197,7 +192,7 @@ namespace Cruciatus.Elements
                 if (!_childrenDictionary.ContainsKey(automationId))
                 {
                     var item = new T();
-                    item.Initialize(Element, automationId);
+                    item.Initialize(this, automationId);
                     _childrenDictionary.Add(automationId, item);
                 }
 

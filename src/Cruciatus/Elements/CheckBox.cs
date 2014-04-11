@@ -30,25 +30,25 @@ namespace Cruciatus.Elements
         private const int MaxClickCount = 10;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="CheckBox"/>.
+        /// Создает новый экземпляр класса <see cref="CheckBox"/>.
         /// </summary>
         public CheckBox()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="CheckBox"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="CheckBox"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для чекбокса.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор чекбокса.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public CheckBox(AutomationElement parent, string automationId)
+        public CheckBox(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -150,16 +150,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.CheckBox;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
 
         /// <summary>

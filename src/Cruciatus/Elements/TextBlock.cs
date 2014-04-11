@@ -27,25 +27,25 @@ namespace Cruciatus.Elements
     public class TextBlock : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
+        /// Создает новый экземпляр класса <see cref="TextBlock"/>.
         /// </summary>
         public TextBlock()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TextBlock"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="TextBlock"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для текстового блока.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор текстового блока.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public TextBlock(AutomationElement parent, string automationId)
+        public TextBlock(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -146,16 +146,6 @@ namespace Cruciatus.Elements
             }
 
             return true;
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
     }
 }

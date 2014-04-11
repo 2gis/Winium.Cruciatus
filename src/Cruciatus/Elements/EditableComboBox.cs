@@ -30,25 +30,25 @@ namespace Cruciatus.Elements
     public class EditableComboBox : ComboBox
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="EditableComboBox"/>.
+        /// Создает новый экземпляр класса <see cref="EditableComboBox"/>.
         /// </summary>
         public EditableComboBox()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="EditableComboBox"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="EditableComboBox"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для редактируемого выпадающего списка.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор редактируемого выпадающего списка.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public EditableComboBox(AutomationElement parent, string automationId)
+        public EditableComboBox(CruciatusElement parent, string automationId)
             : base(parent, automationId)
         {
         }

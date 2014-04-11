@@ -17,28 +17,28 @@ namespace Cruciatus.Elements
 
     #endregion
 
-    public abstract class AvalonDockTabItem : TabItem
+    public class AvalonDockTabItem : TabItem
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="AvalonDockTabItem"/>.
+        /// Создает новый экземпляр класса <see cref="AvalonDockTabItem"/>.
         /// </summary>
-        protected AvalonDockTabItem()
+        public AvalonDockTabItem()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="AvalonDockTabItem"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="AvalonDockTabItem"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для вкладки.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор дочернего элемента вкладки (1 уровня).
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        protected AvalonDockTabItem(AutomationElement parent, string automationId)
+        public AvalonDockTabItem(CruciatusElement parent, string automationId)
             : base(parent, automationId)
         {
         }

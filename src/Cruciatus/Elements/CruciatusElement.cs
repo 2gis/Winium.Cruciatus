@@ -32,12 +32,18 @@ namespace Cruciatus.Elements
 
         internal new abstract ControlType GetType { get; }
 
-        internal virtual AutomationElement Element
+        internal AutomationElement Element
         {
             get
             {
                 if (ElementInstance == null)
                 {
+                    if (Parent == null || AutomationId == null)
+                    {
+                        LastErrorMessage = "Элемент нельзя использовать, пока он не инициализирован";
+                        return null;
+                    }
+
                     Find();
                 }
 
@@ -80,7 +86,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        protected void Initialize(AutomationElement parent, string automationId)
+        public void Initialize(CruciatusElement parent, string automationId)
         {
             if (parent == null)
             {
@@ -92,18 +98,13 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("automationId");
             }
 
-            Parent = parent;
-            AutomationId = automationId;
-        }
-
-        protected void Initialize(AutomationElement element)
-        {
-            if (element == null)
+            if (parent.Element == null)
             {
-                throw new ArgumentNullException("element");
+                throw new ElementNotFoundException(parent.ToString());
             }
 
-            ElementInstance = element;
+            Parent = parent.Element;
+            AutomationId = automationId;
         }
     }
 }

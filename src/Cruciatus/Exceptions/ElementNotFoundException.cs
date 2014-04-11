@@ -60,7 +60,7 @@ namespace Cruciatus.Exceptions
                     return _fieldMessage;
                 }
 
-                var str = _fieldMessage + string.Format("Подробности: {0}.\n", Element);
+                var str = _fieldMessage + string.Format(" Подробности: {0}.\n", Element);
                 return str;
             }
         }

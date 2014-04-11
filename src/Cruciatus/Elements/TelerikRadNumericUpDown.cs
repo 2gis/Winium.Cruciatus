@@ -31,25 +31,25 @@ namespace Cruciatus.Elements
         private TextBox _textBox;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TelerikRadNumericUpDown"/>.
+        /// Создает новый экземпляр класса <see cref="TelerikRadNumericUpDown"/>.
         /// </summary>
         public TelerikRadNumericUpDown()
         {
         }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="TelerikRadNumericUpDown"/>.
+        /// Создает и инициализирует новый экземпляр класса <see cref="TelerikRadNumericUpDown"/>.
         /// </summary>
         /// <param name="parent">
-        /// Элемент, являющийся родителем для числового поля.
+        /// Родительский элемент.
         /// </param>
         /// <param name="automationId">
-        /// Уникальный идентификатор числового поля.
+        /// Уникальный идентификатор в рамках родительского элемента.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public TelerikRadNumericUpDown(AutomationElement parent, string automationId)
+        public TelerikRadNumericUpDown(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -101,16 +101,6 @@ namespace Cruciatus.Elements
             {
                 return ControlType.Spinner;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
-        }
-
-        void IListElement.Initialize(AutomationElement element)
-        {
-            Initialize(element);
         }
 
         public bool SetText(string text)
@@ -168,9 +158,9 @@ namespace Cruciatus.Elements
         {
             base.Find();
 
-            _textBox = new TextBox(ElementInstance, "textbox");
-            _increaseButton = new Button(ElementInstance, "increase");
-            _decreaseButton = new Button(ElementInstance, "decrease");
+            _textBox = new TextBox(this, "textbox");
+            _increaseButton = new Button(this, "increase");
+            _decreaseButton = new Button(this, "decrease");
         }
     }
 }

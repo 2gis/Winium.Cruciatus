@@ -27,7 +27,7 @@ namespace Cruciatus.Elements
         {
         }
 
-        public DateTimePicker(AutomationElement parent, string automationId)
+        public DateTimePicker(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
         }
@@ -57,11 +57,6 @@ namespace Cruciatus.Elements
                 // TODO: а какой он??
                 return ControlType.Custom;
             }
-        }
-
-        void IContainerElement.Initialize(AutomationElement parent, string automationId)
-        {
-            Initialize(parent, automationId);
         }
 
         public void SetDateTime(string value)
