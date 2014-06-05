@@ -248,7 +248,12 @@ namespace Cruciatus
                 if (File.Exists(_exeFileName))
                 {
                     // Запуск приложения через исполняемый файл
-                    _process = Process.Start(_exeFileName);
+                    var directory = Path.GetDirectoryName(_exeFileName);
+
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    // directory не может быть null, в связи с проверкой выше наличия файла _exeFileName
+                    var info = new ProcessStartInfo { FileName = _exeFileName, WorkingDirectory = directory };
+                    _process = Process.Start(info);
                 }
                 else
                 {
