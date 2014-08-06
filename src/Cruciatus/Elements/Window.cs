@@ -52,6 +52,26 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Создает и инициализирует новый экземпляр класса <see cref="Window"/> с корневым родительским элементом.
+        /// </summary>
+        /// <param name="automationId">
+        /// Уникальный идентификатор в рамках родительского элемента.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Входные параметры не должны быть нулевыми.
+        /// </exception>
+        public Window(string automationId)
+        {
+            if (automationId == null)
+            {
+                throw new ArgumentNullException("automationId");
+            }
+
+            Parent = AutomationElement.RootElement;
+            AutomationId = automationId;
+        }
+
+        /// <summary>
         /// Возвращает текстовое представление имени класса.
         /// </summary>
         internal override string ClassName
