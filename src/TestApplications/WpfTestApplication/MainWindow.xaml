@@ -88,8 +88,19 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+                    
                     <Button Uid="SetTextButton" Content="Set 'CARAMBA' to TextBox1" Click="SetTextButtonClick"
-						Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
+						    Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200">
+                        <Button.ContextMenu>
+                            <ContextMenu Uid="SetTextButtonContextMenu">
+                                <MenuItem Header="Menu item 1"/>
+                                <MenuItem Header="Menu item 2"/>
+                                <Separator />
+                                <MenuItem Header="Menu item 3"/>
+                            </ContextMenu>
+                         </Button.ContextMenu>
+                    </Button>
+                    
                     <TextBox Uid="TextBox1" x:Name="TextBox1" Text="TextBox1"
 						Grid.Row="1" HorizontalAlignment="Center" Height="23" Margin="2" TextWrapping="Wrap" Width="200"/>
                     <ComboBox Uid="TextComboBox" x:Name="TextComboBox"
