@@ -2,12 +2,18 @@
 {
     #region using
 
+    using System.Threading;
+    using System.Windows.Forms;
+
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using WpfTestApplication.Tests.Map;
+
+    using ContextMenu = Cruciatus.Elements.ContextMenu;
+    using Menu = Cruciatus.Elements.Menu;
 
     #endregion
 
@@ -19,6 +25,8 @@
         private static WpfTestApplicationApp _application;
 
         private static FirstTab _firstTab;
+
+        private static ContextMenu _setTextButtonContextMenu;
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
@@ -36,6 +44,7 @@
         public void TestInitialize()
         {
             _firstTab = _application.MainWindow.TabItem1;
+            _setTextButtonContextMenu = _application.MainWindow.SetTextButtonContextMenu;
 
             if (_firstClassStartFlag)
             {
@@ -59,6 +68,18 @@
             Assert.IsNotNull(currentText, _firstTab.TextBox1.LastErrorMessage);
 
             Assert.AreEqual(currentText, "CARAMBA", "Верный текст не установлен в текстовое поле.");
+        }
+
+        [TestMethod]
+        public void CheckingSetTextButtonContextMenu1()
+        {
+            Assert.IsTrue(_firstTab.SetTextButton.Click(MouseButtons.Right), _firstTab.SetTextButton.LastErrorMessage);
+            Assert.IsTrue(_setTextButtonContextMenu.SelectItem("Menu item 1"),
+                          _setTextButtonContextMenu.LastErrorMessage);
+
+            Assert.IsTrue(_firstTab.SetTextButton.Click(MouseButtons.Right), _firstTab.SetTextButton.LastErrorMessage);
+            Assert.IsTrue(_setTextButtonContextMenu.SelectItem("Menu item 3"),
+                          _setTextButtonContextMenu.LastErrorMessage);
         }
 
         [TestMethod]

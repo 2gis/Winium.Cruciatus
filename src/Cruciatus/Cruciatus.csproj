@@ -52,6 +52,7 @@
     <Compile Include="Application.cs" />
     <Compile Include="CruciatusCommand.cs" />
     <Compile Include="CruciatusFactory.cs" />
+    <Compile Include="Elements\ContextMenu.cs" />
     <Compile Include="Extensions\WindowExtension.cs" />
     <Compile Include="Settings\CruciatusSettings.cs" />
     <Compile Include="Elements\AvalonDockTabItem.cs" />

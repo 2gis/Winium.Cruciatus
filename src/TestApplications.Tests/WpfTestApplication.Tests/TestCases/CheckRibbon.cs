@@ -64,6 +64,7 @@
         {
             const string headersPath = "Level1$MultiLevel2$MultiLevel3$MultiLevel4$Level5";
             Assert.IsTrue(_simpleMenu.SelectItem(headersPath), _simpleMenu.LastErrorMessage);
+            Assert.IsTrue(_simpleMenu.SelectItem(headersPath), _simpleMenu.LastErrorMessage);
         }
 
         [TestMethod]

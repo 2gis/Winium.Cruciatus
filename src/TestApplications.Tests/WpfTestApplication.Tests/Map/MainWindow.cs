@@ -58,6 +58,14 @@
             }
         }
 
+        public ContextMenu SetTextButtonContextMenu
+        {
+            get
+            {
+                return GetElement<ContextMenu>("SetTextButtonContextMenu");
+            }
+        }
+
         public override T GetElement<T>(string automationId)
         {
             var element = base.GetElement<T>(automationId);
