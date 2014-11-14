@@ -54,6 +54,7 @@
       <HintPath>..\..\Cruciatus\bin\Debug\Cruciatus.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -71,9 +72,11 @@
     <Compile Include="Map\FirstTab.cs" />
     <Compile Include="Map\MainWindow.cs" />
     <Compile Include="Map\SecondRibbonTab.cs" />
+    <Compile Include="Map\ThirdTab.cs" />
     <Compile Include="Map\SecondTab.cs" />
     <Compile Include="Map\WpfTestApplicationApp.cs" />
     <Compile Include="TestCases\CheckRibbon.cs" />
+    <Compile Include="TestCases\CheckThirdTab.cs" />
     <Compile Include="TestCases\CheckSecondTab.cs" />
     <Compile Include="TestCases\CheckFirstTab.cs" />
     <Compile Include="TestClassHelper.cs" />

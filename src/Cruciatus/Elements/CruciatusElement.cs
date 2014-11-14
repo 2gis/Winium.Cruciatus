@@ -11,15 +11,20 @@ namespace Cruciatus.Elements
     #region using
 
     using System;
-    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
 
     #endregion
 
+    /// <summary>
+    /// Базовый класс для элементов.
+    /// </summary>
     public abstract class CruciatusElement
     {
+        /// <summary>
+        /// Текст последней ошибки.
+        /// </summary>
         public string LastErrorMessage { get; internal set; }
 
         internal AutomationElement ElementInstance { get; set; }
@@ -56,30 +61,10 @@ namespace Cruciatus.Elements
             return string.Format("{0} (uid: {1})", ClassName, AutomationId ?? "nonUid");
         }
 
-        // TODO: Разобраться с ошибкой "Access to modified closure" у переменной condition
         internal virtual void Find()
         {
-            var list = AutomationId.Split('/');
+            ElementInstance = CruciatusFactory.Find(Parent, AutomationId, TreeScope.Subtree);
 
-            var condition = new PropertyCondition(AutomationElement.AutomationIdProperty, list[0]);
-            ElementInstance = CruciatusFactory.WaitingValues(
-                () => Parent.FindFirst(TreeScope.Subtree, condition), 
-                value => value == null, 
-                CruciatusFactory.Settings.SearchTimeout);
-
-            if (list.Count() > 1)
-            {
-                for (var i = 1; i < list.Count(); ++i)
-                {
-                    condition = new PropertyCondition(AutomationElement.AutomationIdProperty, list[i]);
-                    ElementInstance = CruciatusFactory.WaitingValues(
-                        () => ElementInstance.FindFirst(TreeScope.Subtree, condition), 
-                        value => value == null, 
-                        CruciatusFactory.Settings.SearchTimeout);
-                }
-            }
-
-            // Если не нашли, то загрузить элемент не удалось
             if (ElementInstance == null)
             {
                 throw new ElementNotFoundException(ToString());

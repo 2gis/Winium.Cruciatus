@@ -26,6 +26,14 @@
             }
         }
 
+        public ThirdTab TabItem3
+        {
+            get
+            {
+                return GetElement<ThirdTab>("TabItem3");
+            }
+        }
+
         public FirstRibbonTab RibbonTabItem1
         {
             get

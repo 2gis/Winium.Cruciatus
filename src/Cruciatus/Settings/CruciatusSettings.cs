@@ -39,6 +39,8 @@ namespace Cruciatus.Settings
 
         private static readonly MessageBoxButtonUid DefaultMessageBoxButtonUid = new MessageBoxButtonUid();
 
+        private static readonly OpenFileDialogUid DefaultOpenFileDialogUid = new OpenFileDialogUid();
+
         private static CruciatusSettings _instance;
 
         private CruciatusSettings()
@@ -48,6 +50,10 @@ namespace Cruciatus.Settings
             DefaultMessageBoxButtonUid.OkCancelType = new OkCancelType { Ok = "1", Cancel = "2" };
             DefaultMessageBoxButtonUid.YesNoType = new YesNoType { Yes = "6", No = "7" };
             DefaultMessageBoxButtonUid.YesNoCancelType = new YesNoCancelType { Yes = "6", No = "7", Cancel = "2" };
+
+            DefaultOpenFileDialogUid.OpenButton = "1";
+            DefaultOpenFileDialogUid.CancelButton = "2";
+            DefaultOpenFileDialogUid.FileNameComboBox = "1148";
 
             ResetToDefault();
         }
@@ -103,6 +109,11 @@ namespace Cruciatus.Settings
         /// </summary>
         public MessageBoxButtonUid MessageBoxButtonUid { get; set; }
 
+        /// <summary>
+        /// Возвращает или задает информацию о уникальных идентификаторах элементов в OpenFileDialog.
+        /// </summary>
+        public OpenFileDialogUid OpenFileDialogUid { get; set; }
+
         internal static CruciatusSettings Instance
         {
             get
@@ -127,6 +138,7 @@ namespace Cruciatus.Settings
             ClickButton = DefaultClickButton;
 
             MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
+            OpenFileDialogUid = (OpenFileDialogUid)DefaultOpenFileDialogUid.Clone();
         }
     }
 }
