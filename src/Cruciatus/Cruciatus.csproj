@@ -54,6 +54,7 @@
     <Compile Include="CruciatusFactory.cs" />
     <Compile Include="Elements\ContextMenu.cs" />
     <Compile Include="Extensions\WindowExtension.cs" />
+    <Compile Include="SaveFileDialog.cs" />
     <Compile Include="OpenFileDialog.cs" />
     <Compile Include="Settings\CruciatusSettings.cs" />
     <Compile Include="Elements\AvalonDockTabItem.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Settings\MessageBoxSettings\OkType.cs" />
     <Compile Include="Settings\MessageBoxSettings\YesNoCancelType.cs" />
     <Compile Include="Settings\MessageBoxSettings\YesNoType.cs" />
+    <Compile Include="Settings\SaveFileDialogUid.cs" />
     <Compile Include="Settings\OpenFileDialogUid.cs" />
     <Compile Include="WindowFactory.cs" />
   </ItemGroup>

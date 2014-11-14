@@ -41,6 +41,8 @@ namespace Cruciatus.Settings
 
         private static readonly OpenFileDialogUid DefaultOpenFileDialogUid = new OpenFileDialogUid();
 
+        private static readonly SaveFileDialogUid DefaultSaveFileDialogUid = new SaveFileDialogUid();
+
         private static CruciatusSettings _instance;
 
         private CruciatusSettings()
@@ -53,7 +55,12 @@ namespace Cruciatus.Settings
 
             DefaultOpenFileDialogUid.OpenButton = "1";
             DefaultOpenFileDialogUid.CancelButton = "2";
-            DefaultOpenFileDialogUid.FileNameComboBox = "1148";
+            DefaultOpenFileDialogUid.FileNameEditableComboBox = "1148";
+
+            DefaultSaveFileDialogUid.SaveButton = "1";
+            DefaultSaveFileDialogUid.CancelButton = "2";
+            DefaultSaveFileDialogUid.FileNameEditableComboBox = "FileNameControlHost";
+            DefaultSaveFileDialogUid.FileTypeComboBox = "FileTypeControlHost";
 
             ResetToDefault();
         }
@@ -114,6 +121,11 @@ namespace Cruciatus.Settings
         /// </summary>
         public OpenFileDialogUid OpenFileDialogUid { get; set; }
 
+        /// <summary>
+        /// Возвращает или задает информацию о уникальных идентификаторах элементов в SaveFileDialog.
+        /// </summary>
+        public SaveFileDialogUid SaveFileDialogUid { get; set; }
+
         internal static CruciatusSettings Instance
         {
             get
@@ -139,6 +151,7 @@ namespace Cruciatus.Settings
 
             MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
             OpenFileDialogUid = (OpenFileDialogUid)DefaultOpenFileDialogUid.Clone();
+            SaveFileDialogUid = (SaveFileDialogUid)DefaultSaveFileDialogUid.Clone();
         }
     }
 }

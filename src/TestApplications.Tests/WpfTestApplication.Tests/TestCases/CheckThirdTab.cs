@@ -49,5 +49,22 @@
             var cancelButton = OpenFileDialog.GetCancelButton(_application.MainWindow);
             Assert.IsTrue(cancelButton.Click(), cancelButton.LastErrorMessage);
         }
+
+        [TestMethod]
+        public void CheckingSaveFileDialog()
+        {
+            Assert.IsTrue(_thirdTab.Select(), _thirdTab.LastErrorMessage);
+
+            Assert.IsTrue(_thirdTab.SaveFileDialogButton.Click(), _thirdTab.SaveFileDialogButton.LastErrorMessage);
+
+            var fileName = SaveFileDialog.GetFileNameEditableComboBox(_application.MainWindow).Text;
+            Assert.AreEqual("Program.cs", fileName);
+
+            var fileType = SaveFileDialog.GetFileTypeComboBox(_application.MainWindow).Text;
+            Assert.AreEqual("Visual C# Files (*.cs)", fileType);
+
+            var cancelButton = SaveFileDialog.GetCancelButton(_application.MainWindow);
+            Assert.IsTrue(cancelButton.Click(), cancelButton.LastErrorMessage);
+        }
     }
 }

@@ -7,7 +7,7 @@
     #endregion
 
     /// <summary>
-    /// Класс, описывающий уникальные индетификаторы элементов диалога OpenFileDialog.
+    /// Класс, описывающий уникальные идентификаторы элементов диалога OpenFileDialog.
     /// </summary>
     public class OpenFileDialogUid : ICloneable
     {
@@ -24,7 +24,7 @@
         /// <summary>
         /// Редактируемый выпадающий список с именем открываемого файла.
         /// </summary>
-        public string FileNameComboBox { get; set; }
+        public string FileNameEditableComboBox { get; set; }
 
         public object Clone()
         {
@@ -32,7 +32,7 @@
             {
                 OpenButton = OpenButton,
                 CancelButton = CancelButton,
-                FileNameComboBox = FileNameComboBox
+                FileNameEditableComboBox = FileNameEditableComboBox
             };
         }
     }
