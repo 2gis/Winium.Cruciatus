@@ -112,6 +112,7 @@
 						Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
                 </Grid>
             </TabItem>
+            
             <TabItem Header="TabItem2" Uid="TabItem2">
                 <Grid Background="#FFE5E5E5">
                     <Grid.RowDefinitions>
@@ -133,6 +134,20 @@
 						Checked="CheckBox2Checked" Unchecked="CheckBox2Unchecked"/>
                     <ListBox Uid="CheckListBox" x:Name="CheckListBox"
 						Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="TabItem3" Uid="TabItem3">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Button Uid="OpenFileDialogButton" Content="Open file dialog" Click="OpenFileDialogButtonClick"
+						Grid.Row="0" HorizontalAlignment="Center" Margin="2" Width="200"/>
+                    <Button Uid="SaveFileDialogButton" Content="Save file dialog" Click="SaveFileDialogButtonClick"
+						Grid.Row="1" HorizontalAlignment="Center" Margin="2" Width="200"/>
                 </Grid>
             </TabItem>
         </TabControl>

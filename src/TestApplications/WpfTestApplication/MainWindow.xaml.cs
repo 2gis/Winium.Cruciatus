@@ -6,6 +6,8 @@
     using System.Windows;
     using System.Windows.Controls;
 
+    using Microsoft.Win32;
+
     #endregion
 
     /// <summary>
@@ -120,6 +122,18 @@
         private void ChangeEnabledButtonClick(object sender, RoutedEventArgs e)
         {
             TextBox2.IsEnabled = !TextBox2.IsEnabled;
+        }
+
+        private void OpenFileDialogButtonClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog { FileName = "Program.cs" };
+            dialog.ShowDialog();
+        }
+
+        private void SaveFileDialogButtonClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog { FileName = "Program.cs", Filter = "Visual C# Files|*.cs" };
+            dialog.ShowDialog();
         }
     }
 }
