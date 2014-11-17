@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Windows.Forms;
 
+    using Cruciatus;
     using Cruciatus.Elements;
 
     using Microsoft.VisualStudio.TestTools.UITesting;
@@ -78,8 +79,9 @@
                           _setTextButtonContextMenu.LastErrorMessage);
 
             Assert.IsTrue(_firstTab.SetTextButton.Click(MouseButtons.Right), _firstTab.SetTextButton.LastErrorMessage);
-            Assert.IsTrue(_setTextButtonContextMenu.SelectItem("Menu item 3"),
-                          _setTextButtonContextMenu.LastErrorMessage);
+            Assert.IsFalse(_setTextButtonContextMenu.SelectItem("Menu item 3"),
+                           _setTextButtonContextMenu.LastErrorMessage);
+            Keyboard.SendKeys("{ESCAPE}");
         }
 
         [TestMethod]

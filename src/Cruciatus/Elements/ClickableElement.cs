@@ -21,6 +21,9 @@ namespace Cruciatus.Elements
 
     #endregion
 
+    /// <summary>
+    /// Представляет кликабельный элемент управления.
+    /// </summary>
     public class ClickableElement : CruciatusElement, IContainerElement, IListElement, IClickable
     {
         /// <summary>
@@ -45,6 +48,23 @@ namespace Cruciatus.Elements
         public ClickableElement(CruciatusElement parent, string automationId)
         {
             Initialize(parent, automationId);
+        }
+
+        /// <summary>
+        /// Возвращает значение, указывающее, включен ли элемент.
+        /// </summary>
+        /// <exception cref="PropertyNotSupportedException">
+        /// Кнопка не поддерживает данное свойство.
+        /// </exception>
+        /// <exception cref="InvalidCastException">
+        /// При получении значения свойства не удалось привести его к ожидаемому типу.
+        /// </exception>
+        public bool IsEnabled
+        {
+            get
+            {
+                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
+            }
         }
 
         /// <summary>
@@ -109,6 +129,12 @@ namespace Cruciatus.Elements
         {
             try
             {
+                if (!IsEnabled)
+                {
+                    LastErrorMessage = "Элемент отключен.";
+                    return false;
+                }
+
                 CruciatusCommand.Click(ClickablePoint, mouseButton);
             }
             catch (CruciatusException exc)

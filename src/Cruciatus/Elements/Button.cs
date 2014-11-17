@@ -50,23 +50,6 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включена ли кнопка.
-        /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Кнопка не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
-        public bool IsEnabled
-        {
-            get
-            {
-                return this.GetPropertyValue<bool>(AutomationElement.IsEnabledProperty);
-            }
-        }
-
-        /// <summary>
         /// Возвращает координаты точки, внутри кнопки, которые можно использовать для нажатия.
         /// </summary>
         /// <exception cref="PropertyNotSupportedException">
