@@ -11,6 +11,7 @@ namespace Cruciatus.Elements
     #region using
 
     using System;
+    using System.Linq;
     using System.Windows.Automation;
 
     using Cruciatus.Interfaces;
@@ -73,6 +74,47 @@ namespace Cruciatus.Elements
         /// </returns>
         public virtual bool SelectItem(string headersPath)
         {
+            string name;
+            var element = GetItem(headersPath, out name);
+            if (element == null)
+            {
+                return false;
+            }
+
+            var clickableElement = new ClickableElement { ElementInstance = element };
+            if (!clickableElement.Click())
+            {
+                LastErrorMessage = string.Format(
+                    "Не удалось кликнуть по элементу меню {0}. Подробности: {1}",
+                    name,
+                    clickableElement.LastErrorMessage);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Возвращает значение, указывающее, включен ли элемент меню.
+        /// </summary>
+        /// <param name="headersPath">
+        /// Путь из заголовков для прохода (пример: control$view$zoom).
+        /// </param>
+        public bool ItemIsEnabled(string headersPath)
+        {
+            string name;
+            var element = GetItem(headersPath, out name);
+            if (element == null)
+            {
+                return false;
+            }
+
+            var clickableElement = new ClickableElement { ElementInstance = element };
+            return clickableElement.IsEnabled;
+        }
+
+        private AutomationElement GetItem(string headersPath, out string name)
+        {
             if (headersPath == null)
             {
                 throw new ArgumentNullException("headersPath");
@@ -80,32 +122,40 @@ namespace Cruciatus.Elements
 
             var headers = headersPath.Split('$');
 
-            var current = Element;
-            foreach (var header in headers)
+            var item = Element;
+            for (var i = 0; i < headers.Length; ++i)
             {
-                var condition = new PropertyCondition(AutomationElement.NameProperty, header);
-                current = current.FindFirst(TreeScope.Children, condition);
-                if (current == null)
+                var condition = new PropertyCondition(AutomationElement.NameProperty, headers[i]);
+                item = item.FindFirst(TreeScope.Children, condition);
+                if (item == null)
                 {
                     LastErrorMessage = string.Format(
-                        "В {0} нет меню с заголовком {1}.", 
-                        ToString(), 
-                        header);
-                    return false;
+                        "В {0} нет меню с заголовком {1}.",
+                        ToString(),
+                        headers[i]);
+                    name = string.Empty;
+                    return null;
                 }
 
-                var clickableElement = new ClickableElement { ElementInstance = current };
+                if (i == headers.Length - 1)
+                {
+                    break;
+                }
+
+                var clickableElement = new ClickableElement { ElementInstance = item };
                 if (!clickableElement.Click())
                 {
                     LastErrorMessage = string.Format(
-                        "Не удалось кликнуть по меню {0}. Подробности: {1}", 
-                        header, 
+                        "Не удалось кликнуть по элементу меню {0}. Подробности: {1}",
+                        headers[i],
                         clickableElement.LastErrorMessage);
-                    return false;
+                    name = string.Empty;
+                    return null;
                 }
             }
 
-            return true;
+            name = headers.Last();
+            return item;
         }
     }
 }

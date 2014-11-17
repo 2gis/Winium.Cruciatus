@@ -79,8 +79,7 @@
                           _setTextButtonContextMenu.LastErrorMessage);
 
             Assert.IsTrue(_firstTab.SetTextButton.Click(MouseButtons.Right), _firstTab.SetTextButton.LastErrorMessage);
-            Assert.IsFalse(_setTextButtonContextMenu.SelectItem("Menu item 3"),
-                           _setTextButtonContextMenu.LastErrorMessage);
+            Assert.IsFalse(_setTextButtonContextMenu.ItemIsEnabled("Menu item 3"), "Пункт Menu item 3 оказался активен.");
             Keyboard.SendKeys("{ESCAPE}");
         }
 
