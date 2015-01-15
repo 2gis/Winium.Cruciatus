@@ -1,6 +1,6 @@
 ﻿namespace Cruciatus.Core
 {
-    public enum MouseButtons
+    public enum MouseButton
     {
         Left,
         Right

@@ -78,5 +78,21 @@
                 return new Menu(this, By.Uid("SetTextButtonContextMenu"));
             }
         }
+
+        public OpenFileDialog OpenFileDialog
+        {
+            get
+            {
+                return new OpenFileDialog(this, By.Name("Открытие"));
+            }
+        }
+
+        public SaveFileDialog SaveFileDialog
+        {
+            get
+            {
+                return new SaveFileDialog(this, By.Name("Сохранение"));
+            }
+        }
     }
 }

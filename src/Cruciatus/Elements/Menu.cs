@@ -24,11 +24,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class Menu : CruciatusElement
     {
-        internal Menu(AutomationElement parent, AutomationElement element, By selector)
-            : base(parent, element, selector)
-        {
-        }
-
         public Menu(CruciatusElement element)
             : base(element)
         {

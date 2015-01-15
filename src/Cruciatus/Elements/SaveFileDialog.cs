@@ -6,14 +6,13 @@
 //   Представляет класс для работы с диалоговым окном Microsoft.Win32.SaveFileDialog.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus
+namespace Cruciatus.Elements
 {
     #region using
 
     using System.Windows.Automation;
 
     using Cruciatus.Core;
-    using Cruciatus.Elements;
     using Cruciatus.Extensions;
 
     #endregion
@@ -36,37 +35,49 @@ namespace Cruciatus
         /// <summary>
         /// Возвращает кнопку Сохранить.
         /// </summary>
-        public CruciatusElement GetSaveButton()
+        public CruciatusElement SaveButton
         {
-            var uid = CruciatusFactory.Settings.SaveFileDialogUid.SaveButton;
-            return Get(By.Uid(TreeScope.Children, uid));
+            get
+            {
+                var uid = CruciatusFactory.Settings.SaveFileDialogUid.SaveButton;
+                return Get(By.Uid(TreeScope.Children, uid));
+            }
         }
 
         /// <summary>
         /// Возвращает кнопку Отмена.
         /// </summary>
-        public CruciatusElement GetCancelButton()
+        public CruciatusElement CancelButton
         {
-            var uid = CruciatusFactory.Settings.SaveFileDialogUid.CancelButton;
-            return Get(By.Uid(TreeScope.Children, uid));
+            get
+            {
+                var uid = CruciatusFactory.Settings.SaveFileDialogUid.CancelButton;
+                return Get(By.Uid(TreeScope.Children, uid));
+            }
         }
 
         /// <summary>
-        /// Возвращает редактируемый выпадающий список с именем открываемого файла.
+        /// Возвращает выпадающий список с именем открываемого файла.
         /// </summary>
-        public ComboBox GetFileNameEditableComboBox()
+        public ComboBox FileNameComboBox
         {
-            var uid = CruciatusFactory.Settings.SaveFileDialogUid.FileNameEditableComboBox;
-            return Get(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
+            get
+            {
+                var uid = CruciatusFactory.Settings.SaveFileDialogUid.FileNameEditableComboBox;
+                return Get(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
+            }
         }
 
         /// <summary>
         /// Возвращает выпадающий список с типом открываемого файла.
         /// </summary>
-        public ComboBox GetFileTypeComboBox()
+        public ComboBox FileTypeComboBox
         {
-            var uid = CruciatusFactory.Settings.SaveFileDialogUid.FileTypeComboBox;
-            return Get(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
+            get
+            {
+                var uid = CruciatusFactory.Settings.SaveFileDialogUid.FileTypeComboBox;
+                return Get(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
+            }
         }
     }
 }

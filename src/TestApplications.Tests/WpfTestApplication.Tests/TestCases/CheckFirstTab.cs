@@ -56,12 +56,12 @@
         [Test]
         public void CheckingSetTextButtonContextMenu1()
         {
-            _firstTab.SetTextButton.Click(MouseButtons.Right);
+            _firstTab.SetTextButton.Click(MouseButton.Right);
             _setTextButtonContextMenu.SelectItem("Menu item 1");
 
-            _firstTab.SetTextButton.Click(MouseButtons.Right);
+            _firstTab.SetTextButton.Click(MouseButton.Right);
             Assert.IsFalse(_setTextButtonContextMenu.GetItem("Menu item 3").Properties.IsEnabled, "Пункт Menu item 3 оказался активен.");
-            CruciatusCommand.Keyboard.SendKeys("{ESCAPE}");
+            Keyboard.SendKeys("{ESCAPE}");
         }
 
         [Test]

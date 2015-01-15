@@ -6,7 +6,7 @@
 
     #endregion
 
-    public class Keyboard
+    public static class Keyboard
     {
         public const string Enter = "{ENTER}";
 
@@ -20,33 +20,33 @@
 
         private static readonly Logger Logger = CruciatusFactory.Logger;
 
-        public void SendKeys(string text)
+        public static void SendKeys(string text)
         {
             Logger.Info("Send keys '{0}'", text);
             System.Windows.Forms.SendKeys.SendWait(text);
         }
 
-        public void SendEnter()
+        public static void SendEnter()
         {
             SendKeys(Enter);
         }
 
-        public void SendBackspace()
+        public static void SendBackspace()
         {
             SendKeys(Backspace);
         }
 
-        public void SendCtrlA()
+        public static void SendCtrlA()
         {
             SendKeys(CtrlA);
         }
 
-        public void SendCtrlC()
+        public static void SendCtrlC()
         {
             SendKeys(CtrlC);
         }
 
-        public void SendCtrlV()
+        public static void SendCtrlV()
         {
             SendKeys(CtrlV);
         }

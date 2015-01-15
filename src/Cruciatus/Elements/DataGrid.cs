@@ -24,11 +24,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class DataGrid : CruciatusElement
     {
-        internal DataGrid(AutomationElement parent, AutomationElement element, By selector)
-            : base(parent, element, selector)
-        {
-        }
-
         public DataGrid(CruciatusElement parent, By selector)
             : base(parent, selector)
         {

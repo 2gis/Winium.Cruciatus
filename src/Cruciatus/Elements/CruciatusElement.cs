@@ -100,17 +100,17 @@ namespace Cruciatus.Elements
             Click(CruciatusFactory.Settings.ClickButton);
         }
 
-        public void Click(MouseButtons button)
+        public void Click(MouseButton button)
         {
             Click(button, ClickStrategies.None, false);
         }
 
-        public void Click(MouseButtons button, ClickStrategies strategy)
+        public void Click(MouseButton button, ClickStrategies strategy)
         {
             Click(button, strategy, false);
         }
 
-        public void Click(MouseButtons button, ClickStrategies strategy, bool doubleClick)
+        public void Click(MouseButton button, ClickStrategies strategy, bool doubleClick)
         {
             if (!Instanse.Current.IsEnabled)
             {
@@ -156,12 +156,12 @@ namespace Cruciatus.Elements
             DoubleClick(CruciatusFactory.Settings.ClickButton);
         }
 
-        public void DoubleClick(MouseButtons button)
+        public void DoubleClick(MouseButton button)
         {
             DoubleClick(button, ClickStrategies.None);
         }
 
-        public void DoubleClick(MouseButtons button, ClickStrategies strategy)
+        public void DoubleClick(MouseButton button, ClickStrategies strategy)
         {
             Click(button, strategy, true);
         }
@@ -174,26 +174,26 @@ namespace Cruciatus.Elements
                 throw new ElementNotEnabledException("NOT SET TEXT");
             }
 
-            Click(MouseButtons.Left, ClickStrategies.ClickablePoint | ClickStrategies.BoundingRectangleCenter);
+            Click(MouseButton.Left, ClickStrategies.ClickablePoint | ClickStrategies.BoundingRectangleCenter);
 
             text = Keyboard.CtrlA + Keyboard.Backspace + text;
-            CruciatusCommand.Keyboard.SendKeys(text);
+            Keyboard.SendKeys(text);
         }
 
         public string Text()
         {
-            return Text(GetTextStrategy.None);
+            return Text(GetTextStrategies.None);
         }
 
-        public string Text(GetTextStrategy strategy)
+        public string Text(GetTextStrategies strategy)
         {
-            if (strategy == GetTextStrategy.None)
+            if (strategy == GetTextStrategies.None)
             {
                 strategy = ~strategy;
             }
 
             string text;
-            if (strategy.HasFlag(GetTextStrategy.TextPattern))
+            if (strategy.HasFlag(GetTextStrategies.TextPattern))
             {
                 if (CruciatusCommand.TryGetTextUsingTextPattern(this, out text))
                 {
@@ -201,7 +201,7 @@ namespace Cruciatus.Elements
                 }
             }
 
-            if (strategy.HasFlag(GetTextStrategy.ValuePattern))
+            if (strategy.HasFlag(GetTextStrategies.ValuePattern))
             {
                 if (CruciatusCommand.TryGetTextUsingValuePattern(this, out text))
                 {

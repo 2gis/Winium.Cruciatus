@@ -21,11 +21,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class RibbonApplicationMenu : Menu
     {
-        internal RibbonApplicationMenu(AutomationElement parent, AutomationElement element, By selector)
-            : base(parent, element, selector)
-        {
-        }
-
         public RibbonApplicationMenu(CruciatusElement parent, By selector)
             : base(parent, selector)
         {

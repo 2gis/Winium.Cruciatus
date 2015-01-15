@@ -22,11 +22,6 @@ namespace Cruciatus.Elements
     /// </summary>
     public class ListBox : CruciatusElement
     {
-        internal ListBox(AutomationElement parent, AutomationElement element, By selector)
-            : base(parent, element, selector)
-        {
-        }
-
         public ListBox(CruciatusElement parent)
             : base(parent)
         {

@@ -57,12 +57,11 @@
     <Compile Include="Core\Mouse.cs" />
     <Compile Include="Core\MouseButtons.cs" />
     <Compile Include="Core\MouseNativeMethods.cs" />
-    <Compile Include="Core\WindowsConstants.cs" />
     <Compile Include="CruciatusCommand.cs" />
     <Compile Include="CruciatusFactory.cs" />
     <Compile Include="Elements\Menu.cs" />
-    <Compile Include="SaveFileDialog.cs" />
-    <Compile Include="OpenFileDialog.cs" />
+    <Compile Include="Elements\SaveFileDialog.cs" />
+    <Compile Include="Elements\OpenFileDialog.cs" />
     <Compile Include="Settings\CruciatusSettings.cs" />
     <Compile Include="Elements\CheckBox.cs" />
     <Compile Include="Elements\ComboBox.cs" />

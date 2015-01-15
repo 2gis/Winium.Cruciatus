@@ -35,7 +35,7 @@ namespace Cruciatus.Settings
 
         private const int DefaultScrollBarHeight = 18;
 
-        private const MouseButtons DefaultClickButton = MouseButtons.Left;
+        private const MouseButton DefaultClickButton = MouseButton.Left;
 
         private static readonly MessageBoxButtonUid DefaultMessageBoxButtonUid = new MessageBoxButtonUid();
 
@@ -109,7 +109,7 @@ namespace Cruciatus.Settings
         /// <summary>
         /// Возвращает или задает кнопку мыши, которой производится нажатие (click).
         /// </summary>
-        public MouseButtons ClickButton { get; set; }
+        public MouseButton ClickButton { get; set; }
 
         /// <summary>
         /// Возвращает или задает информацию о уникальных идентификаторах кнопок в MessageBox.

@@ -7,7 +7,7 @@ namespace Cruciatus.Core
     #endregion
 
     [Flags]
-    public enum GetTextStrategy
+    public enum GetTextStrategies
     {
         None = 0, 
 

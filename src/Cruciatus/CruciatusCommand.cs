@@ -20,8 +20,6 @@ namespace Cruciatus
 
     using NLog;
 
-    using Keyboard = Cruciatus.Core.Keyboard;
-    using Mouse = Cruciatus.Core.Mouse;
     using Point = System.Windows.Point;
 
     #endregion
@@ -30,11 +28,7 @@ namespace Cruciatus
     {
         private static readonly Logger Logger = CruciatusFactory.Logger;
 
-        public static readonly Mouse Mouse = new Mouse();
-
-        public static readonly Keyboard Keyboard = new Keyboard();
-
-        public static bool TryClickOnClickablePoint(MouseButtons button, CruciatusElement element, bool doubleClick)
+        public static bool TryClickOnClickablePoint(MouseButton button, CruciatusElement element, bool doubleClick)
         {
             if (element == null)
             {
@@ -62,7 +56,7 @@ namespace Cruciatus
             return true;
         }
 
-        public static bool TryClickOnBoundingRectangleCenter(MouseButtons button, CruciatusElement element, bool doubleClick)
+        public static bool TryClickOnBoundingRectangleCenter(MouseButton button, CruciatusElement element, bool doubleClick)
         {
             if (element == null)
             {

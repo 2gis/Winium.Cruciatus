@@ -2,8 +2,8 @@
 {
     #region using
 
-    using Cruciatus;
     using Cruciatus.Core;
+    using Cruciatus.Elements;
 
     using NUnit.Framework;
 
@@ -50,11 +50,11 @@
         {
             _thirdTab.OpenFileDialogButton.Click();
 
-            var openFileDialog = new OpenFileDialog(_application.MainWindow);
-            var fileName = openFileDialog.GetFileNameEditableComboBox().Text();
+            var openFileDialog = _application.MainWindow.OpenFileDialog;
+            var fileName = openFileDialog.FileNameComboBox.Text();
             Assert.AreEqual("Program.cs", fileName);
 
-            openFileDialog.GetCancelButton().Click();
+            openFileDialog.CancelButton.Click();
         }
 
         [Test]
@@ -62,14 +62,14 @@
         {
             _thirdTab.SaveFileDialogButton.Click();
 
-            var saveFileDialog = new SaveFileDialog(_application.MainWindow, By.Name("Сохранение"));
-            var fileName = saveFileDialog.GetFileNameEditableComboBox().Text();
+            var saveFileDialog = _application.MainWindow.SaveFileDialog;
+            var fileName = saveFileDialog.FileNameComboBox.Text();
             Assert.AreEqual("Program.cs", fileName);
 
-            var fileType = saveFileDialog.GetFileTypeComboBox().SelectedItem().Properties.Name;
+            var fileType = saveFileDialog.FileTypeComboBox.SelectedItem().Properties.Name;
             Assert.AreEqual("Visual C# Files (*.cs)", fileType);
 
-            saveFileDialog.GetCancelButton().Click();
+            saveFileDialog.CancelButton.Click();
         }
     }
 }
