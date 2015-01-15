@@ -10,87 +10,64 @@ namespace Cruciatus
 {
     #region using
 
-    using System;
     using System.Windows.Automation;
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
+    using Cruciatus.Extensions;
 
     #endregion
 
     /// <summary>
     /// Класс для работы с диалоговым окном Microsoft.Win32.OpenFileDialog.
     /// </summary>
-    public static class OpenFileDialog
+    public class OpenFileDialog
     {
+        private readonly CruciatusElement _parent;
+
+        private readonly By _selector;
+
+        private CruciatusElement _instance;
+
+        public OpenFileDialog(CruciatusElement parent)
+        {
+            _parent = parent;
+            _selector = By.AutomationProperty(TreeScope.Subtree, WindowPattern.IsModalProperty, true);
+        }
+
+        private CruciatusElement Instance
+        {
+            get
+            {
+                return _instance ?? (_instance = _parent.Get(_selector));
+            }
+        }
+
         /// <summary>
         /// Возвращает кнопку Открыть.
         /// </summary>
-        /// <param name="parent">
-        /// Родительский элемент диалогового окна.
-        /// </param>
-        public static Button GetOpenButton(CruciatusElement parent)
+        public CruciatusElement GetOpenButton()
         {
-            var dialog = GetInstance(parent);
             var uid = CruciatusFactory.Settings.OpenFileDialogUid.OpenButton;
-            var buttonInstance = CruciatusFactory.Find(dialog, uid, TreeScope.Children);
-            return new Button
-            {
-                Parent = dialog,
-                AutomationId = uid,
-                ElementInstance = buttonInstance
-            };
+            return Instance.Get(By.Uid(TreeScope.Children, uid));
         }
 
         /// <summary>
         /// Возвращает кнопку Отмена.
         /// </summary>
-        /// <param name="parent">
-        /// Родительский элемент диалогового окна.
-        /// </param>
-        public static Button GetCancelButton(CruciatusElement parent)
+        public CruciatusElement GetCancelButton()
         {
-            var dialog = GetInstance(parent);
             var uid = CruciatusFactory.Settings.OpenFileDialogUid.CancelButton;
-            var buttonInstance = CruciatusFactory.Find(dialog, uid, TreeScope.Children);
-            return new Button
-            {
-                Parent = dialog,
-                AutomationId = uid,
-                ElementInstance = buttonInstance
-            };
+            return Instance.Get(By.Uid(TreeScope.Children, uid));
         }
 
         /// <summary>
         /// Возвращает редактируемый выпадающий список с именем открываемого файла.
         /// </summary>
-        /// <param name="parent">
-        /// Родительский элемент диалогового окна.
-        /// </param>
-        public static EditableComboBox GetFileNameEditableComboBox(CruciatusElement parent)
+        public ComboBox GetFileNameEditableComboBox()
         {
-            var dialog = GetInstance(parent);
             var uid = CruciatusFactory.Settings.OpenFileDialogUid.FileNameEditableComboBox;
-            var buttonInstance = CruciatusFactory.Find(dialog, uid, TreeScope.Children);
-            return new EditableComboBox
-            {
-                Parent = dialog,
-                AutomationId = uid,
-                ElementInstance = buttonInstance
-            };
-        }
-
-        private static AutomationElement GetInstance(CruciatusElement parent)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            var instance = CruciatusFactory.WaitingValues(() => parent.Element.FindFirst(TreeScope.Subtree, condition),
-                                                          value => value == null,
-                                                          CruciatusFactory.Settings.SearchTimeout);
-            return instance;
+            return Instance.Get(By.Uid(TreeScope.Children, uid)).ToComboBox();
         }
     }
 }

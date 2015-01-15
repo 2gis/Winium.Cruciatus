@@ -2,27 +2,32 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
     public class SecondTab : TabItem
     {
-        public Button ChangeEnabledButton
+        public SecondTab(CruciatusElement parent, By selector)
+            : base(parent, selector)
+        {
+        }
+
+        public CruciatusElement ChangeEnabledButton
         {
             get
             {
-                return GetElement<Button>("ChangeEnabledButton");
+                return Get(By.Uid("ChangeEnabledButton"));
             }
         }
 
-        public TextBox TextBox2
+        public CruciatusElement TextBox2
         {
             get
             {
-                return GetElement<TextBox>("TextBox2");
+                return Get(By.Uid("TextBox2"));
             }
         }
 
@@ -30,7 +35,7 @@
         {
             get
             {
-                return GetElement<CheckBox>("CheckBox2");
+                return Get(By.Uid("CheckBox2")).ToCheckBox();
             }
         }
 
@@ -38,15 +43,8 @@
         {
             get
             {
-                return GetElement<ListBox>("CheckListBox");
+                return Get(By.Uid("CheckListBox")).ToListBox();
             }
-        }
-
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
         }
     }
 }

@@ -2,19 +2,24 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
-    public class MainWindow : Window
+    public class MainWindow : CruciatusElement
     {
+        public MainWindow(CruciatusElement parent, By selector)
+            : base(parent, selector)
+        {
+        }
+
         public FirstTab TabItem1
         {
             get
             {
-                return GetElement<FirstTab>("TabItem1");
+                return new FirstTab(this, By.Uid("TabItem1"));
             }
         }
 
@@ -22,7 +27,7 @@
         {
             get
             {
-                return GetElement<SecondTab>("TabItem2");
+                return new SecondTab(this, By.Uid("TabItem2"));
             }
         }
 
@@ -30,7 +35,7 @@
         {
             get
             {
-                return GetElement<ThirdTab>("TabItem3");
+                return new ThirdTab(this, By.Uid("TabItem3"));
             }
         }
 
@@ -38,7 +43,7 @@
         {
             get
             {
-                return GetElement<FirstRibbonTab>("RibbonTabItem1");
+                return new FirstRibbonTab(this, By.Uid("RibbonTabItem1"));
             }
         }
 
@@ -46,7 +51,7 @@
         {
             get
             {
-                return GetElement<SecondRibbonTab>("RibbonTabItem2");
+                return new SecondRibbonTab(this, By.Uid("RibbonTabItem2"));
             }
         }
 
@@ -54,7 +59,7 @@
         {
             get
             {
-                return GetElement<RibbonApplicationMenu>("RibbonMenu");
+                return new RibbonApplicationMenu(this, By.Uid("RibbonMenu"));
             }
         }
 
@@ -62,23 +67,16 @@
         {
             get
             {
-                return GetElement<Menu>("SimpleMenu");
+                return Get(By.Uid("SimpleMenu")).ToMenu();
             }
         }
 
-        public ContextMenu SetTextButtonContextMenu
+        public Menu SetTextButtonContextMenu
         {
             get
             {
-                return GetElement<ContextMenu>("SetTextButtonContextMenu");
+                return new Menu(this, By.Uid("SetTextButtonContextMenu"));
             }
-        }
-
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
         }
     }
 }

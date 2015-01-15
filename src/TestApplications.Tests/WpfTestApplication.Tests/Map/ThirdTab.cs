@@ -2,35 +2,32 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     #endregion
 
     public class ThirdTab : TabItem
     {
-        public Button OpenFileDialogButton
+        public ThirdTab(CruciatusElement parent, By selector)
+            : base(parent, selector)
+        {
+        }
+
+        public CruciatusElement OpenFileDialogButton
         {
             get
             {
-                return GetElement<Button>("OpenFileDialogButton");
+                return Get(By.Uid("OpenFileDialogButton"));
             }
         }
 
-        public Button SaveFileDialogButton
+        public CruciatusElement SaveFileDialogButton
         {
             get
             {
-                return GetElement<Button>("SaveFileDialogButton");
+                return Get(By.Uid("SaveFileDialogButton"));
             }
-        }
-
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
         }
     }
 }

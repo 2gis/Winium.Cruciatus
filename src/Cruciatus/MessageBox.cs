@@ -11,10 +11,13 @@ namespace Cruciatus
     #region using
 
     using System;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Automation;
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
+    using Cruciatus.Exceptions;
 
     #endregion
 
@@ -28,10 +31,10 @@ namespace Cruciatus
             }
 
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            return parent.Element.FindAll(TreeScope.Children, condition).Count;
+            return AutomationElementHelper.FindAll(parent.Instanse, TreeScope.Children, condition, 60).Count();
         }
 
-        public static bool ClickButton(CruciatusElement parent, MessageBoxButton buttonsType, MessageBoxResult button)
+        public static void ClickButton(CruciatusElement parent, MessageBoxButton buttonsType, MessageBoxResult button)
         {
             if (parent == null)
             {
@@ -39,10 +42,10 @@ namespace Cruciatus
             }
 
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            var modalwindow = parent.Element.FindFirst(TreeScope.Children, condition);
+            var modalwindow = AutomationElementHelper.FindFirst(parent.Instanse, TreeScope.Children, condition);
             if (modalwindow == null)
             {
-                return false;
+                throw new CruciatusException("NOT CLICK BUTTON");
             }
 
             string uid;
@@ -61,7 +64,7 @@ namespace Cruciatus
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkType.Ok;
                                 break;
                             default:
-                                return false;
+                                throw new CruciatusException("NOT CLICK BUTTON");
                         }
 
                         break;
@@ -76,7 +79,7 @@ namespace Cruciatus
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.Cancel;
                                 break;
                             default:
-                                return false;
+                                throw new CruciatusException("NOT CLICK BUTTON");
                         }
 
                         break;
@@ -91,7 +94,7 @@ namespace Cruciatus
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.No;
                                 break;
                             default:
-                                return false;
+                                throw new CruciatusException("NOT CLICK BUTTON");
                         }
 
                         break;
@@ -109,18 +112,18 @@ namespace Cruciatus
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.Cancel;
                                 break;
                             default:
-                                return false;
+                                throw new CruciatusException("NOT CLICK BUTTON");
                         }
 
                         break;
 
                     default:
-                        return false;
+                        throw new CruciatusException("NOT CLICK BUTTON");
                 }
             }
 
-            var buttonElement = new Button { Parent = modalwindow, AutomationId = uid };
-            return buttonElement.Click();
+            var buttonElement = new CruciatusElement(parent.Instanse, modalwindow, null).Get(By.Uid(uid));
+            buttonElement.Click();
         }
     }
 }

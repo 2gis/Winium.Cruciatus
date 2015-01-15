@@ -11,8 +11,8 @@ namespace Cruciatus.Settings
     #region using
 
     using System.Diagnostics.CodeAnalysis;
-    using System.Windows.Forms;
 
+    using Cruciatus.Core;
     using Cruciatus.Settings.MessageBoxSettings;
 
     #endregion
@@ -21,7 +21,7 @@ namespace Cruciatus.Settings
     {
         private const int DefaultWaitingPeriod = 25;
 
-        private const int DefaultSearchTimeout = 10000;
+        private const int DefaultSearchTimeout = 60000;
 
         private const int DefaultWaitForExitTimeout = 10000;
 

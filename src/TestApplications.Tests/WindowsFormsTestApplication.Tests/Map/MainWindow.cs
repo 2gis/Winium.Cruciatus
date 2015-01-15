@@ -2,19 +2,23 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     #endregion
 
-    public class MainWindow : Window
+    public class MainWindow : CruciatusElement
     {
+        public MainWindow(CruciatusElement parent, By selector)
+            : base(parent, selector)
+        {
+        }
+
         public FirstTab TabItem1
         {
             get
             {
-                return GetElement<FirstTab>("TabItem1");
+                return new FirstTab(this, By.Name("TabItem1"));
             }
         }
 
@@ -22,25 +26,25 @@
         {
             get
             {
-                return GetElement<SecondTab>("TabItem2");
+                return new SecondTab(this, By.Name("TabItem2"));
             }
         }
 
-        #region Временно, пока проблемы с вкладками.
+        /*#region Временно, пока проблемы с вкладками.
 
-        public Button SetTextButton
+        public CruciatusElement SetTextButton
         {
             get
             {
-                return GetElement<Button>("SetTextButton");
+                return new CruciatusElement(this, By.Uid("SetTextButton"));
             }
         }
 
-        public TextBox TextBox1
+        public CruciatusElement TextBox1
         {
             get
             {
-                return GetElement<TextBox>("TextBox1");
+                return new CruciatusElement(this, By.Uid("TextBox1"));
             }
         }
 
@@ -48,7 +52,7 @@
         {
             get
             {
-                return GetElement<ComboBox>("TextComboBox");
+                return new ComboBox(this, By.Uid("TextComboBox"));
             }
         }
 
@@ -56,7 +60,7 @@
         {
             get
             {
-                return GetElement<CheckBox>("CheckBox1");
+                return new CheckBox(this, By.Uid("CheckBox1"));
             }
         }
 
@@ -64,17 +68,10 @@
         {
             get
             {
-                return GetElement<ListBox>("TextListBox");
+                return new ListBox(this, By.Uid("TextListBox"));
             }
         }
 
-        #endregion
-
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
-        }
+        #endregion*/
     }
 }

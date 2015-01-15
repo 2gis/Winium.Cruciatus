@@ -2,19 +2,24 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
     public class FirstRibbonTab : TabItem
     {
-        public Button RibbonButton
+        public FirstRibbonTab(CruciatusElement parent, By selector)
+            : base(parent, selector)
+        {
+        }
+
+        public CruciatusElement RibbonButton
         {
             get
             {
-                return GetElement<Button>("RibbonButton");
+                return Get(By.Uid("RibbonButton"));
             }
         }
 
@@ -22,7 +27,7 @@
         {
             get
             {
-                return GetElement<ComboBox>("RibbonTextComboBox");
+                return Get(By.Uid("RibbonTextComboBox")).ToComboBox();
             }
         }
 
@@ -30,15 +35,8 @@
         {
             get
             {
-                return GetElement<ComboBox>("RibbonCheckComboBox");
+                return Get(By.Uid("RibbonCheckComboBox")).ToComboBox();
             }
-        }
-
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
         }
     }
 }

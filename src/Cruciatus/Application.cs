@@ -11,69 +11,45 @@ namespace Cruciatus
     #region using
 
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Windows.Automation;
 
-    using Cruciatus.Elements;
     using Cruciatus.Exceptions;
-    using Cruciatus.Interfaces;
 
     #endregion
 
     /// <summary>
     /// Представляет объект приложение.
     /// </summary>
-    /// <typeparam name="T">
-    /// Главное окно.
-    /// </typeparam>
-    public class Application<T> where T : Window, IContainerElement, new()
+    public class Application
     {
-        private readonly Dictionary<string, object> _childrenDictionary = new Dictionary<string, object>();
-
         private readonly string _clickOnceFileName;
 
         private readonly string _exeFileName;
 
         private readonly bool _isClickOnceApplication;
 
-        private readonly string _mainWindowAutomationId;
-
         private readonly string _pidFileName;
-
-        private T _mainWindow;
-
-        private AutomationElement _mainWindowElement;
 
         private Process _process;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Application{T}"/>.
+        /// Инициализирует новый экземпляр класса <see cref="Application"/>.
         /// </summary>
         /// <param name="exeFileName">
         /// Полный путь к исполняемому файлу приложения.
         /// </param>
-        /// <param name="mainWindowAutomationId">
-        /// Уникальный идентификатор главного окна приложения.
-        /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public Application(string exeFileName, string mainWindowAutomationId)
+        public Application(string exeFileName)
         {
             if (exeFileName == null)
             {
                 throw new ArgumentNullException("exeFileName");
             }
 
-            if (mainWindowAutomationId == null)
-            {
-                throw new ArgumentNullException("mainWindowAutomationId");
-            }
-
             _exeFileName = exeFileName;
-            _mainWindowAutomationId = mainWindowAutomationId;
         }
 
         /// <summary>
@@ -85,13 +61,10 @@ namespace Cruciatus
         /// <param name="pidFileName">
         /// Полный путь к файлу с PID запущенного приложения.
         /// </param>
-        /// <param name="mainWindowAutomationId">
-        /// Уникальный идентификатор главного окна ClickOnce приложения.
-        /// </param>
         /// <exception cref="ArgumentNullException">
         /// Входные параметры не должны быть нулевыми.
         /// </exception>
-        public Application(string clickOnceFileName, string pidFileName, string mainWindowAutomationId)
+        public Application(string clickOnceFileName, string pidFileName)
         {
             if (clickOnceFileName == null)
             {
@@ -103,47 +76,20 @@ namespace Cruciatus
                 throw new ArgumentNullException("pidFileName");
             }
 
-            if (mainWindowAutomationId == null)
-            {
-                throw new ArgumentNullException("mainWindowAutomationId");
-            }
-
             _clickOnceFileName = clickOnceFileName;
             _pidFileName = pidFileName;
-            _mainWindowAutomationId = mainWindowAutomationId;
             _isClickOnceApplication = true;
-        }
-
-        public T MainWindow
-        {
-            get
-            {
-                if (_process == null)
-                {
-                    return null;
-                }
-
-                if (_mainWindow == null)
-                {
-                    _mainWindow = new T { ElementInstance = _mainWindowElement, AutomationId = _mainWindowAutomationId };
-                }
-
-                return _mainWindow;
-            }
         }
 
         /// <summary>
         /// Запуск приложения с временем ожидания по умолчанию.
         /// </summary>
-        /// <returns>
-        /// Значение true если запуск приложения удался; в противном случае значение - false.
-        /// </returns>
         /// <exception cref="Exception">
         /// Произвести процесс запуска приложения не удалось.
         /// </exception>
-        public bool Start()
+        public void Start()
         {
-            return Start(CruciatusFactory.Settings.SearchTimeout);
+            Start(CruciatusFactory.Settings.SearchTimeout);
         }
 
         /// <summary>
@@ -152,13 +98,10 @@ namespace Cruciatus
         /// <param name="milliseconds">
         /// Задает время ожидания запуска приложения.
         /// </param>
-        /// <returns>
-        /// Значение true если запуск приложения удался; в противном случае значение - false.
-        /// </returns>
         /// <exception cref="Exception">
         /// Произвести процесс запуска приложения не удалось.
         /// </exception>
-        public bool Start(int milliseconds)
+        public void Start(int milliseconds)
         {
             if (_isClickOnceApplication)
             {
@@ -266,13 +209,6 @@ namespace Cruciatus
             {
                 throw new CruciatusException("Не удалось запустить приложение.");
             }
-
-            // Ожидание открытия главного окна
-            _mainWindowElement = CruciatusFactory.WaitingValues(
-                () => WindowFactory.GetMainWindowElement(_process.Id, _mainWindowAutomationId), 
-                value => value == null, 
-                milliseconds);
-            return _mainWindowElement != null;
         }
 
         public bool Close()
@@ -299,17 +235,6 @@ namespace Cruciatus
         {
             _process.Kill();
             return _process.WaitForExit(CruciatusFactory.Settings.WaitForExitTimeout);
-        }
-
-        public TU GetElement<TU>(string headerName) where TU : Window, new()
-        {
-            if (!_childrenDictionary.ContainsKey(headerName))
-            {
-                var item = new TU { Parent = _mainWindowElement, AutomationId = headerName };
-                _childrenDictionary.Add(headerName, item);
-            }
-
-            return (TU)_childrenDictionary[headerName];
         }
 
         private bool GetPid(out int pid)

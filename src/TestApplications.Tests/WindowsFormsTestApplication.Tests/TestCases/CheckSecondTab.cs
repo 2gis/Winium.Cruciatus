@@ -4,127 +4,105 @@
 
     using WindowsFormsTestApplication.Tests.Map;
 
-    using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UITesting;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     #endregion
 
-    [CodedUITest]
+    [TestFixture]
     public class CheckSecondTab
     {
         #region Бесполезно, пока не работает переключение вкладок
 
-        ////private static bool _firstClassStartFlag = true;
+        private WindowsFormsTestApplicationApp _application;
 
-        ////private static WindowsFormsTestApplicationApp _application;
+        private SecondTab _secondTab;
 
-        ////private static SecondTab _secondTab;
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            TestClassHelper.Initialize(out _application);
 
-        ////[ClassInitialize]
-        ////public static void ClassInitialize(TestContext testContext)
-        ////{
-        ////    TestClassHelper.ClassInitialize(out _application);
-        ////}
+            _secondTab = _application.Window.TabItem2;
+            _secondTab.Select();
+        }
 
-        ////[ClassCleanup]
-        ////public static void ClassCleanup()
-        ////{
-        ////    TestClassHelper.ClassCleanup(_application);
-        ////}
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(_application);
+        }
 
-        ////[TestInitialize]
-        ////public void TestInitialize()
-        ////{
-        ////    _secondTab = _application.MainWindow.TabItem2;
+        [Test]
+        public void CheckingTabItem2()
+        {
+            _secondTab.Select();
+            Assert.AreEqual(true, _secondTab.IsSelection, "Вкладка 2 оказалась не выбрана");
+        }
 
-        ////    if (_firstClassStartFlag)
-        ////    {
-        ////        // Это пока не работает
-        ////        ////Assert.IsTrue(_secondTab.Select(), _secondTab.LastErrorMessage);
-        ////        _firstClassStartFlag = false;
-        ////    }
-        ////}
+        [Test]
+        public void CheckingChangeEnabledButton()
+        {
+            if (!_secondTab.TextBox2.Properties.IsEnabled)
+            {
+                _secondTab.ChangeEnabledButton.Click();
+            }
 
-        ////[TestMethod]
-        ////public void CheckingTabItem2()
-        ////{
-        ////    Assert.IsTrue(_application.MainWindow.TabItem2.Select(), _application.MainWindow.TabItem2.LastErrorMessage);
-        ////}
+            _secondTab.ChangeEnabledButton.Click();
+            Assert.AreEqual(false, _secondTab.TextBox2.Properties.IsEnabled);
 
-        ////[TestMethod]
-        ////public void CheckingChangeEnabledButton()
-        ////{
-        ////    Assert.IsTrue(_secondTab.ChangeEnabledButton.Click(), _secondTab.ChangeEnabledButton.LastErrorMessage);
-        ////}
+            _secondTab.ChangeEnabledButton.Click();
+            Assert.AreEqual(true, _secondTab.TextBox2.Properties.IsEnabled);
+        }
 
-        ////[TestMethod]
-        ////public void CheckingTextBox2()
-        ////{
-        ////    var startText = _secondTab.TextBox2.Text;
-        ////    Assert.IsNotNull(startText, _secondTab.TextBox2.LastErrorMessage);
+        [Test]
+        public void CheckingTextBox2()
+        {
+            _secondTab.TextBox2.SetText("start test text");
+            var startText = _secondTab.TextBox2.Text();
 
-        ////    Assert.IsTrue(_secondTab.TextBox2.SetText("new test text"), _secondTab.TextBox2.LastErrorMessage);
+            _secondTab.TextBox2.SetText("new test text");
+            var currentText = _secondTab.TextBox2.Text();
 
-        ////    var currentText = _secondTab.TextBox2.Text;
-        ////    Assert.IsNotNull(currentText, _secondTab.TextBox2.LastErrorMessage);
+            Assert.AreNotEqual(startText, currentText, "Текст не изменился.");
+        }
 
-        ////    Assert.AreNotEqual(startText, currentText, "Текст не изменился.");
-        ////}
+        [Test]
+        public void CheckingCheckBox2()
+        {
+            _secondTab.CheckBox2.Uncheck();
+            Assert.AreEqual(false, _secondTab.CheckBox2.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
 
-        ////[TestMethod]
-        ////public void CheckingCheckBox2()
-        ////{
-        ////    Assert.IsTrue(_secondTab.CheckBox2.Uncheck(), _secondTab.CheckBox2.LastErrorMessage);
-        ////    Assert.IsFalse(_secondTab.CheckBox2.IsChecked, "Чекбокс в check состоянии после uncheck.");
+            _secondTab.CheckBox2.Check();
+            Assert.AreEqual(true, _secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
+        }
 
-        ////    Assert.IsTrue(_secondTab.CheckBox2.Check(), _secondTab.CheckBox2.LastErrorMessage);
-        ////    Assert.IsTrue(_secondTab.CheckBox2.IsChecked, "Чекбокс в uncheck состоянии после check.");
-        ////}
+        [Test]
+        public void CheckingCheckListBox()
+        {
+            var month = _secondTab.CheckListBox.ScrollToCheckBoxByName("December");
+            
+            month.Check();
+            Assert.AreEqual(true, month.IsToggleOn, "Чекбокс December в uncheck состоянии после check.");
+        }
 
-        ////[TestMethod]
-        ////public void CheckingCheckListBox()
-        ////{
-        ////    var month = _secondTab.CheckListBox.ScrollTo<CheckBox>("December");
-        ////    Assert.IsNotNull(month, _secondTab.CheckListBox.LastErrorMessage);
-        ////    Assert.IsTrue(month.Check(), month.LastErrorMessage);
-        ////    Assert.IsTrue(month.IsChecked, "Чекбокс December в uncheck состоянии после check.");
-        ////}
+        [Test]
+        public void CheckingChangeAfterCheckBox2()
+        {
+            var monthMarch = _secondTab.CheckListBox.ScrollToCheckBoxByName("March");
+            Assert.AreEqual(false, monthMarch.IsToggleOn, "Чекбокс March в check состоянии.");
 
-        ////[TestMethod]
-        ////public void CheckingChangeEnabledTextBox2()
-        ////{
-        ////    Assert.IsTrue(_secondTab.TextBox2.IsEnabled, "TextBox2 в начале оказался не включен.");
+            var monthDecember = _secondTab.CheckListBox.ScrollToCheckBoxByName("December");
+            Assert.AreEqual(false, monthDecember.IsToggleOn, "Чекбокс December в check состоянии.");
 
-        ////    Assert.IsTrue(_secondTab.ChangeEnabledButton.Click(), _secondTab.ChangeEnabledButton.LastErrorMessage);
+            _secondTab.CheckBox2.Check();
+            Assert.AreEqual(true, _secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
 
-        ////    Assert.IsFalse(_secondTab.TextBox2.IsEnabled, "TextBox2 не стал включенным.");
-        ////}
+            _secondTab.CheckListBox.ScrollToCheckBoxByName("March");
+            Assert.AreEqual(true, monthMarch.IsToggleOn, "Чекбокс March остался в uncheck состоянии.");
 
-        ////[TestMethod]
-        ////public void CheckingChangeAfterCheckBox2()
-        ////{
-        ////    var monthMarch = _secondTab.CheckListBox.ScrollTo<CheckBox>("March");
-        ////    Assert.IsNotNull(monthMarch, _secondTab.CheckListBox.LastErrorMessage);
-        ////    Assert.IsFalse(monthMarch.IsChecked, "Чекбокс March в check состоянии.");
-
-        ////    var monthDecember = _secondTab.CheckListBox.ScrollTo<CheckBox>("December");
-        ////    Assert.IsNotNull(monthDecember, _secondTab.CheckListBox.LastErrorMessage);
-        ////    Assert.IsFalse(monthDecember.IsChecked, "Чекбокс December в check состоянии.");
-
-        ////    Assert.IsTrue(_secondTab.CheckBox2.Check(), _secondTab.CheckBox2.LastErrorMessage);
-        ////    Assert.IsTrue(_secondTab.CheckBox2.IsChecked, "Чекбокс в uncheck состоянии после check.");
-
-        ////    Assert.Fail("Ручная остановка. Не работает скролл, когда начальное состояние внизу, а интересуемое вверху.");
-        ////    Assert.IsNotNull(_secondTab.CheckListBox.ScrollTo<CheckBox>("March"), 
-        ////                     _secondTab.CheckListBox.LastErrorMessage);
-        ////    Assert.IsTrue(monthMarch.IsChecked, "Чекбокс March остался в uncheck состоянии.");
-
-        ////    Assert.IsNotNull(_secondTab.CheckListBox.ScrollTo<CheckBox>("December"), 
-        ////                     _secondTab.CheckListBox.LastErrorMessage);
-        ////    Assert.IsTrue(monthDecember.IsChecked, "Чекбокс December остался в uncheck состоянии.");
-        ////}
+            _secondTab.CheckListBox.ScrollToCheckBoxByName("December");
+            Assert.AreEqual(true, monthDecember.IsToggleOn, "Чекбокс December остался в uncheck состоянии.");
+        }
 
         #endregion
     }

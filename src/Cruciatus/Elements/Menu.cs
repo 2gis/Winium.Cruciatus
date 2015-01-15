@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+﻿﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Menu.cs" company="2GIS">
 //   Cruciatus
 // </copyright>
@@ -14,53 +14,29 @@ namespace Cruciatus.Elements
     using System.Linq;
     using System.Windows.Automation;
 
-    using Cruciatus.Interfaces;
+    using Cruciatus.Core;
+    using Cruciatus.Exceptions;
 
     #endregion
 
     /// <summary>
     /// Представляет элемент управления меню.
     /// </summary>
-    public class Menu : CruciatusElement, IContainerElement
+    public class Menu : CruciatusElement
     {
-        /// <summary>
-        /// Создает новый экземпляр класса <see cref="Menu"/>.
-        /// </summary>
-        public Menu()
+        internal Menu(AutomationElement parent, AutomationElement element, By selector)
+            : base(parent, element, selector)
         {
         }
 
-        /// <summary>
-        /// Создает и инициализирует новый экземпляр класса <see cref="Menu"/>.
-        /// </summary>
-        /// <param name="parent">
-        /// Родительский элемент.
-        /// </param>
-        /// <param name="automationId">
-        /// Уникальный идентификатор в рамках родительского элемента.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// Входные параметры не должны быть нулевыми.
-        /// </exception>
-        public Menu(CruciatusElement parent, string automationId)
+        public Menu(CruciatusElement element)
+            : base(element)
         {
-            Initialize(parent, automationId);
         }
 
-        internal override string ClassName
+        public Menu(CruciatusElement parent, By selector)
+            : base(parent, selector)
         {
-            get
-            {
-                return "Menu";
-            }
-        }
-
-        internal override ControlType GetType
-        {
-            get
-            {
-                return ControlType.Menu;
-            }
         }
 
         /// <summary>
@@ -69,93 +45,53 @@ namespace Cruciatus.Elements
         /// <param name="headersPath">
         /// Путь из заголовков для прохода (пример: control$view$zoom).
         /// </param>
-        /// <returns>
-        /// Значение true если операция завершена успешна; в противном случае значение - false.
-        /// </returns>
-        public virtual bool SelectItem(string headersPath)
+        public virtual void SelectItem(string headersPath)
         {
-            string name;
-            var element = GetItem(headersPath, out name);
-            if (element == null)
+            if (!Instanse.Current.IsEnabled)
             {
-                return false;
+                Logger.Error("Element '{0}' not enabled. Select item failed.", ToString());
+                throw new ElementNotEnabledException("NOT SELECT ITEM");
             }
 
-            var clickableElement = new ClickableElement { ElementInstance = element };
-            if (!clickableElement.Click())
+            var item = GetItem(headersPath);
+            if (item == null)
             {
-                LastErrorMessage = string.Format(
-                    "Не удалось кликнуть по элементу меню {0}. Подробности: {1}",
-                    name,
-                    clickableElement.LastErrorMessage);
-                return false;
+                Logger.Error("Item '{0}' not found. Select item failed.", headersPath);
+                throw new ElementNotFoundException("NOT SELECT ITEM");
             }
 
-            return true;
+            item.Click();
         }
 
         /// <summary>
-        /// Возвращает значение, указывающее, включен ли элемент меню.
+        /// Возвращает элемент меню, указанный последним в пути.
         /// </summary>
         /// <param name="headersPath">
         /// Путь из заголовков для прохода (пример: control$view$zoom).
         /// </param>
-        public bool ItemIsEnabled(string headersPath)
+        public CruciatusElement GetItem(string headersPath)
         {
-            string name;
-            var element = GetItem(headersPath, out name);
-            if (element == null)
-            {
-                return false;
-            }
-
-            var clickableElement = new ClickableElement { ElementInstance = element };
-            return clickableElement.IsEnabled;
-        }
-
-        private AutomationElement GetItem(string headersPath, out string name)
-        {
-            if (headersPath == null)
+            if (string.IsNullOrEmpty(headersPath))
             {
                 throw new ArgumentNullException("headersPath");
             }
 
+            var item = (CruciatusElement)this;
             var headers = headersPath.Split('$');
-
-            var item = Element;
-            for (var i = 0; i < headers.Length; ++i)
+            for (var i = 0; i < headers.Length - 1; ++i)
             {
-                var condition = new PropertyCondition(AutomationElement.NameProperty, headers[i]);
-                item = item.FindFirst(TreeScope.Children, condition);
+                var name = headers[i];
+                item = item.Get(By.Name(name));
                 if (item == null)
                 {
-                    LastErrorMessage = string.Format(
-                        "В {0} нет меню с заголовком {1}.",
-                        ToString(),
-                        headers[i]);
-                    name = string.Empty;
-                    return null;
+                    Logger.Error("Item '{0}' not found. Get item failed.", name);
+                    throw new ElementNotFoundException("NOT GET ITEM");
                 }
 
-                if (i == headers.Length - 1)
-                {
-                    break;
-                }
-
-                var clickableElement = new ClickableElement { ElementInstance = item };
-                if (!clickableElement.Click())
-                {
-                    LastErrorMessage = string.Format(
-                        "Не удалось кликнуть по элементу меню {0}. Подробности: {1}",
-                        headers[i],
-                        clickableElement.LastErrorMessage);
-                    name = string.Empty;
-                    return null;
-                }
+                item.Click();
             }
 
-            name = headers.Last();
-            return item;
+            return item.Get(By.Name(headers.Last()));
         }
     }
 }

@@ -2,148 +2,123 @@
 {
     #region using
 
-    using System.Threading;
-    using System.Windows.Forms;
-
     using Cruciatus;
+    using Cruciatus.Core;
     using Cruciatus.Elements;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     using WpfTestApplication.Tests.Map;
 
-    using ContextMenu = Cruciatus.Elements.ContextMenu;
-    using Menu = Cruciatus.Elements.Menu;
-
     #endregion
 
-    [CodedUITest]
+    [TestFixture]
     public class CheckFirstTab
     {
-        private static bool _firstClassStartFlag = true;
-
         private static WpfTestApplicationApp _application;
 
         private static FirstTab _firstTab;
 
-        private static ContextMenu _setTextButtonContextMenu;
+        private static Menu _setTextButtonContextMenu;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
         {
-            TestClassHelper.ClassInitialize(out _application);
-        }
+            TestClassHelper.Initialize(out _application);
 
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            TestClassHelper.ClassCleanup(_application);
-        }
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
             _firstTab = _application.MainWindow.TabItem1;
             _setTextButtonContextMenu = _application.MainWindow.SetTextButtonContextMenu;
 
-            if (_firstClassStartFlag)
-            {
-                Assert.IsTrue(_firstTab.Select(), _firstTab.LastErrorMessage);
-                _firstClassStartFlag = false;
-            }
+            _firstTab.Select();
         }
 
-        [TestMethod]
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(_application);
+        }
+
+        [Test]
         public void CheckingTabItem2()
         {
-            Assert.IsTrue(_firstTab.Select(), _firstTab.LastErrorMessage);
+            _firstTab.Select();
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingSetTextButton()
         {
-            Assert.IsTrue(_firstTab.SetTextButton.Click(), _firstTab.SetTextButton.LastErrorMessage);
+            _firstTab.SetTextButton.Click();
 
-            var currentText = _firstTab.TextBox1.Text;
-            Assert.IsNotNull(currentText, _firstTab.TextBox1.LastErrorMessage);
-
+            var currentText = _firstTab.TextBox1.Text();
             Assert.AreEqual(currentText, "CARAMBA", "Верный текст не установлен в текстовое поле.");
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingSetTextButtonContextMenu1()
         {
-            Assert.IsTrue(_firstTab.SetTextButton.Click(MouseButtons.Right), _firstTab.SetTextButton.LastErrorMessage);
-            Assert.IsTrue(_setTextButtonContextMenu.SelectItem("Menu item 1"),
-                          _setTextButtonContextMenu.LastErrorMessage);
+            _firstTab.SetTextButton.Click(MouseButtons.Right);
+            _setTextButtonContextMenu.SelectItem("Menu item 1");
 
-            Assert.IsTrue(_firstTab.SetTextButton.Click(MouseButtons.Right), _firstTab.SetTextButton.LastErrorMessage);
-            Assert.IsFalse(_setTextButtonContextMenu.ItemIsEnabled("Menu item 3"), "Пункт Menu item 3 оказался активен.");
-            Keyboard.SendKeys("{ESCAPE}");
+            _firstTab.SetTextButton.Click(MouseButtons.Right);
+            Assert.IsFalse(_setTextButtonContextMenu.GetItem("Menu item 3").Properties.IsEnabled, "Пункт Menu item 3 оказался активен.");
+            CruciatusCommand.Keyboard.SendKeys("{ESCAPE}");
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingTextBox1()
         {
-            var startText = _firstTab.TextBox1.Text;
-            Assert.IsNotNull(startText, _firstTab.TextBox1.LastErrorMessage);
+            var startText = _firstTab.TextBox1.Text();
 
-            Assert.IsTrue(_firstTab.TextBox1.SetText("new test text"), _firstTab.TextBox1.LastErrorMessage);
+            _firstTab.TextBox1.SetText("new test text");
 
-            var currentText = _firstTab.TextBox1.Text;
-            Assert.IsNotNull(currentText, _firstTab.TextBox1.LastErrorMessage);
+            var currentText = _firstTab.TextBox1.Text();
 
             Assert.AreNotEqual(startText, currentText, "Текст не изменился.");
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingTextComboBox()
         {
-            Assert.IsTrue(_firstTab.TextComboBox.Expand(), _firstTab.TextComboBox.LastErrorMessage);
+            _firstTab.TextComboBox.Expand();
 
-            var element = _firstTab.TextComboBox.Item<TextBlock>("Quarter");
-            Assert.IsNotNull(element, _firstTab.TextComboBox.LastErrorMessage);
-
-            Assert.IsTrue(element.Click(), element.LastErrorMessage);
+            var element = _firstTab.TextComboBox.Get(By.Name("Quarter"));
+            Assert.IsNotNull(element);
+            
+            element.Click();
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingCheckBox1()
         {
-            Assert.IsTrue(_firstTab.CheckBox1.Uncheck(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsFalse(_firstTab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
+            _firstTab.CheckBox1.Uncheck();
+            Assert.IsFalse(_firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
 
-            Assert.IsTrue(_firstTab.CheckBox1.Check(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsTrue(_firstTab.CheckBox1.IsChecked, "Чекбокс в uncheck состоянии после check.");
+            _firstTab.CheckBox1.Check();
+            Assert.IsTrue(_firstTab.CheckBox1.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingTextListBox()
         {
-            if (!_firstTab.TextListBox.IsEnabled)
+            if (!_firstTab.TextListBox.Properties.IsEnabled)
             {
-                Assert.IsTrue(_firstTab.CheckBox1.Check(), _firstTab.CheckBox1.LastErrorMessage);
+                _firstTab.CheckBox1.Check();
             }
 
-            var month = _firstTab.TextListBox.ScrollTo<TextBlock>("December");
-            Assert.IsNotNull(month, _firstTab.TextListBox.LastErrorMessage);
-            Assert.IsTrue(month.Click(), month.LastErrorMessage);
+            _firstTab.TextListBox.ScrollTo(By.Name("December")).Click();
 
-            month = _firstTab.TextListBox.ScrollTo<TextBlock>("October");
-            Assert.IsNotNull(month, _firstTab.TextListBox.LastErrorMessage);
-            Assert.IsTrue(month.Click(), month.LastErrorMessage);
+            _firstTab.TextListBox.ScrollTo(By.Name("October")).Click();
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingChangeEnabledTextListBox()
         {
-            Assert.IsTrue(_firstTab.TextListBox.IsEnabled, "TextListBox в начале оказался не включен.");
+            Assert.IsTrue(_firstTab.TextListBox.Properties.IsEnabled, "TextListBox в начале оказался не включен.");
 
-            Assert.IsTrue(_firstTab.CheckBox1.Uncheck(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsFalse(_firstTab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
+            _firstTab.CheckBox1.Uncheck();
+            Assert.IsFalse(_firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
 
-            Assert.IsFalse(_firstTab.TextListBox.IsEnabled, "TextListBox не стал включенным.");
+            Assert.IsFalse(_firstTab.TextListBox.Properties.IsEnabled, "TextListBox не стал включенным.");
         }
     }
 }

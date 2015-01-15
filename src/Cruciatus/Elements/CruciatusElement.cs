@@ -11,85 +11,218 @@ namespace Cruciatus.Elements
     #region using
 
     using System;
+    using System.Collections.Generic;
     using System.Windows.Automation;
 
+    using Cruciatus.Core;
     using Cruciatus.Exceptions;
+
+    using NLog;
 
     #endregion
 
     /// <summary>
     /// Базовый класс для элементов.
     /// </summary>
-    public abstract class CruciatusElement
+    public class CruciatusElement
     {
-        /// <summary>
-        /// Текст последней ошибки.
-        /// </summary>
-        public string LastErrorMessage { get; internal set; }
+        protected static readonly Logger Logger = CruciatusFactory.Logger;
 
-        internal AutomationElement ElementInstance { get; set; }
+        private AutomationElement _instance;
 
-        internal AutomationElement Parent { get; set; }
-
-        internal string AutomationId { get; set; }
-
-        internal abstract string ClassName { get; }
-
-        internal new abstract ControlType GetType { get; }
-
-        internal AutomationElement Element
+        internal CruciatusElement(AutomationElement parent, AutomationElement element, By selector)
         {
-            get
+            Parent = parent;
+            Instanse = element;
+            Selector = selector;
+        }
+
+        public CruciatusElement(CruciatusElement element)
+        {
+            if (element == null)
             {
-                if (ElementInstance == null)
-                {
-                    if (Parent == null || AutomationId == null)
-                    {
-                        LastErrorMessage = "Элемент нельзя использовать, пока он не инициализирован";
-                        return null;
-                    }
-
-                    Find();
-                }
-
-                return ElementInstance;
+                throw new ArgumentNullException("element");
             }
+
+            Instanse = element.Instanse;
+            Parent = element.Instanse;
+            Selector = element.Selector;
         }
 
-        public new string ToString()
-        {
-            return string.Format("{0} (uid: {1})", ClassName, AutomationId ?? "nonUid");
-        }
-
-        internal virtual void Find()
-        {
-            ElementInstance = CruciatusFactory.Find(Parent, AutomationId, TreeScope.Subtree);
-
-            if (ElementInstance == null)
-            {
-                throw new ElementNotFoundException(ToString());
-            }
-        }
-
-        public void Initialize(CruciatusElement parent, string automationId)
+        public CruciatusElement(CruciatusElement parent, By selector)
         {
             if (parent == null)
             {
                 throw new ArgumentNullException("parent");
             }
 
-            if (automationId == null)
+            Parent = parent.Instanse;
+            Selector = selector;
+        }
+
+        internal AutomationElement Instanse
+        {
+            get
             {
-                throw new ArgumentNullException("automationId");
+                return _instance ?? (_instance = CruciatusCommand.FindFirst(Parent, Selector));
             }
 
-            if (parent.Element == null)
+            set
             {
-                throw new ElementNotFoundException(parent.ToString());
+                _instance = value;
+            }
+        }
+
+        internal AutomationElement Parent { get; set; }
+
+        public By Selector { get; internal set; }
+
+        public CruciatusElementProperties Properties
+        {
+            get
+            {
+                return new CruciatusElementProperties(Instanse);
+            }
+        }
+
+        public virtual CruciatusElement Get(By selector)
+        {
+            return CruciatusCommand.FindFirst(this, selector);
+        }
+
+        public IEnumerable<CruciatusElement> GetAll(By selector)
+        {
+            return CruciatusCommand.FindAll(this, selector);
+        }
+
+        public void Click()
+        {
+            Click(CruciatusFactory.Settings.ClickButton);
+        }
+
+        public void Click(MouseButtons button)
+        {
+            Click(button, ClickStrategies.None, false);
+        }
+
+        public void Click(MouseButtons button, ClickStrategies strategy)
+        {
+            Click(button, strategy, false);
+        }
+
+        public void Click(MouseButtons button, ClickStrategies strategy, bool doubleClick)
+        {
+            if (!Instanse.Current.IsEnabled)
+            {
+                Logger.Error("Element '{0}' not enabled. Click failed.", ToString());
+                throw new ElementNotEnabledException("NOT CLICK");
             }
 
-            Parent = parent.Element;
-            AutomationId = automationId;
+            if (strategy == ClickStrategies.None)
+            {
+                strategy = ~strategy;
+            }
+
+            if (strategy.HasFlag(ClickStrategies.ClickablePoint))
+            {
+                if (CruciatusCommand.TryClickOnClickablePoint(button, this, doubleClick))
+                {
+                    return;
+                }
+            }
+
+            if (strategy.HasFlag(ClickStrategies.BoundingRectangleCenter))
+            {
+                if (CruciatusCommand.TryClickOnBoundingRectangleCenter(button, this, doubleClick))
+                {
+                    return;
+                }
+            }
+
+            if (strategy.HasFlag(ClickStrategies.InvokePattern))
+            {
+                if (CruciatusCommand.TryClickUsingInvokePattern(this, doubleClick))
+                {
+                    return;
+                }
+            }
+
+            Logger.Error("Click on '{0}' element failed", ToString());
+            throw new CruciatusException("NOT CLICK");
+        }
+
+        public void DoubleClick()
+        {
+            DoubleClick(CruciatusFactory.Settings.ClickButton);
+        }
+
+        public void DoubleClick(MouseButtons button)
+        {
+            DoubleClick(button, ClickStrategies.None);
+        }
+
+        public void DoubleClick(MouseButtons button, ClickStrategies strategy)
+        {
+            Click(button, strategy, true);
+        }
+
+        public void SetText(string text)
+        {
+            if (!Instanse.Current.IsEnabled)
+            {
+                Logger.Error("Element '{0}' not enabled. Set text failed.", ToString());
+                throw new ElementNotEnabledException("NOT SET TEXT");
+            }
+
+            Click(MouseButtons.Left, ClickStrategies.ClickablePoint | ClickStrategies.BoundingRectangleCenter);
+
+            text = Keyboard.CtrlA + Keyboard.Backspace + text;
+            CruciatusCommand.Keyboard.SendKeys(text);
+        }
+
+        public string Text()
+        {
+            return Text(GetTextStrategy.None);
+        }
+
+        public string Text(GetTextStrategy strategy)
+        {
+            if (strategy == GetTextStrategy.None)
+            {
+                strategy = ~strategy;
+            }
+
+            string text;
+            if (strategy.HasFlag(GetTextStrategy.TextPattern))
+            {
+                if (CruciatusCommand.TryGetTextUsingTextPattern(this, out text))
+                {
+                    return text;
+                }
+            }
+
+            if (strategy.HasFlag(GetTextStrategy.ValuePattern))
+            {
+                if (CruciatusCommand.TryGetTextUsingValuePattern(this, out text))
+                {
+                    return text;
+                }
+            }
+
+            Logger.Error("Get text from '{0}' element failed.", ToString());
+            throw new CruciatusException("NO GET TEXT");
+        }
+
+        public override string ToString()
+        {
+            var typeName = Instanse.Current.ControlType.ProgrammaticName;
+            var uid = Instanse.Current.AutomationId;
+            var name = Instanse.Current.Name;
+            var str = string.Format("{0}{1}{2}", 
+                                    "type: " + typeName, 
+                                    string.IsNullOrEmpty(uid) ? string.Empty : ", uid: " + uid, 
+                                    string.IsNullOrEmpty(name) ? string.Empty : ", name: " + name);
+            return str;
         }
     }
 }

@@ -20,6 +20,26 @@ namespace Cruciatus.Extensions
 
     public static class CruciatusElementExtension
     {
+        public static CheckBox ToCheckBox(this CruciatusElement element)
+        {
+            return new CheckBox(element);
+        }
+
+        public static ComboBox ToComboBox(this CruciatusElement element)
+        {
+            return new ComboBox(element);
+        }
+
+        public static ListBox ToListBox(this CruciatusElement element)
+        {
+            return new ListBox(element);
+        }
+
+        public static Menu ToMenu(this CruciatusElement element)
+        {
+            return new Menu(element);
+        }
+
         /// <summary>
         /// Возвращает значение заданного свойства, приведенное к указанному типу.
         /// </summary>
@@ -45,7 +65,7 @@ namespace Cruciatus.Extensions
         {
             try
             {
-                return cruciatusElement.Element.GetPropertyValue<TOut>(property);
+                return cruciatusElement.Instanse.GetPropertyValue<TOut>(property);
             }
             catch (NotSupportedException)
             {

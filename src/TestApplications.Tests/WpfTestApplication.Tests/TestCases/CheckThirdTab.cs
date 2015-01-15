@@ -3,68 +3,73 @@
     #region using
 
     using Cruciatus;
+    using Cruciatus.Core;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     using WpfTestApplication.Tests.Map;
-    
+
     #endregion
 
-    [CodedUITest]
-    public class CheckThirdTab
+    [TestFixture]
+    public class CheckThirdTab 
     {
-        private static WpfTestApplicationApp _application;
+        private WpfTestApplicationApp _application;
 
-        private readonly ThirdTab _thirdTab = _application.MainWindow.TabItem3;
+        private ThirdTab _thirdTab;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
         {
-            TestClassHelper.ClassInitialize(out _application);
+            TestClassHelper.Initialize(out _application);
+
+            _thirdTab = _application.MainWindow.TabItem3;
         }
 
-        [ClassCleanup]
-        public static void ClassCleanup()
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
         {
-            TestClassHelper.ClassCleanup(_application);
+            TestClassHelper.Cleanup(_application);
         }
 
-        [TestMethod]
+        [SetUp]
+        public void TestSetUp()
+        {
+            _thirdTab.Select();
+        }
+
+        [Test]
         public void CheckingTabItem3()
         {
-            Assert.IsTrue(_thirdTab.Select(), _thirdTab.LastErrorMessage);
+            _thirdTab.Select();
+            Assert.AreEqual(true, _thirdTab.IsSelection, "Третья вкладка оказалось не выбранной");
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingOpenFileDialog()
         {
-            Assert.IsTrue(_thirdTab.Select(), _thirdTab.LastErrorMessage);
+            _thirdTab.OpenFileDialogButton.Click();
 
-            Assert.IsTrue(_thirdTab.OpenFileDialogButton.Click(), _thirdTab.OpenFileDialogButton.LastErrorMessage);
-
-            var fileName = OpenFileDialog.GetFileNameEditableComboBox(_application.MainWindow).Text;
+            var openFileDialog = new OpenFileDialog(_application.MainWindow);
+            var fileName = openFileDialog.GetFileNameEditableComboBox().Text();
             Assert.AreEqual("Program.cs", fileName);
 
-            var cancelButton = OpenFileDialog.GetCancelButton(_application.MainWindow);
-            Assert.IsTrue(cancelButton.Click(), cancelButton.LastErrorMessage);
+            openFileDialog.GetCancelButton().Click();
         }
 
-        [TestMethod]
+        [Test]
         public void CheckingSaveFileDialog()
         {
-            Assert.IsTrue(_thirdTab.Select(), _thirdTab.LastErrorMessage);
+            _thirdTab.SaveFileDialogButton.Click();
 
-            Assert.IsTrue(_thirdTab.SaveFileDialogButton.Click(), _thirdTab.SaveFileDialogButton.LastErrorMessage);
-
-            var fileName = SaveFileDialog.GetFileNameEditableComboBox(_application.MainWindow).Text;
+            var saveFileDialog = new SaveFileDialog(_application.MainWindow, By.Name("Сохранение"));
+            var fileName = saveFileDialog.GetFileNameEditableComboBox().Text();
             Assert.AreEqual("Program.cs", fileName);
 
-            var fileType = SaveFileDialog.GetFileTypeComboBox(_application.MainWindow).Text;
+            var fileType = saveFileDialog.GetFileTypeComboBox().SelectedItem().Properties.Name;
             Assert.AreEqual("Visual C# Files (*.cs)", fileType);
 
-            var cancelButton = SaveFileDialog.GetCancelButton(_application.MainWindow);
-            Assert.IsTrue(cancelButton.Click(), cancelButton.LastErrorMessage);
+            saveFileDialog.GetCancelButton().Click();
         }
     }
 }
