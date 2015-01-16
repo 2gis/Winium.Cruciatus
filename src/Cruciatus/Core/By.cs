@@ -4,43 +4,136 @@
 
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Windows.Automation;
 
     using Cruciatus.Exceptions;
 
     #endregion
 
-    internal struct FindInfo
+    internal enum ConditionType
     {
-        internal Condition Condition;
+        None, 
+
+        Or, 
+
+        And
+    }
+
+    internal struct Info
+    {
+        internal ConditionType ConditionType;
+
+        internal AutomationProperty Property;
+
+        internal object Value;
+
+        internal Info(AutomationProperty property, object value, ConditionType conditionType)
+        {
+            Property = property;
+            Value = value;
+            ConditionType = conditionType;
+        }
+    }
+
+    internal struct ElementFindInfo
+    {
+        private readonly List<Info> _infoList;
 
         internal TreeScope TreeScope;
 
-        internal FindInfo(TreeScope scope, Condition condition)
+        internal ElementFindInfo(TreeScope scope, Info info)
         {
             TreeScope = scope;
-            Condition = condition;
+            _infoList = new List<Info> { info };
         }
 
-        internal static FindInfo Create(TreeScope scope, Condition condition)
+        internal Condition Condition
         {
-            return new FindInfo(scope, condition);
+            get
+            {
+                var info = _infoList[0];
+                Condition result = new PropertyCondition(info.Property, info.Value);
+                for (var i = 1; i < _infoList.Count; ++i)
+                {
+                    info = _infoList[i];
+                    var condition = new PropertyCondition(info.Property, info.Value);
+                    switch (info.ConditionType)
+                    {
+                        case ConditionType.And:
+                            result = new AndCondition(result, condition);
+                            break;
+
+                        case ConditionType.Or:
+                            result = new OrCondition(result, condition);
+                            break;
+
+                        default:
+                            throw new CruciatusException("ConditionType ERROR");
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        internal void Add(Info info)
+        {
+            _infoList.Add(info);
+        }
+
+        public override string ToString()
+        {
+            var info = _infoList[0];
+            var str = GetPropertyName(info.Property) + ": " + info.Value;
+            for (var i = 1; i < _infoList.Count; ++i)
+            {
+                info = _infoList[i];
+                string condition;
+                switch (info.ConditionType)
+                {
+                    case ConditionType.And:
+                        condition = "and";
+                        break;
+
+                    case ConditionType.Or:
+                        condition = "or";
+                        break;
+
+                    default:
+                        throw new CruciatusException("ConditionType ERROR");
+                }
+
+                var propertyKeyValue = GetPropertyName(info.Property) + ": " + info.Value;
+                str = string.Format("({0}) {1} {2}", str, condition, propertyKeyValue);
+            }
+
+            return str;
+        }
+
+        private static string GetPropertyName(AutomationIdentifier property)
+        {
+            var pattern = new Regex(@".*\.(?<name>.*)Property");
+            return pattern.Match(property.ProgrammaticName).Groups["name"].Value;
         }
     }
 
     public class By
     {
-        internal readonly List<FindInfo> FindInfoList;
+        internal readonly List<ElementFindInfo> FindInfoList = new List<ElementFindInfo>();
 
-        internal By()
+        internal By(TreeScope scope, Info info)
         {
-            FindInfoList = new List<FindInfo>();
+            FindInfoList.Add(new ElementFindInfo(scope, info));
         }
 
-        internal By(TreeScope scope, Condition condition)
+        internal By(List<ElementFindInfo> findInfoList)
         {
-            FindInfoList = new List<FindInfo> { FindInfo.Create(scope, condition) };
+            FindInfoList = findInfoList;
         }
+
+        #region Create By (static)
 
         public static By Uid(string value)
         {
@@ -64,44 +157,38 @@
 
         public static By AutomationProperty(TreeScope scope, AutomationProperty property, object value)
         {
-            return new By(scope, new PropertyCondition(property, value));
+            return new By(scope, new Info(property, value, ConditionType.None));
         }
+
+        #endregion
 
         public By AndType(ControlType value)
         {
-            var condition = new PropertyCondition(AutomationElement.ControlTypeProperty, value);
-            var n = FindInfoList.Count;
-            if (n != 0)
-            {
-                var info = FindInfoList[n - 1];
-                info.Condition = new AndCondition(info.Condition, condition);
-                FindInfoList[n - 1] = info;
-                return this;
-            }
-
-            FindInfoList.Add(FindInfo.Create(TreeScope.Subtree, condition));
+            And(AutomationElement.ControlTypeProperty, value);
             return this;
         }
 
         public By OrName(string value)
         {
-            var condition = new PropertyCondition(AutomationElement.NameProperty, value);
-            var n = FindInfoList.Count;
-            if (n != 0)
-            {
-                var info = FindInfoList[n - 1];
-                info.Condition = new OrCondition(info.Condition, condition);
-                FindInfoList[n - 1] = info;
-                return this;
-            }
+            Or(AutomationElement.NameProperty, value);
+            return this;
+        }
 
-            FindInfoList.Add(FindInfo.Create(TreeScope.Subtree, condition));
+        public By And(AutomationProperty property, object value)
+        {
+            AddInfoToLast(property, value, ConditionType.And);
+            return this;
+        }
+
+        public By Or(AutomationProperty property, object value)
+        {
+            AddInfoToLast(property, value, ConditionType.Or);
             return this;
         }
 
         public static By Path(string value)
         {
-            var selector = new By();
+            var findInfoList = new List<ElementFindInfo>();
             var flag = true;
             while (flag)
             {
@@ -140,7 +227,7 @@
                 string propertyValue;
                 if (index == 0)
                 {
-                    throw new CruciatusException("EMPTY AFTER '#' or '%'");
+                    throw new CruciatusException("NOT FOUND '/' AFTER '#' or '%'");
                 }
 
                 if (index == -1)
@@ -154,10 +241,15 @@
                     value = value.Substring(index);
                 }
 
-                selector.FindInfoList.Add(FindInfo.Create(scope, new PropertyCondition(property, propertyValue)));
+                findInfoList.Add(new ElementFindInfo(scope, new Info(property, propertyValue, ConditionType.None)));
             }
 
-            return selector;
+            return new By(findInfoList);
+        }
+
+        private void AddInfoToLast(AutomationProperty property, object value, ConditionType conditionType)
+        {
+            FindInfoList.Last().Add(new Info(property, value, conditionType));
         }
     }
 }

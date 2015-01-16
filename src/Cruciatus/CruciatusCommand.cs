@@ -17,6 +17,7 @@ namespace Cruciatus
 
     using Cruciatus.Core;
     using Cruciatus.Elements;
+    using Cruciatus.Exceptions;
 
     using NLog;
 
@@ -135,7 +136,7 @@ namespace Cruciatus
                 }
             }
 
-            Logger.Debug("Element ({0}) not support TextPattern", element);
+            Logger.Debug("Element '{0}' not support TextPattern", element);
             text = null;
             return false;
         }
@@ -159,7 +160,7 @@ namespace Cruciatus
                 }
             }
 
-            Logger.Debug("Element ({0}) not support ValuePattern", element);
+            Logger.Debug("Element '{0}' not support ValuePattern", element);
             text = null;
             return false;
         }
@@ -177,12 +178,7 @@ namespace Cruciatus
             }
 
             var element = FindFirst(parent.Instanse, selector, timeout);
-            if (element == null)
-            {
-                return null;
-            }
-
-            return new CruciatusElement(parent.Instanse, element, selector);
+            return element == null ? null : new CruciatusElement(parent, element, selector);
         }
 
         public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By selector)
@@ -204,13 +200,14 @@ namespace Cruciatus
                 element = AutomationElementHelper.FindFirst(element, info[i].TreeScope, info[i].Condition, timeout);
                 if (element == null)
                 {
-                    return Enumerable.Empty<CruciatusElement>();
+                    Logger.Error("Element '{0}' not found", info);
+                    throw new CruciatusException("ELEMENT NOT FOUND");
                 }
             }
 
             var lastIinfo = selector.FindInfoList.Last();
             var result = AutomationElementHelper.FindAll(element, lastIinfo.TreeScope, lastIinfo.Condition);
-            return result.Select(e => new CruciatusElement(parent.Instanse, e, selector));
+            return result.Select(e => new CruciatusElement(parent, e, selector));
         }
 
         internal static AutomationElement FindFirst(AutomationElement parent, By selector)
@@ -226,6 +223,7 @@ namespace Cruciatus
                 element = AutomationElementHelper.FindFirst(element, info.TreeScope, info.Condition, timeout);
                 if (element == null)
                 {
+                    Logger.Info("Element '{0}' not found", info);
                     return null;
                 }
             }

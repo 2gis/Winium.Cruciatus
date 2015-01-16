@@ -2,9 +2,6 @@
 {
     #region using
 
-    using Cruciatus.Core;
-    using Cruciatus.Elements;
-
     using NUnit.Framework;
 
     using WpfTestApplication.Tests.Map;

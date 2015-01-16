@@ -30,7 +30,7 @@ namespace Cruciatus.Elements
 
         private AutomationElement _instance;
 
-        internal CruciatusElement(AutomationElement parent, AutomationElement element, By selector)
+        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By selector)
         {
             Parent = parent;
             Instanse = element;
@@ -45,7 +45,7 @@ namespace Cruciatus.Elements
             }
 
             Instanse = element.Instanse;
-            Parent = element.Instanse;
+            Parent = element;
             Selector = element.Selector;
         }
 
@@ -56,7 +56,7 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("parent");
             }
 
-            Parent = parent.Instanse;
+            Parent = parent;
             Selector = selector;
         }
 
@@ -64,7 +64,17 @@ namespace Cruciatus.Elements
         {
             get
             {
-                return _instance ?? (_instance = CruciatusCommand.FindFirst(Parent, Selector));
+                if (_instance == null)
+                {
+                    _instance = CruciatusCommand.FindFirst(Parent.Instanse, Selector);
+                }
+
+                if (_instance == null)
+                {
+                    throw new CruciatusException("ELEMENT NOT FOUND");
+                }
+
+                return _instance;
             }
 
             set
@@ -73,7 +83,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        internal AutomationElement Parent { get; set; }
+        internal CruciatusElement Parent { get; set; }
 
         public By Selector { get; internal set; }
 

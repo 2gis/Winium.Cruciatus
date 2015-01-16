@@ -281,7 +281,7 @@ namespace Cruciatus.Elements
                 throw new CruciatusException("NOT GET ITEM");
             }
 
-            return new CruciatusElement(Instanse, elem, null);
+            return new CruciatusElement(this, elem, null);
         }
     }
 }

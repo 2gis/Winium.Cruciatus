@@ -122,7 +122,7 @@ namespace Cruciatus
                 }
             }
 
-            var buttonElement = new CruciatusElement(parent.Instanse, modalwindow, null).Get(By.Uid(uid));
+            var buttonElement = new CruciatusElement(parent, modalwindow, null).Get(By.Uid(uid));
             buttonElement.Click();
         }
     }

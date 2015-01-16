@@ -24,7 +24,12 @@
 
         public static void Cleanup(WpfTestApplicationApp application)
         {
-            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WpfTestApplication.");
+            var isClose = application.Close();
+            if (!isClose)
+            {
+                Assert.IsTrue(application.Kill(), "Не удалось завершить и убить приложение WpfTestApplication.");
+
+            }
         }
     }
 }
