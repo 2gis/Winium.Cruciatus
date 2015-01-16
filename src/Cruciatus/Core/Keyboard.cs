@@ -12,6 +12,8 @@
 
         public const string Backspace = "{BACKSPACE}";
 
+        public const string Escape = "{ESCAPE}";
+
         public const string CtrlA = "^a";
 
         public const string CtrlC = "^c";
