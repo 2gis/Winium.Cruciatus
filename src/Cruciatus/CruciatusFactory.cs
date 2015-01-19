@@ -52,15 +52,7 @@ namespace Cruciatus
         {
             get
             {
-                return new CruciatusElement(null, RootAe, null);
-            }
-        }
-
-        internal static AutomationElement RootAe
-        {
-            get
-            {
-                return AutomationElement.RootElement;
+                return new CruciatusElement(null, AutomationElement.RootElement, null);
             }
         }
 

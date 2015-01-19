@@ -10,8 +10,8 @@
 
     public class FirstTab : TabItem
     {
-        public FirstTab(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public FirstTab(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

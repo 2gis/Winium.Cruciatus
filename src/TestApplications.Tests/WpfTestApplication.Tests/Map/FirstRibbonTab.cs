@@ -10,8 +10,8 @@
 
     public class FirstRibbonTab : TabItem
     {
-        public FirstRibbonTab(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public FirstRibbonTab(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

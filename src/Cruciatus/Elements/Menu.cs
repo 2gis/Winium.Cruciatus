@@ -12,7 +12,6 @@ namespace Cruciatus.Elements
 
     using System;
     using System.Linq;
-    using System.Windows.Automation;
 
     using Cruciatus.Core;
     using Cruciatus.Exceptions;
@@ -29,8 +28,8 @@ namespace Cruciatus.Elements
         {
         }
 
-        public Menu(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public Menu(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 
@@ -45,14 +44,14 @@ namespace Cruciatus.Elements
             if (!Instanse.Current.IsEnabled)
             {
                 Logger.Error("Element '{0}' not enabled. Select item failed.", ToString());
-                throw new ElementNotEnabledException("NOT SELECT ITEM");
+                throw new CruciatusException("NOT SELECT ITEM");
             }
 
             var item = GetItem(headersPath);
             if (item == null)
             {
                 Logger.Error("Item '{0}' not found. Select item failed.", headersPath);
-                throw new ElementNotFoundException("NOT SELECT ITEM");
+                throw new CruciatusException("NOT SELECT ITEM");
             }
 
             item.Click();
@@ -80,7 +79,7 @@ namespace Cruciatus.Elements
                 if (item == null)
                 {
                     Logger.Error("Item '{0}' not found. Get item failed.", name);
-                    throw new ElementNotFoundException("NOT GET ITEM");
+                    throw new CruciatusException("NOT GET ITEM");
                 }
 
                 item.Click();

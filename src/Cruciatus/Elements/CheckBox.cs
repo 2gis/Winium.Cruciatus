@@ -29,8 +29,8 @@ namespace Cruciatus.Elements
         {
         }
 
-        public CheckBox(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public CheckBox(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

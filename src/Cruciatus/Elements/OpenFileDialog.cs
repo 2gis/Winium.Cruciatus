@@ -27,8 +27,8 @@ namespace Cruciatus.Elements
         {
         }
 
-        public OpenFileDialog(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public OpenFileDialog(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

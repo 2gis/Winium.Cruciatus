@@ -29,8 +29,8 @@ namespace Cruciatus.Elements
         {
         }
 
-        public ComboBox(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public ComboBox(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 
@@ -98,7 +98,7 @@ namespace Cruciatus.Elements
             }
         }
 
-        public CruciatusElement ScrollTo(By selector)
+        public CruciatusElement ScrollTo(By getStrategy)
         {
             if (!Instanse.Current.IsEnabled)
             {
@@ -122,7 +122,7 @@ namespace Cruciatus.Elements
             }
 
             // Стартовый поиск элемента
-            var element = CruciatusCommand.FindFirst(this, selector, 1000);
+            var element = CruciatusCommand.FindFirst(this, getStrategy, 1000);
 
             // Вертикальная прокрутка (при необходимости и возможности)
             if (element == null && scrollPattern.Current.VerticallyScrollable)
@@ -146,14 +146,14 @@ namespace Cruciatus.Elements
                 while (element == null && scrollPattern.Current.VerticalScrollPercent < 99.9)
                 {
                     scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-                    element = CruciatusCommand.FindFirst(this, selector, 1000);
+                    element = CruciatusCommand.FindFirst(this, getStrategy, 1000);
                 }
             }
 
             // Если прокрутив до конца элемент не найден, то его нет (кэп)
             if (element == null)
             {
-                Logger.Debug("В {0} нет элемента '{1}'.", ToString(), selector);
+                Logger.Debug("В {0} нет элемента '{1}'.", ToString(), getStrategy);
                 return null;
             }
 

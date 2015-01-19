@@ -10,8 +10,6 @@ namespace Cruciatus.Elements
 {
     #region using
 
-    using System.Windows.Automation;
-
     using Cruciatus.Core;
 
     #endregion
@@ -21,15 +19,24 @@ namespace Cruciatus.Elements
     /// </summary>
     public class RibbonApplicationMenu : Menu
     {
-        public RibbonApplicationMenu(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        /// <summary>
+        /// Создает экземпляр меню приложения ленты.
+        /// </summary>
+        /// <param name="parent">
+        /// Родительский элемент.
+        /// </param>
+        /// <param name="getStrategy">
+        /// Стратегия получения элемента.
+        /// </param>
+        public RibbonApplicationMenu(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 
-        public override CruciatusElement Get(By selector)
+        public override CruciatusElement Get(By strategy)
         {
             Click();
-            return base.Get(selector);
+            return base.Get(strategy);
         }
     }
 }

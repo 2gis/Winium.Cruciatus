@@ -22,13 +22,28 @@ namespace Cruciatus.Elements
     /// </summary>
     public class SaveFileDialog : CruciatusElement
     {
+        /// <summary>
+        /// Создает экземпляр диалогового окна.
+        /// </summary>
+        /// <param name="element">
+        /// Исходный элемент.
+        /// </param>
         public SaveFileDialog(CruciatusElement element)
             : base(element)
         {
         }
 
-        public SaveFileDialog(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        /// <summary>
+        /// Создает экземпляр диалогового окна.
+        /// </summary>
+        /// <param name="parent">
+        /// Родительский элемент.
+        /// </param>
+        /// <param name="getStrategy">
+        /// Стратегия получения элемента.
+        /// </param>
+        public SaveFileDialog(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

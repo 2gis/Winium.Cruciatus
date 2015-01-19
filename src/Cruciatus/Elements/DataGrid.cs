@@ -24,8 +24,8 @@ namespace Cruciatus.Elements
     /// </summary>
     public class DataGrid : CruciatusElement
     {
-        public DataGrid(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public DataGrid(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

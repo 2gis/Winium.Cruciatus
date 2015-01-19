@@ -160,32 +160,6 @@
             return new By(scope, new Info(property, value, ConditionType.None));
         }
 
-        #endregion
-
-        public By AndType(ControlType value)
-        {
-            And(AutomationElement.ControlTypeProperty, value);
-            return this;
-        }
-
-        public By OrName(string value)
-        {
-            Or(AutomationElement.NameProperty, value);
-            return this;
-        }
-
-        public By And(AutomationProperty property, object value)
-        {
-            AddInfoToLast(property, value, ConditionType.And);
-            return this;
-        }
-
-        public By Or(AutomationProperty property, object value)
-        {
-            AddInfoToLast(property, value, ConditionType.Or);
-            return this;
-        }
-
         public static By Path(string value)
         {
             var findInfoList = new List<ElementFindInfo>();
@@ -245,6 +219,32 @@
             }
 
             return new By(findInfoList);
+        }
+
+        #endregion
+
+        public By AndType(ControlType value)
+        {
+            And(AutomationElement.ControlTypeProperty, value);
+            return this;
+        }
+
+        public By OrName(string value)
+        {
+            Or(AutomationElement.NameProperty, value);
+            return this;
+        }
+
+        public By And(AutomationProperty property, object value)
+        {
+            AddInfoToLast(property, value, ConditionType.And);
+            return this;
+        }
+
+        public By Or(AutomationProperty property, object value)
+        {
+            AddInfoToLast(property, value, ConditionType.Or);
+            return this;
         }
 
         private void AddInfoToLast(AutomationProperty property, object value, ConditionType conditionType)

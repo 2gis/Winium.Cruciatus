@@ -10,8 +10,8 @@
 
     public class MainWindow : CruciatusElement
     {
-        public MainWindow(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public MainWindow(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

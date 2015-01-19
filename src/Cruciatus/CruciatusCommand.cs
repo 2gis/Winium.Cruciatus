@@ -165,28 +165,28 @@ namespace Cruciatus
             return false;
         }
 
-        public static CruciatusElement FindFirst(CruciatusElement parent, By selector)
+        public static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy)
         {
-            return FindFirst(parent, selector, CruciatusFactory.Settings.SearchTimeout);
+            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
         }
 
-        public static CruciatusElement FindFirst(CruciatusElement parent, By selector, int timeout)
+        public static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy, int timeout)
         {
             if (parent == null)
             {
                 throw new ArgumentNullException("parent");
             }
 
-            var element = FindFirst(parent.Instanse, selector, timeout);
-            return element == null ? null : new CruciatusElement(parent, element, selector);
+            var element = FindFirst(parent.Instanse, getStrategy, timeout);
+            return element == null ? null : new CruciatusElement(parent, element, getStrategy);
         }
 
-        public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By selector)
+        public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy)
         {
-            return FindAll(parent, selector, CruciatusFactory.Settings.SearchTimeout);
+            return FindAll(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
         }
 
-        public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By selector, int timeout)
+        public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy, int timeout)
         {
             if (parent == null)
             {
@@ -194,7 +194,7 @@ namespace Cruciatus
             }
 
             var element = parent.Instanse;
-            var info = selector.FindInfoList;
+            var info = getStrategy.FindInfoList;
             for (var i = 0; i < info.Count - 1; ++i)
             {
                 element = AutomationElementHelper.FindFirst(element, info[i].TreeScope, info[i].Condition, timeout);
@@ -205,20 +205,20 @@ namespace Cruciatus
                 }
             }
 
-            var lastIinfo = selector.FindInfoList.Last();
+            var lastIinfo = getStrategy.FindInfoList.Last();
             var result = AutomationElementHelper.FindAll(element, lastIinfo.TreeScope, lastIinfo.Condition);
-            return result.Select(e => new CruciatusElement(parent, e, selector));
+            return result.Select(e => new CruciatusElement(parent, e, getStrategy));
         }
 
-        internal static AutomationElement FindFirst(AutomationElement parent, By selector)
+        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy)
         {
-            return FindFirst(parent, selector, CruciatusFactory.Settings.SearchTimeout);
+            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
         }
 
-        internal static AutomationElement FindFirst(AutomationElement parent, By selector, int timeout)
+        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy, int timeout)
         {
             var element = parent;
-            foreach (var info in selector.FindInfoList)
+            foreach (var info in getStrategy.FindInfoList)
             {
                 element = AutomationElementHelper.FindFirst(element, info.TreeScope, info.Condition, timeout);
                 if (element == null)

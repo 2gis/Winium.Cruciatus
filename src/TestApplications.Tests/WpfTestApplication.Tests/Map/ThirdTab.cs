@@ -9,8 +9,8 @@
 
     public class ThirdTab : TabItem
     {
-        public ThirdTab(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        public ThirdTab(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 

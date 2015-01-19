@@ -24,8 +24,17 @@ namespace Cruciatus.Elements
     /// </summary>
     public class TabItem : CruciatusElement
     {
-        public TabItem(CruciatusElement parent, By selector)
-            : base(parent, selector)
+        /// <summary>
+        /// Создает экземпляр вкладки.
+        /// </summary>
+        /// <param name="parent">
+        /// Родительский элемент.
+        /// </param>
+        /// <param name="getStrategy">
+        /// Стратегия получения элемента.
+        /// </param>
+        public TabItem(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
         }
 
@@ -49,9 +58,6 @@ namespace Cruciatus.Elements
         /// <summary>
         /// Выбирает вкладку текущей.
         /// </summary>
-        /// <returns>
-        /// Значение true если удалось выбрать либо уже выбрана; в противном случае значение - false.
-        /// </returns>
         public void Select()
         {
             if (IsSelection)

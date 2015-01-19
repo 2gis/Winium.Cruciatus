@@ -30,11 +30,11 @@ namespace Cruciatus.Elements
 
         private AutomationElement _instance;
 
-        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By selector)
+        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By strategy)
         {
             Parent = parent;
             Instanse = element;
-            Selector = selector;
+            GetStrategy = strategy;
         }
 
         public CruciatusElement(CruciatusElement element)
@@ -46,10 +46,10 @@ namespace Cruciatus.Elements
 
             Instanse = element.Instanse;
             Parent = element;
-            Selector = element.Selector;
+            GetStrategy = element.GetStrategy;
         }
 
-        public CruciatusElement(CruciatusElement parent, By selector)
+        public CruciatusElement(CruciatusElement parent, By getStrategy)
         {
             if (parent == null)
             {
@@ -57,7 +57,7 @@ namespace Cruciatus.Elements
             }
 
             Parent = parent;
-            Selector = selector;
+            GetStrategy = getStrategy;
         }
 
         internal AutomationElement Instanse
@@ -66,7 +66,7 @@ namespace Cruciatus.Elements
             {
                 if (_instance == null)
                 {
-                    _instance = CruciatusCommand.FindFirst(Parent.Instanse, Selector);
+                    _instance = CruciatusCommand.FindFirst(Parent.Instanse, GetStrategy);
                 }
 
                 if (_instance == null)
@@ -85,7 +85,7 @@ namespace Cruciatus.Elements
 
         internal CruciatusElement Parent { get; set; }
 
-        public By Selector { get; internal set; }
+        public By GetStrategy { get; internal set; }
 
         public CruciatusElementProperties Properties
         {
@@ -95,14 +95,14 @@ namespace Cruciatus.Elements
             }
         }
 
-        public virtual CruciatusElement Get(By selector)
+        public virtual CruciatusElement Get(By strategy)
         {
-            return CruciatusCommand.FindFirst(this, selector);
+            return CruciatusCommand.FindFirst(this, strategy);
         }
 
-        public IEnumerable<CruciatusElement> GetAll(By selector)
+        public IEnumerable<CruciatusElement> GetAll(By strategy)
         {
-            return CruciatusCommand.FindAll(this, selector);
+            return CruciatusCommand.FindAll(this, strategy);
         }
 
         public void Click()

@@ -71,7 +71,6 @@
     <Compile Include="Elements\RibbonApplicationMenu.cs" />
     <Compile Include="Elements\TabItem.cs" />
     <Compile Include="Exceptions\CruciatusException.cs" />
-    <Compile Include="Exceptions\ElementNotFoundException.cs" />
     <Compile Include="Exceptions\PropertyInvalidCastException.cs" />
     <Compile Include="Exceptions\PropertyNotSupportedException.cs" />
     <Compile Include="Extensions\AutomationElementExtension.cs" />
