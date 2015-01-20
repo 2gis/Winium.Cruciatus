@@ -29,49 +29,5 @@
                 return new SecondTab(this, By.Name("TabItem2"));
             }
         }
-
-        /*#region Временно, пока проблемы с вкладками.
-
-        public CruciatusElement SetTextButton
-        {
-            get
-            {
-                return new CruciatusElement(this, By.Uid("SetTextButton"));
-            }
-        }
-
-        public CruciatusElement TextBox1
-        {
-            get
-            {
-                return new CruciatusElement(this, By.Uid("TextBox1"));
-            }
-        }
-
-        public ComboBox TextComboBox
-        {
-            get
-            {
-                return new ComboBox(this, By.Uid("TextComboBox"));
-            }
-        }
-
-        public CheckBox CheckBox1
-        {
-            get
-            {
-                return new CheckBox(this, By.Uid("CheckBox1"));
-            }
-        }
-
-        public ListBox TextListBox
-        {
-            get
-            {
-                return new ListBox(this, By.Uid("TextListBox"));
-            }
-        }
-
-        #endregion*/
     }
 }

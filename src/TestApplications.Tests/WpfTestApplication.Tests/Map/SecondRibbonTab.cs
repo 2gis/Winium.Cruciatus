@@ -19,7 +19,7 @@
         {
             get
             {
-                return Get(By.Uid("RibbonCheckBox")).ToCheckBox();
+                return GetByUid("RibbonCheckBox").ToCheckBox();
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return Get(By.Uid("RibbonToggleButton")).ToCheckBox();
+                return GetByUid("RibbonToggleButton").ToCheckBox();
             }
         }
     }

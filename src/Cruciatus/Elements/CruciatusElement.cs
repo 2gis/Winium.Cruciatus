@@ -95,6 +95,21 @@ namespace Cruciatus.Elements
             }
         }
 
+        public virtual CruciatusElement GetByUid(string value)
+        {
+            return Get(By.Uid(value));
+        }
+
+        public virtual CruciatusElement GetByName(string value)
+        {
+            return Get(By.Name(value));
+        }
+
+        public virtual CruciatusElement GetByPath(string value)
+        {
+            return Get(By.Path(value));
+        }
+
         public virtual CruciatusElement Get(By strategy)
         {
             return CruciatusCommand.FindFirst(this, strategy);

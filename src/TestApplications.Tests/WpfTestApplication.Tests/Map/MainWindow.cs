@@ -67,7 +67,7 @@
         {
             get
             {
-                return Get(By.Uid("SimpleMenu")).ToMenu();
+                return GetByUid("SimpleMenu").ToMenu();
             }
         }
 

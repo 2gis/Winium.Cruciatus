@@ -19,7 +19,7 @@
         {
             get
             {
-                return Get(By.Uid("RibbonButton"));
+                return GetByUid("RibbonButton");
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return Get(By.Uid("RibbonTextComboBox")).ToComboBox();
+                return GetByUid("RibbonTextComboBox").ToComboBox();
             }
         }
 
@@ -35,7 +35,7 @@
         {
             get
             {
-                return Get(By.Uid("RibbonCheckComboBox")).ToComboBox();
+                return GetByUid("RibbonCheckComboBox").ToComboBox();
             }
         }
     }

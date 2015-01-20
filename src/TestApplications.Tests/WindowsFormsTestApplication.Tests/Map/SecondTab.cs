@@ -19,7 +19,7 @@
         {
             get
             {
-                return Get(By.Uid("ChangeEnabledButton"));
+                return GetByUid("ChangeEnabledButton");
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return Get(By.Uid("TextBox2"));
+                return GetByUid("TextBox2");
             }
         }
 
@@ -35,7 +35,7 @@
         {
             get
             {
-                return Get(By.Uid("CheckBox2")).ToCheckBox();
+                return GetByUid("CheckBox2").ToCheckBox();
             }
         }
 
@@ -43,7 +43,7 @@
         {
             get
             {
-                return Get(By.Uid("CheckListBox")).ToListBox();
+                return GetByUid("CheckListBox").ToListBox();
             }
         }
     }

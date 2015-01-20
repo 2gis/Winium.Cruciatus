@@ -19,7 +19,7 @@
         {
             get
             {
-                return Get(By.Uid("SetTextButton"));
+                return GetByUid("SetTextButton");
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return Get(By.Uid("TextBox1"));
+                return GetByUid("TextBox1");
             }
         }
 
@@ -35,7 +35,7 @@
         {
             get
             {
-                return Get(By.Uid("TextComboBox")).ToComboBox();
+                return GetByUid("TextComboBox").ToComboBox();
             }
         }
 
@@ -43,7 +43,7 @@
         {
             get
             {
-                return Get(By.Uid("CheckBox1")).ToCheckBox();
+                return GetByUid("CheckBox1").ToCheckBox();
             }
         }
 
@@ -51,7 +51,7 @@
         {
             get
             {
-                return Get(By.Uid("TextListBox")).ToListBox();
+                return GetByUid("TextListBox").ToListBox();
             }
         }
     }

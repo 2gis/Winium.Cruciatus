@@ -18,7 +18,7 @@
         {
             get
             {
-                return Get(By.Uid("OpenFileDialogButton"));
+                return GetByUid("OpenFileDialogButton");
             }
         }
 
@@ -26,7 +26,7 @@
         {
             get
             {
-                return Get(By.Uid("SaveFileDialogButton"));
+                return GetByUid("SaveFileDialogButton");
             }
         }
     }
