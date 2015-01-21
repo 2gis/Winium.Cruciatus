@@ -71,7 +71,8 @@
             var element = _secondTab.CheckComboBox.GetCheckBoxByName("Quarter");
 
             element.Check();
-            Assert.AreEqual(true, element.IsToggleOn, "Чекбокс Quarter в uncheck состоянии после check.");
+            Assert.That(element.IsToggleOn, Is.True.After(100, 2000),
+                        "Чекбокс Quarter в uncheck состоянии после check.");
 
             element = _secondTab.CheckComboBox.GetCheckBoxByName("Week");
 
@@ -86,10 +87,12 @@
         public void CheckingCheckBox2()
         {
             _secondTab.CheckBox2.Uncheck();
-            Assert.IsFalse(_secondTab.CheckBox2.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
+            Assert.That(_secondTab.CheckBox2.IsToggleOn, Is.False.After(100, 2000),
+                        "Чекбокс в check состоянии после uncheck.");
 
             _secondTab.CheckBox2.Check();
-            Assert.IsTrue(_secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
+            Assert.That(_secondTab.CheckBox2.IsToggleOn, Is.True.After(100, 2000),
+                        "Чекбокс в uncheck состоянии после check.");
         }
 
         [Test]

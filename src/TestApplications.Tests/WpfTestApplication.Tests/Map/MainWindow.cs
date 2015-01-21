@@ -83,7 +83,7 @@
         {
             get
             {
-                return new OpenFileDialog(this, By.Name("Открытие"));
+                return new OpenFileDialog(this, By.Name("Открытие").OrName("Open"));
             }
         }
 
@@ -91,7 +91,7 @@
         {
             get
             {
-                return new SaveFileDialog(this, By.Name("Сохранение"));
+                return new SaveFileDialog(this, By.Name("Сохранение").OrName("Save As"));
             }
         }
     }
