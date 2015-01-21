@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <DeployPathEnvVarName>UITestApps</DeployPathEnvVarName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -94,7 +95,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>powershell.exe $envVar = $env:UITestApps; if ($envVar -ne $null) { New-Item -ItemType Directory -Path $envVar\$(ProjectName)\$(ConfigurationName) -Force; Copy-Item $(TargetDir) $envVar\$(ProjectName) -Recurse -Force } else { Write-Host "Copy build path stop. Environment variable not found." }</PostBuildEvent>
+    <PostBuildEvent>
+      powershell.exe $dpath = $env:$(DeployPathEnvVarName); if ($dpath -ne $null) { New-Item -ItemType Directory -Path $dpath\$(ProjectName) -Force; Copy-Item $(TargetDir)\* $dpath\$(ProjectName) -Recurse -Force; Write-Host "Copy build files successful." } else { Write-Host "Copy build files stop. Environment variable $(DeployPathEnvVarName) not found." }
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
