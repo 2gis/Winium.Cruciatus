@@ -11,6 +11,7 @@ namespace Cruciatus.Elements
     #region using
 
     using System;
+    using System.Threading;
     using System.Windows.Automation;
 
     using Cruciatus.Core;
@@ -82,6 +83,7 @@ namespace Cruciatus.Elements
             }
 
             Click();
+            Thread.Sleep(250);
         }
 
         /// <summary>
@@ -95,6 +97,7 @@ namespace Cruciatus.Elements
             if (ExpandCollapseState != ExpandCollapseState.Collapsed)
             {
                 Click();
+                Thread.Sleep(250);
             }
         }
 
@@ -110,15 +113,15 @@ namespace Cruciatus.Elements
             if (ExpandCollapseState != ExpandCollapseState.Expanded)
             {
                 Logger.Error(string.Format("Элемент {0} не развернут.", ToString()));
-                throw new ElementNotEnabledException("NOT SCROLL");
+                throw new CruciatusException("NOT SCROLL");
             }
 
             // Получение шаблона прокрутки у списка
             var scrollPattern = Instanse.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern == null)
             {
-                Logger.Debug(string.Format("{0} не поддерживает шаблон прокрутки.", ToString()));
-                throw new ElementNotEnabledException("NOT SCROLL");
+                Logger.Error(string.Format("{0} не поддерживает ScrollPattern.", ToString()));
+                throw new CruciatusException("NOT SCROLL");
             }
 
             // Стартовый поиск элемента
@@ -157,26 +160,36 @@ namespace Cruciatus.Elements
                 return null;
             }
 
-            // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
-            while (element.Instanse.ClickablePointUnder(Instanse, scrollPattern))
+            var strategy = By.AutomationProperty(TreeScope.Subtree, AutomationElement.ClassNameProperty, "Popup")
+                .And(AutomationElement.ProcessIdProperty, Instanse.Current.ProcessId);
+            var popupWindow = CruciatusFactory.Root.Get(strategy);
+            if (popupWindow == null)
             {
-                scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+                Logger.Error("Не найдено popup окно выпадающего списка.");
+                throw new CruciatusException("NOT SCROLL");
+            }
+
+            // Если точка клика элемента под границей списка - докручиваем по вертикали вниз
+            var popupWindowInstance = popupWindow.Instanse;
+            while (element.Instanse.ClickablePointUnder(popupWindowInstance, scrollPattern))
+            {
+                scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
             }
 
             // Если точка клика элемента над границей списка - докручиваем по вертикали вверх
-            while (element.Instanse.ClickablePointOver(Instanse))
+            while (element.Instanse.ClickablePointOver(popupWindowInstance))
             {
                 scrollPattern.ScrollVertical(ScrollAmount.SmallDecrement);
             }
 
             // Если точка клика элемента справа от границы списка - докручиваем по горизонтали вправо
-            while (element.Instanse.ClickablePointRight(Instanse, scrollPattern))
+            while (element.Instanse.ClickablePointRight(popupWindowInstance, scrollPattern))
             {
-                scrollPattern.ScrollHorizontal(ScrollAmount.SmallIncrement);
+                scrollPattern.ScrollHorizontal(ScrollAmount.LargeIncrement);
             }
 
             // Если точка клика элемента слева от границы списка - докручиваем по горизонтали влево
-            while (element.Instanse.ClickablePointLeft(Instanse))
+            while (element.Instanse.ClickablePointLeft(popupWindowInstance))
             {
                 scrollPattern.ScrollHorizontal(ScrollAmount.SmallDecrement);
             }
