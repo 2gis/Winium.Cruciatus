@@ -2,55 +2,86 @@
 {
     #region using
 
+    using System;
+
+    using WindowsInput;
+    using WindowsInput.Native;
+
     using NLog;
 
     #endregion
 
-    public static class Keyboard
+    public class Keyboard
     {
-        public const string Enter = "{ENTER}";
+        private readonly Logger _logger;
 
-        public const string Backspace = "{BACKSPACE}";
+        private readonly IKeyboardSimulator _keyboardSimulator;
 
-        public const string Escape = "{ESCAPE}";
-
-        public const string CtrlA = "^a";
-
-        public const string CtrlC = "^c";
-
-        public const string CtrlV = "^v";
-
-        private static readonly Logger Logger = CruciatusFactory.Logger;
-
-        public static void SendKeys(string text)
+        public Keyboard(Logger logger, IKeyboardSimulator keyboardSimulator)
         {
-            Logger.Info("Send keys '{0}'", text);
-            System.Windows.Forms.SendKeys.SendWait(text);
+            _logger = logger;
+            _keyboardSimulator = keyboardSimulator;
         }
 
-        public static void SendEnter()
+        [Obsolete("SendKeys is deprecated, please use SendText instead.")]
+        public Keyboard SendKeys(string text)
         {
-            SendKeys(Enter);
+            return SendText(text);
         }
 
-        public static void SendBackspace()
+        public Keyboard SendText(string text)
         {
-            SendKeys(Backspace);
+            _logger.Info("Send text '{0}'", text);
+            _keyboardSimulator.TextEntry(text);
+            return this;
         }
 
-        public static void SendCtrlA()
+        public Keyboard SendEnter()
         {
-            SendKeys(CtrlA);
+            KeyPress(VirtualKeyCode.RETURN);
+            return this;
         }
 
-        public static void SendCtrlC()
+        public Keyboard SendBackspace()
         {
-            SendKeys(CtrlC);
+            KeyPress(VirtualKeyCode.BACK);
+            return this;
         }
 
-        public static void SendCtrlV()
+        public Keyboard SendEscape()
         {
-            SendKeys(CtrlV);
+            KeyPress(VirtualKeyCode.ESCAPE);
+            return this;
+        }
+
+        public Keyboard SendCtrlA()
+        {
+            KeyPressWithModifier(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_A);
+            return this;
+        }
+
+        public Keyboard SendCtrlC()
+        {
+            KeyPressWithModifier(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_C);
+            return this;
+        }
+
+        public Keyboard SendCtrlV()
+        {
+            KeyPressWithModifier(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_V);
+            return this;
+        }
+
+        private IKeyboardSimulator KeyPress(VirtualKeyCode keyCode)
+        {
+            _logger.Info("Key press '{0}'", keyCode.ToString());
+            return _keyboardSimulator.KeyPress(keyCode);
+        }
+
+        private IKeyboardSimulator KeyPressWithModifier(VirtualKeyCode keyCode, VirtualKeyCode modifierKeyCode)
+        {
+            _logger.Info("Press key combo '{0} + {1}'", modifierKeyCode, keyCode);
+            return _keyboardSimulator.ModifiedKeyStroke(modifierKeyCode, keyCode);
         }
     }
 }

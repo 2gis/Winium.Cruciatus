@@ -11,11 +11,13 @@ namespace Cruciatus
     #region using
 
     using System;
-    using System.Linq;
     using System.Diagnostics;
     using System.Threading;
     using System.Windows.Automation;
 
+    using WindowsInput;
+
+    using Cruciatus.Core;
     using Cruciatus.Elements;
     using Cruciatus.Settings;
 
@@ -27,9 +29,12 @@ namespace Cruciatus
 
     public static class CruciatusFactory
     {
+        private static Keyboard _keyboard;
+
         static CruciatusFactory()
         {
             LoggerInit();
+            InputSimulatorsInit();
         }
 
         public static Logger Logger
@@ -54,6 +59,20 @@ namespace Cruciatus
             {
                 return new CruciatusElement(null, AutomationElement.RootElement, null);
             }
+        }
+
+        public static Keyboard Keyboard
+        {
+            get
+            {
+                return _keyboard;
+            }
+        }
+
+        private static void InputSimulatorsInit()
+        {
+            var inputSimulator = new InputSimulator();
+            _keyboard = new Keyboard(Logger, inputSimulator.Keyboard);
         }
 
         private static void LoggerInit()

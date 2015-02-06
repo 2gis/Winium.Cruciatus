@@ -201,8 +201,7 @@ namespace Cruciatus.Elements
 
             Click(MouseButton.Left, ClickStrategies.ClickablePoint | ClickStrategies.BoundingRectangleCenter);
 
-            text = Keyboard.CtrlA + Keyboard.Backspace + text;
-            Keyboard.SendKeys(text);
+            CruciatusFactory.Keyboard.SendCtrlA().SendBackspace().SendText(text);
         }
 
         public string Text()

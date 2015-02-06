@@ -2,6 +2,7 @@
 {
     #region using
 
+    using Cruciatus;
     using Cruciatus.Core;
     using Cruciatus.Elements;
 
@@ -60,7 +61,7 @@
 
             _firstTab.SetTextButton.Click(MouseButton.Right);
             Assert.IsFalse(_setTextButtonContextMenu.GetItem("Menu item 3").Properties.IsEnabled, "Пункт Menu item 3 оказался активен.");
-            Keyboard.SendKeys("{ESCAPE}");
+            CruciatusFactory.Keyboard.SendEscape();
         }
 
         [Test]
