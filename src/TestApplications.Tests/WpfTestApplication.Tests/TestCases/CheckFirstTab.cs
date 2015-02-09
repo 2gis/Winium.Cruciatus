@@ -67,13 +67,12 @@
         [Test]
         public void CheckingTextBox1()
         {
-            var startText = _firstTab.TextBox1.Text();
-
-            _firstTab.TextBox1.SetText("new test text");
-
+            const string text = "new test text";
+            
+            _firstTab.TextBox1.SetText(text);
             var currentText = _firstTab.TextBox1.Text();
 
-            Assert.AreNotEqual(startText, currentText, "Текст не изменился.");
+            Assert.AreEqual(text, currentText, "Текст не изменился.");
         }
 
         [Test]
