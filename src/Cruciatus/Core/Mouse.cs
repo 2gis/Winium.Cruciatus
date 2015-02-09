@@ -20,9 +20,8 @@
 
         public void SetCursorPos(double x, double y)
         {
-            var absoluteX = x * (65535 / SystemParameters.VirtualScreenWidth);
-            var absoluteY = y * (65535 / SystemParameters.VirtualScreenHeight);
-            _mouseSimulator.MoveMouseToPositionOnVirtualDesktop(absoluteX, absoluteY);
+            var vdPoint = ScreenCoordinatesHelper.ScreenPointToVirtualScreenPoint(new Point(x, y));
+            _mouseSimulator.MoveMouseToPositionOnVirtualDesktop(vdPoint.X, vdPoint.Y);
             Thread.Sleep(250);
         }
 
