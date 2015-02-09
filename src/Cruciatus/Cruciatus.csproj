@@ -60,7 +60,6 @@
     <Compile Include="Core\Keyboard.cs" />
     <Compile Include="Core\Mouse.cs" />
     <Compile Include="Core\MouseButtons.cs" />
-    <Compile Include="Core\MouseNativeMethods.cs" />
     <Compile Include="CruciatusCommand.cs" />
     <Compile Include="CruciatusFactory.cs" />
     <Compile Include="Elements\Menu.cs" />

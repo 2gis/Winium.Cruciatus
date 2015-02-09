@@ -31,6 +31,8 @@ namespace Cruciatus
     {
         private static Keyboard _keyboard;
 
+        private static Mouse _mouse;
+
         static CruciatusFactory()
         {
             LoggerInit();
@@ -69,10 +71,19 @@ namespace Cruciatus
             }
         }
 
+        public static Mouse Mouse
+        {
+            get
+            {
+                return _mouse;
+            }
+        }
+
         private static void InputSimulatorsInit()
         {
             var inputSimulator = new InputSimulator();
             _keyboard = new Keyboard(Logger, inputSimulator.Keyboard);
+            _mouse = new Mouse(inputSimulator.Mouse);
         }
 
         private static void LoggerInit()

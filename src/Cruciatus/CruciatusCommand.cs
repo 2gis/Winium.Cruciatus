@@ -45,11 +45,11 @@ namespace Cruciatus
 
             if (doubleClick)
             {
-                Mouse.DoubleClick(button, point.X, point.Y);
+                CruciatusFactory.Mouse.DoubleClick(button, point.X, point.Y);
             }
             else
             {
-                Mouse.Click(button, point.X, point.Y);
+                CruciatusFactory.Mouse.Click(button, point.X, point.Y);
             }
 
             Logger.Info("{0} on '{1}' element at ({2}, {3}) ClickablePoint",
@@ -73,11 +73,11 @@ namespace Cruciatus
 
             if (doubleClick)
             {
-                Mouse.DoubleClick(button, point.X, point.Y);
+                CruciatusFactory.Mouse.DoubleClick(button, point.X, point.Y);
             }
             else
             {
-                Mouse.Click(button, point.X, point.Y);
+                CruciatusFactory.Mouse.Click(button, point.X, point.Y);
             }
 
             Logger.Info("{0} on '{1}' element at ({2}, {3}) BoundingRectangle center",
