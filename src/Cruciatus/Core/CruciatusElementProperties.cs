@@ -3,6 +3,7 @@
     #region using
 
     using System;
+    using System.Windows;
     using System.Windows.Automation;
 
     using Cruciatus.Elements;
@@ -41,6 +42,16 @@
             get
             {
                 return _element.Current.IsEnabled;
+            }
+        }
+
+        public Point? ClickablePoint
+        {
+            get
+            {
+                Point point;
+                var exists = _element.TryGetClickablePoint(out point);
+                return exists ? point : new Point?();
             }
         }
     }

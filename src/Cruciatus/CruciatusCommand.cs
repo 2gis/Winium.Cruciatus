@@ -36,24 +36,26 @@ namespace Cruciatus
                 throw new ArgumentNullException("element");
             }
 
-            Point point;
-            if (!AutomationElementHelper.TryGetClickablePoint(element.Instanse, out point))
+            var point = element.Properties.ClickablePoint;
+            if (!point.HasValue)
             {
                 Logger.Debug("Element '{0}' not have ClickablePoint", element);
                 return false;
             }
 
+            var x = point.Value.X;
+            var y = point.Value.Y;
             if (doubleClick)
             {
-                CruciatusFactory.Mouse.DoubleClick(button, point.X, point.Y);
+                CruciatusFactory.Mouse.DoubleClick(button, x, y);
             }
             else
             {
-                CruciatusFactory.Mouse.Click(button, point.X, point.Y);
+                CruciatusFactory.Mouse.Click(button, x, y);
             }
 
             Logger.Info("{0} on '{1}' element at ({2}, {3}) ClickablePoint",
-                        doubleClick ? "DoubleClick" : "Click", element, point.X, point.Y);
+                        doubleClick ? "DoubleClick" : "Click", element, x, y);
             return true;
         }
 
