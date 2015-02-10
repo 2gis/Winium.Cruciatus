@@ -45,6 +45,14 @@
             }
         }
 
+        public bool IsOffscreen
+        {
+            get
+            {
+                return _element.Current.IsOffscreen;
+            }
+        }
+
         public Point? ClickablePoint
         {
             get
