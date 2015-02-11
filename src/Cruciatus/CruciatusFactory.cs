@@ -19,6 +19,7 @@ namespace Cruciatus
 
     using Cruciatus.Core;
     using Cruciatus.Elements;
+    using Cruciatus.Exceptions;
     using Cruciatus.Settings;
 
     using NLog;
@@ -29,7 +30,9 @@ namespace Cruciatus
 
     public static class CruciatusFactory
     {
-        private static Keyboard _keyboard;
+        private static KeyboardSimulatorExt _keyboardSimulatorExt;
+
+        private static SendKeysExt _sendKeysExt;
 
         private static Mouse _mouse;
 
@@ -63,11 +66,11 @@ namespace Cruciatus
             }
         }
 
-        public static Keyboard Keyboard
+        public static IKeyboard Keyboard
         {
             get
             {
-                return _keyboard;
+                return GetCurrentKeyboard();
             }
         }
 
@@ -82,8 +85,10 @@ namespace Cruciatus
         private static void InputSimulatorsInit()
         {
             var inputSimulator = new InputSimulator();
-            _keyboard = new Keyboard(Logger, inputSimulator.Keyboard);
+            _keyboardSimulatorExt = new KeyboardSimulatorExt(Logger, inputSimulator.Keyboard);
             _mouse = new Mouse(inputSimulator.Mouse);
+
+            _sendKeysExt = new SendKeysExt(Logger);
         }
 
         private static void LoggerInit()
@@ -115,6 +120,19 @@ namespace Cruciatus
 
             // Step 5. Activate the configuration
             LogManager.Configuration = config;
+        }
+
+        private static IKeyboard GetCurrentKeyboard()
+        {
+            switch (Settings.KeyboardSimulatorType)
+            {
+                case KeyboardSimulatorType.BasedOnInputSimulatorLib:
+                    return _keyboardSimulatorExt;
+                case KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass:
+                    return _sendKeysExt;
+            }
+
+            throw new CruciatusException("Unknown KeyboardSimulatorType");
         }
 
         internal static TOut WaitingValues<TOut>(
