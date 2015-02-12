@@ -39,9 +39,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="UIAutomationClient" />
@@ -57,6 +59,9 @@
     <Compile Include="Core\By.cs" />
     <Compile Include="Core\ClickStrategy.cs" />
     <Compile Include="Core\CruciatusElementProperties.cs" />
+    <Compile Include="Core\IScreenshoter.cs" />
+    <Compile Include="Core\Screenshot.cs" />
+    <Compile Include="Core\Screenshoter.cs" />
     <Compile Include="Core\SendKeysExt.cs" />
     <Compile Include="Core\GetTextStrategy.cs" />
     <Compile Include="Core\IKeyboard.cs" />
@@ -69,6 +74,7 @@
     <Compile Include="Elements\Menu.cs" />
     <Compile Include="Elements\SaveFileDialog.cs" />
     <Compile Include="Elements\OpenFileDialog.cs" />
+    <Compile Include="Extensions\IScreenshoterExtension.cs" />
     <Compile Include="Settings\KeyboardSimulatorType.cs" />
     <Compile Include="Settings\CruciatusSettings.cs" />
     <Compile Include="Elements\CheckBox.cs" />
