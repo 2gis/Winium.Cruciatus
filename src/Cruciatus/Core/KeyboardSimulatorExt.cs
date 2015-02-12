@@ -2,7 +2,6 @@
 {
     #region using
 
-    using System;
     using System.Threading;
 
     using WindowsInput;
@@ -18,7 +17,7 @@
 
         private readonly IKeyboardSimulator _keyboardSimulator;
 
-        public KeyboardSimulatorExt(Logger logger, IKeyboardSimulator keyboardSimulator)
+        public KeyboardSimulatorExt(IKeyboardSimulator keyboardSimulator, Logger logger)
         {
             _logger = logger;
             _keyboardSimulator = keyboardSimulator;
@@ -56,33 +55,40 @@
 
         public IKeyboard SendCtrlA()
         {
-            KeyPressWithModifier(VirtualKeyCode.VK_A, VirtualKeyCode.CONTROL);
+            KeyPressSimultaneous(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_A);
             return this;
         }
 
         public IKeyboard SendCtrlC()
         {
-            KeyPressWithModifier(VirtualKeyCode.VK_C, VirtualKeyCode.CONTROL);
+            KeyPressSimultaneous(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_C);
             return this;
         }
 
         public IKeyboard SendCtrlV()
         {
-            KeyPressWithModifier(VirtualKeyCode.VK_V, VirtualKeyCode.CONTROL);
+            KeyPressSimultaneous(VirtualKeyCode.CONTROL, VirtualKeyCode.VK_V);
             return this;
         }
 
-        private void KeyPress(VirtualKeyCode keyCode)
+        public void KeyPress(VirtualKeyCode keyCode)
         {
             _logger.Info("Key press '{0}'", keyCode.ToString());
             _keyboardSimulator.KeyPress(keyCode);
             Thread.Sleep(250);
         }
 
-        private void KeyPressWithModifier(VirtualKeyCode keyCode, VirtualKeyCode modifierKeyCode)
+        public void KeyPressSimultaneous(VirtualKeyCode keyCode1, VirtualKeyCode keyCode2)
         {
-            _logger.Info("Press key combo '{0} + {1}'", modifierKeyCode, keyCode);
-            _keyboardSimulator.ModifiedKeyStroke(modifierKeyCode, keyCode);
+            _logger.Info("Press key combo '{0} + {1}'", keyCode1, keyCode2);
+            _keyboardSimulator.ModifiedKeyStroke(keyCode1, keyCode2);
+            Thread.Sleep(250);
+        }
+
+        public void KeyPressSimultaneous(VirtualKeyCode keyCode1, VirtualKeyCode keyCode2, VirtualKeyCode keyCode3)
+        {
+            _logger.Info("Press key combo '{0} + {1} + {2}'", keyCode1, keyCode2, keyCode3);
+            _keyboardSimulator.ModifiedKeyStroke(new[] { keyCode1, keyCode2 }, keyCode3);
             Thread.Sleep(250);
         }
     }

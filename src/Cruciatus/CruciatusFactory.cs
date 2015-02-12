@@ -85,7 +85,7 @@ namespace Cruciatus
         private static void InputSimulatorsInit()
         {
             var inputSimulator = new InputSimulator();
-            _keyboardSimulatorExt = new KeyboardSimulatorExt(Logger, inputSimulator.Keyboard);
+            _keyboardSimulatorExt = new KeyboardSimulatorExt(inputSimulator.Keyboard, Logger);
             _mouse = new Mouse(inputSimulator.Mouse);
 
             _sendKeysExt = new SendKeysExt(Logger);
