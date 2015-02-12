@@ -21,5 +21,13 @@
             screenshoter.GetScreenshot().SaveAsFile(screenshotPath);
             CruciatusFactory.Logger.Info("Saved screenshot to '{0}' file.", Path.GetFullPath(screenshotPath));
         }
+
+        internal static void IntellectualTakeScreenshot(this IScreenshoter screenshoter)
+        {
+            if (CruciatusFactory.Settings.AutomaticScreenshotCapture)
+            {
+                screenshoter.TakeScreenshot();
+            }
+        }
     }
 }

@@ -204,7 +204,7 @@ namespace Cruciatus
                 if (element == null)
                 {
                     Logger.Error("Element '{0}' not found", info);
-                    CruciatusFactory.Screenshoter.TakeScreenshot();
+                    CruciatusFactory.Screenshoter.IntellectualTakeScreenshot();
                     throw new CruciatusException("ELEMENT NOT FOUND");
                 }
             }
@@ -228,7 +228,7 @@ namespace Cruciatus
                 if (element == null)
                 {
                     Logger.Info("Element '{0}' not found", info);
-                    CruciatusFactory.Screenshoter.TakeScreenshot();
+                    CruciatusFactory.Screenshoter.IntellectualTakeScreenshot();
                     return null;
                 }
             }
