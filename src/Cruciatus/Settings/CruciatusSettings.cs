@@ -126,6 +126,11 @@ namespace Cruciatus.Settings
         /// </summary>
         public SaveFileDialogUid SaveFileDialogUid { get; set; }
 
+        /// <summary>
+        /// Возвращает или задает информацию о типе симулятора клавиатуры.
+        /// </summary>
+        public KeyboardSimulatorType KeyboardSimulatorType { get; set; }
+
         internal static CruciatusSettings Instance
         {
             get
@@ -148,6 +153,7 @@ namespace Cruciatus.Settings
             ScrollBarWidth = DefaultScrollBarWidth;
             ScrollBarHeight = DefaultScrollBarHeight;
             ClickButton = DefaultClickButton;
+            KeyboardSimulatorType = KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass;
 
             MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
             OpenFileDialogUid = (OpenFileDialogUid)DefaultOpenFileDialogUid.Clone();

@@ -42,6 +42,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
@@ -56,8 +57,10 @@
     <Compile Include="Core\By.cs" />
     <Compile Include="Core\ClickStrategy.cs" />
     <Compile Include="Core\CruciatusElementProperties.cs" />
+    <Compile Include="Core\SendKeysExt.cs" />
     <Compile Include="Core\GetTextStrategy.cs" />
-    <Compile Include="Core\Keyboard.cs" />
+    <Compile Include="Core\IKeyboard.cs" />
+    <Compile Include="Core\KeyboardSimulatorExt.cs" />
     <Compile Include="Core\Mouse.cs" />
     <Compile Include="Core\MouseButtons.cs" />
     <Compile Include="Core\ScreenCoordinatesHelper.cs" />
@@ -66,6 +69,7 @@
     <Compile Include="Elements\Menu.cs" />
     <Compile Include="Elements\SaveFileDialog.cs" />
     <Compile Include="Elements\OpenFileDialog.cs" />
+    <Compile Include="Settings\KeyboardSimulatorType.cs" />
     <Compile Include="Settings\CruciatusSettings.cs" />
     <Compile Include="Elements\CheckBox.cs" />
     <Compile Include="Elements\ComboBox.cs" />
