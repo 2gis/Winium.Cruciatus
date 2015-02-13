@@ -36,10 +36,13 @@ namespace Cruciatus
 
         private static Mouse _mouse;
 
+        private static Screenshoter _screenshoter;
+
         static CruciatusFactory()
         {
             LoggerInit();
             InputSimulatorsInit();
+            ScreenshotersInit();
         }
 
         public static Logger Logger
@@ -82,6 +85,14 @@ namespace Cruciatus
             }
         }
 
+        public static IScreenshoter Screenshoter
+        {
+            get
+            {
+                return _screenshoter;
+            }
+        }
+
         private static void InputSimulatorsInit()
         {
             var inputSimulator = new InputSimulator();
@@ -120,6 +131,11 @@ namespace Cruciatus
 
             // Step 5. Activate the configuration
             LogManager.Configuration = config;
+        }
+
+        private static void ScreenshotersInit()
+        {
+            _screenshoter = new Screenshoter();
         }
 
         private static IKeyboard GetCurrentKeyboard()

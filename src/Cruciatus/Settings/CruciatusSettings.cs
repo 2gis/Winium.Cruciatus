@@ -131,6 +131,16 @@ namespace Cruciatus.Settings
         /// </summary>
         public KeyboardSimulatorType KeyboardSimulatorType { get; set; }
 
+        /// <summary>
+        /// Возвращает или задает директорию для скриншотов.
+        /// </summary>
+        public string ScreenshotsPath { get; set; }
+
+        /// <summary>
+        /// По умолчанию false.
+        /// </summary>
+        public bool AutomaticScreenshotCapture { get; set; }
+
         internal static CruciatusSettings Instance
         {
             get
@@ -154,6 +164,8 @@ namespace Cruciatus.Settings
             ScrollBarHeight = DefaultScrollBarHeight;
             ClickButton = DefaultClickButton;
             KeyboardSimulatorType = KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass;
+            ScreenshotsPath = "Screenshots";
+            AutomaticScreenshotCapture = false;
 
             MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
             OpenFileDialogUid = (OpenFileDialogUid)DefaultOpenFileDialogUid.Clone();

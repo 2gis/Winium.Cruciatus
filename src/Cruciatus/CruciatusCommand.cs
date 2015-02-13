@@ -18,6 +18,7 @@ namespace Cruciatus
     using Cruciatus.Core;
     using Cruciatus.Elements;
     using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
 
     using NLog;
 
@@ -203,6 +204,7 @@ namespace Cruciatus
                 if (element == null)
                 {
                     Logger.Error("Element '{0}' not found", info);
+                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                     throw new CruciatusException("ELEMENT NOT FOUND");
                 }
             }
@@ -226,6 +228,7 @@ namespace Cruciatus
                 if (element == null)
                 {
                     Logger.Info("Element '{0}' not found", info);
+                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                     return null;
                 }
             }
