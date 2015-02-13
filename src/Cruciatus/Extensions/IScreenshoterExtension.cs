@@ -22,7 +22,7 @@
             CruciatusFactory.Logger.Info("Saved screenshot to '{0}' file.", Path.GetFullPath(screenshotPath));
         }
 
-        internal static void IntellectualTakeScreenshot(this IScreenshoter screenshoter)
+        internal static void AutomaticScreenshotCaptureIfNeeded(this IScreenshoter screenshoter)
         {
             if (CruciatusFactory.Settings.AutomaticScreenshotCapture)
             {
