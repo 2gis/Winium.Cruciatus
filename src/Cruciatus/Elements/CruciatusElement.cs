@@ -16,6 +16,7 @@ namespace Cruciatus.Elements
 
     using Cruciatus.Core;
     using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
 
     using NLog;
 
@@ -140,6 +141,7 @@ namespace Cruciatus.Elements
             if (!Instanse.Current.IsEnabled)
             {
                 Logger.Error("Element '{0}' not enabled. Click failed.", ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new ElementNotEnabledException("NOT CLICK");
             }
 
@@ -196,6 +198,7 @@ namespace Cruciatus.Elements
             if (!Instanse.Current.IsEnabled)
             {
                 Logger.Error("Element '{0}' not enabled. Set text failed.", ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new ElementNotEnabledException("NOT SET TEXT");
             }
 
@@ -234,6 +237,7 @@ namespace Cruciatus.Elements
             }
 
             Logger.Error("Get text from '{0}' element failed.", ToString());
+            CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
             throw new CruciatusException("NO GET TEXT");
         }
 

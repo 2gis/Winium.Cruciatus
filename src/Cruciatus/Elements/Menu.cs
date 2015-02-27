@@ -15,6 +15,7 @@ namespace Cruciatus.Elements
 
     using Cruciatus.Core;
     using Cruciatus.Exceptions;
+    using Cruciatus.Extensions;
 
     #endregion
 
@@ -44,6 +45,7 @@ namespace Cruciatus.Elements
             if (!Instanse.Current.IsEnabled)
             {
                 Logger.Error("Element '{0}' not enabled. Select item failed.", ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new CruciatusException("NOT SELECT ITEM");
             }
 

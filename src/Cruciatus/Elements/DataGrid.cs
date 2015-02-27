@@ -81,6 +81,7 @@ namespace Cruciatus.Elements
             if (!Instanse.Current.IsEnabled)
             {
                 Logger.Error("Element '{0}' not enabled. Scroll failed.", ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new ElementNotEnabledException("NOT SCROLL");
             }
 
@@ -240,6 +241,7 @@ namespace Cruciatus.Elements
             if (!Instanse.Current.IsEnabled)
             {
                 Logger.Error("Element '{0}' not enabled. Scroll failed.", ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new ElementNotEnabledException("NOT GET ITEM");
             }
 
