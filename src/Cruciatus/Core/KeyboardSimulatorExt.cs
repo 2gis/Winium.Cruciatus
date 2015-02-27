@@ -91,5 +91,19 @@
             _keyboardSimulator.ModifiedKeyStroke(new[] { keyCode1, keyCode2 }, keyCode3);
             Thread.Sleep(250);
         }
+
+        public void KeyDown(VirtualKeyCode keyCode)
+        {
+            _logger.Info("Key down '{0}'", keyCode.ToString());
+            _keyboardSimulator.KeyDown(keyCode);
+            Thread.Sleep(250);
+        }
+
+        public void KeyUp(VirtualKeyCode keyCode)
+        {
+            _logger.Info("Key up '{0}'", keyCode.ToString());
+            _keyboardSimulator.KeyUp(keyCode);
+            Thread.Sleep(250);
+        }
     }
 }

@@ -30,8 +30,6 @@ namespace Cruciatus
 
     public static class CruciatusFactory
     {
-        private static KeyboardSimulatorExt _keyboardSimulatorExt;
-
         private static SendKeysExt _sendKeysExt;
 
         private static Mouse _mouse;
@@ -93,10 +91,12 @@ namespace Cruciatus
             }
         }
 
+        internal static KeyboardSimulatorExt KeyboardSimulatorExt { get; private set; }
+
         private static void InputSimulatorsInit()
         {
             var inputSimulator = new InputSimulator();
-            _keyboardSimulatorExt = new KeyboardSimulatorExt(inputSimulator.Keyboard, Logger);
+            KeyboardSimulatorExt = new KeyboardSimulatorExt(inputSimulator.Keyboard, Logger);
             _mouse = new Mouse(inputSimulator.Mouse);
 
             _sendKeysExt = new SendKeysExt(Logger);
@@ -143,7 +143,7 @@ namespace Cruciatus
             switch (Settings.KeyboardSimulatorType)
             {
                 case KeyboardSimulatorType.BasedOnInputSimulatorLib:
-                    return _keyboardSimulatorExt;
+                    return KeyboardSimulatorExt;
                 case KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass:
                     return _sendKeysExt;
             }

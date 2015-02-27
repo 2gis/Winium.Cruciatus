@@ -108,7 +108,7 @@
                     <CheckBox Uid="CheckBox1" x:Name="CheckBox1" Content="IsEnabledTextListBox"
 						Grid.Row="3" HorizontalAlignment="Center" Margin="2" Width="200"
 						Checked="CheckBox1Checked" Unchecked="CheckBox1Unchecked"/>
-                    <ListBox Uid="TextListBox" x:Name="TextListBox"
+                    <ListBox Uid="TextListBox" x:Name="TextListBox" SelectionMode="Extended"
 						Grid.Row="4" HorizontalAlignment="Center" Height="100" Margin="2" Width="200"/>
                 </Grid>
             </TabItem>

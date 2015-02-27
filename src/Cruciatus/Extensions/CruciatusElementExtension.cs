@@ -13,6 +13,8 @@ namespace Cruciatus.Extensions
     using System;
     using System.Windows.Automation;
 
+    using WindowsInput.Native;
+
     using Cruciatus.Elements;
     using Cruciatus.Exceptions;
 
@@ -38,6 +40,18 @@ namespace Cruciatus.Extensions
         public static Menu ToMenu(this CruciatusElement element)
         {
             return new Menu(element);
+        }
+
+        public static void ClickWithPressedCtrl(this CruciatusElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element");
+            }
+
+            CruciatusFactory.KeyboardSimulatorExt.KeyDown(VirtualKeyCode.CONTROL);
+            element.Click();
+            CruciatusFactory.KeyboardSimulatorExt.KeyUp(VirtualKeyCode.CONTROL);
         }
 
         /// <summary>
