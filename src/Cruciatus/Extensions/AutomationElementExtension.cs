@@ -16,6 +16,7 @@ namespace Cruciatus.Extensions
     using System.Windows.Automation;
 
     using Cruciatus.Core;
+    using Cruciatus.Exceptions;
 
     #endregion
 
@@ -228,6 +229,26 @@ namespace Cruciatus.Extensions
             }
 
             return (TOut)obj;
+        }
+
+        [SuppressMessage("Microsoft.Design",
+            "CA1062:Validate arguments of public methods",
+            Justification = "First parameter in extension cannot be null.")]
+        public static T GetPattern<T>(this AutomationElement element, AutomationPattern pattern) where T : class
+        {
+            if (pattern == null)
+            {
+                throw new ArgumentNullException("pattern");
+            }
+
+            object foundPattern;
+            if (element.TryGetCurrentPattern(pattern, out foundPattern))
+            {
+                return (T)foundPattern;
+            }
+
+            var msg = string.Format("Element does not support {0}", typeof(T).Name);
+            throw new CruciatusException(msg);
         }
     }
 }

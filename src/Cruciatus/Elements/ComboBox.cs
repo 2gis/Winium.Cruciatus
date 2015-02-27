@@ -70,35 +70,71 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
+        /// Раскрывает выпадающий список кликом.
+        /// </summary>
+        public void Expand()
+        {
+            this.Expand(ExpandStrategy.Click);
+        }
+
+        /// <summary>
         /// Раскрывает выпадающий список.
         /// </summary>
-        /// <returns>
-        /// Значение true если удалось раскрыть либо если уже раскрыт; в противном случае значение - false.
-        /// </returns>
-        public void Expand()
+        public void Expand(ExpandStrategy strategy)
         {
             if (ExpandCollapseState == ExpandCollapseState.Expanded)
             {
                 return;
             }
 
-            Click();
+            switch (strategy)
+            {
+                case ExpandStrategy.Click:
+                    this.Click();
+                    break;
+                case ExpandStrategy.ExpandCollapsePattern:
+                    this.Instanse.GetPattern<ExpandCollapsePattern>(ExpandCollapsePattern.Pattern).Expand();
+                    break;
+                default:
+                    Logger.Error("{0} is not valid or implemented expand strategy.", strategy);
+                    throw new CruciatusException("NOT EXPAND");
+            }
+
             Thread.Sleep(250);
+        }
+
+        /// <summary>
+        /// Сворачивает выпадающий список кликом.
+        /// </summary>
+        public void Collapse()
+        {
+            this.Collapse(ExpandStrategy.Click);
         }
 
         /// <summary>
         /// Сворачивает выпадающий список.
         /// </summary>
-        /// <returns>
-        /// Значение true если удалось свернуть либо если уже свернут; в противном случае значение - false.
-        /// </returns>
-        public void Collapse()
+        public void Collapse(ExpandStrategy strategy)
         {
-            if (ExpandCollapseState != ExpandCollapseState.Collapsed)
+            if (ExpandCollapseState == ExpandCollapseState.Collapsed)
             {
-                Click();
-                Thread.Sleep(250);
+                return;
             }
+
+            switch (strategy)
+            {
+                case ExpandStrategy.Click:
+                    this.Click();
+                    break;
+                case ExpandStrategy.ExpandCollapsePattern:
+                    this.Instanse.GetPattern<ExpandCollapsePattern>(ExpandCollapsePattern.Pattern).Collapse();
+                    break;
+                default:
+                    Logger.Error("{0} is not valid or implemented collapse strategy.", strategy);
+                    throw new CruciatusException("NOT COLLAPSE");
+            }
+
+            Thread.Sleep(250);
         }
 
         public CruciatusElement ScrollTo(By getStrategy)

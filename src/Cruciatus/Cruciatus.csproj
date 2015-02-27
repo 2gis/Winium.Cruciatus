@@ -57,8 +57,9 @@
     <Compile Include="Application.cs" />
     <Compile Include="Core\AutomationElementHelper.cs" />
     <Compile Include="Core\By.cs" />
-    <Compile Include="Core\ClickStrategy.cs" />
+    <Compile Include="Core\ClickStrategies.cs" />
     <Compile Include="Core\CruciatusElementProperties.cs" />
+    <Compile Include="Core\ExpandStrategy.cs" />
     <Compile Include="Core\IScreenshoter.cs" />
     <Compile Include="Core\Screenshot.cs" />
     <Compile Include="Core\Screenshoter.cs" />
