@@ -2,141 +2,113 @@
 {
     #region using
 
+    using Cruciatus.Core;
+
+    using NUnit.Framework;
+
     using WindowsFormsTestApplication.Tests.Map;
-
-    using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UITesting;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     #endregion
 
-    [CodedUITest]
+    [TestFixture]
     public class CheckFirstTab
     {
-        private static bool _firstClassStartFlag = true;
+        #region Fields
 
-        private static WindowsFormsTestApplicationApp _application;
+        private WindowsFormsTestApplicationApp application;
 
-        // Так пока не работает, поэтому временно из MainWindow
-        ////private FirstTab _firstTab;
-        private MainWindow _firstTab;
+        private FirstTab firstTab;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
+        #endregion
+
+        #region Public Methods and Operators
+
+        [Test]
+        public void CheckingChangeEnabledTextListBox()
         {
-            TestClassHelper.ClassInitialize(out _application);
+            this.firstTab.CheckBox1.Uncheck();
+            Assert.IsFalse(this.firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
+            Assert.IsFalse(this.firstTab.TextListBox.Properties.IsEnabled, "TextListBox включен после uncheсk-а.");
+
+            this.firstTab.CheckBox1.Check();
+            Assert.IsTrue(this.firstTab.CheckBox1.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
+            Assert.IsTrue(this.firstTab.TextListBox.Properties.IsEnabled, "TextListBox выключен после cheсk-а.");
         }
 
-        [ClassCleanup]
-        public static void ClassCleanup()
+        [Test]
+        public void CheckingCheckBox1()
         {
-            TestClassHelper.ClassCleanup(_application);
+            this.firstTab.CheckBox1.Uncheck();
+            Assert.IsFalse(this.firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
+
+            this.firstTab.CheckBox1.Check();
+            Assert.IsTrue(this.firstTab.CheckBox1.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
         }
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            // Так пока не работает, поэтому временно из MainWindow
-            ////_firstTab = _application.MainWindow.TabItem1;
-            _firstTab = _application.MainWindow;
-
-            if (_firstClassStartFlag)
-            {
-                // Это пока не работает
-                ////Assert.IsTrue(_firstTab.Select(), _firstTab.LastErrorMessage);
-                _firstClassStartFlag = false;
-            }
-        }
-
-        [TestMethod]
-        public void CheckingTabItem1()
-        {
-            Assert.Inconclusive("Ручная остановка. В винформс вкладку надо искать по имени.");
-            Assert.IsTrue(_application.MainWindow.TabItem1.Select(), _application.MainWindow.TabItem1.LastErrorMessage);
-        }
-
-        [TestMethod]
+        [Test]
         public void CheckingSetTextButton()
         {
-            Assert.IsTrue(_firstTab.SetTextButton.Click(), _firstTab.SetTextButton.LastErrorMessage);
+            this.firstTab.SetTextButton.Click();
         }
 
-        [TestMethod]
-        public void CheckingTextBox1()
-        {
-            const string startText = "new test text";
-            Assert.IsTrue(_firstTab.TextBox1.SetText(null), _firstTab.TextBox1.LastErrorMessage);
-            Assert.IsTrue(_firstTab.TextBox1.SetText(startText), _firstTab.TextBox1.LastErrorMessage);
-
-            var currentText = _firstTab.TextBox1.Text;
-            Assert.IsNotNull(currentText, _firstTab.TextBox1.LastErrorMessage);
-
-            Assert.AreEqual(startText, currentText, "Текст после ввода не стал new test text.");
-        }
-
-        [TestMethod]
-        public void CheckingTextComboBox()
-        {
-            Assert.Inconclusive("Ручная остановка. В винформс c ComboBox круциатус пока нормально не работает.");
-            Assert.IsTrue(_firstTab.TextComboBox.Expand(), _firstTab.TextComboBox.LastErrorMessage);
-
-            var element = _firstTab.TextComboBox.Item<TextBlock>("Quarter");
-            Assert.IsNotNull(element, _firstTab.TextComboBox.LastErrorMessage);
-
-            Assert.IsTrue(element.Click(), element.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void CheckingTextListBox()
-        {
-            Assert.Inconclusive("Ручная остановка. В винформс невидимый элемент списка не имеет точки клика.");
-            var month = _firstTab.TextListBox.ScrollTo<TextBlock>("December");
-            Assert.IsNotNull(month, _firstTab.TextListBox.LastErrorMessage);
-            Assert.IsTrue(month.Click(), month.LastErrorMessage);
-
-            month = _firstTab.TextListBox.ScrollTo<TextBlock>("October");
-            Assert.IsNotNull(month, _firstTab.TextListBox.LastErrorMessage);
-            Assert.IsTrue(month.Click(), month.LastErrorMessage);
-        }
-
-        [TestMethod]
+        [Test]
         public void CheckingSetTextToTextBox1()
         {
-            Assert.IsTrue(_firstTab.TextBox1.SetText(null), _firstTab.TextBox1.LastErrorMessage);
-            Assert.IsTrue(_firstTab.SetTextButton.Click(), _firstTab.SetTextButton.LastErrorMessage);
+            this.firstTab.TextBox1.SetText(null);
+            this.firstTab.SetTextButton.Click();
 
-            var currentText = _firstTab.TextBox1.Text;
-            Assert.IsNotNull(currentText, _firstTab.TextBox1.LastErrorMessage);
-
+            var currentText = this.firstTab.TextBox1.Text();
             Assert.AreEqual("CARAMBA", currentText, "После клика текст не стал = CARAMBA.");
         }
 
-        #region черная дыра
-
-        // Тут происходит неведомая фигня в виде (при последовательном старте тестов на одном экземпляре приложения):
-        // один тест отрабатывает нормально с чекбоксом, а вот во втором чекбокс говорит,
-        // что не поддерживает свойство TogglePattern.ToggleStateProperty
-        ////[TestMethod]
-        public void CheckingCheckBox1()
+        [Test]
+        public void CheckingTabItem1()
         {
-            Assert.IsTrue(_firstTab.CheckBox1.Uncheck(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsFalse(_firstTab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
-
-            Assert.IsTrue(_firstTab.CheckBox1.Check(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsTrue(_firstTab.CheckBox1.IsChecked, "Чекбокс в uncheck состоянии после check.");
+            this.application.Window.TabItem1.Select();
         }
 
-        ////[TestMethod]
-        public void CheckingChangeEnabledTextListBox()
+        [Test]
+        public void CheckingTextBox1()
         {
-            Assert.IsTrue(_firstTab.CheckBox1.Uncheck(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsFalse(_firstTab.CheckBox1.IsChecked, "Чекбокс в check состоянии после uncheck.");
-            Assert.IsFalse(_firstTab.TextListBox.IsEnabled, "TextListBox включен после uncheсk-а.");
+            const string StartText = "new test text";
+            this.firstTab.TextBox1.SetText(null);
+            this.firstTab.TextBox1.SetText(StartText);
 
-            Assert.IsTrue(_firstTab.CheckBox1.Check(), _firstTab.CheckBox1.LastErrorMessage);
-            Assert.IsTrue(_firstTab.CheckBox1.IsChecked, "Чекбокс в uncheck состоянии после check.");
-            Assert.IsTrue(_firstTab.TextListBox.IsEnabled, "TextListBox выключен после cheсk-а.");
+            var currentText = this.firstTab.TextBox1.Text();
+            Assert.AreEqual(StartText, currentText, "Текст после ввода не стал new test text.");
+        }
+
+        [Test]
+        public void CheckingTextComboBox()
+        {
+            this.firstTab.TextComboBox.Expand();
+
+            var element = this.firstTab.TextComboBox.FindElement(By.Name("Quarter"));
+            element.Click();
+        }
+
+        [Test]
+        public void CheckingTextListBox()
+        {
+            var month = this.firstTab.TextListBox.ScrollTo(By.Name("December"));
+            month.Click();
+
+            month = this.firstTab.TextListBox.ScrollTo(By.Name("October"));
+            month.Click();
+        }
+
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            TestClassHelper.Initialize(out this.application);
+
+            this.firstTab = this.application.Window.TabItem1;
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(this.application);
         }
 
         #endregion

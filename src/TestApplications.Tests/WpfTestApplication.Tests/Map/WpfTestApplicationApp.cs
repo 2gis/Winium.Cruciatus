@@ -2,15 +2,34 @@
 {
     #region using
 
+    using System.Windows.Automation;
+
     using Cruciatus;
+    using Cruciatus.Core;
 
     #endregion
 
-    public class WpfTestApplicationApp : Application<MainWindow>
+    public class WpfTestApplicationApp : Application
     {
+        #region Constructors and Destructors
+
         public WpfTestApplicationApp(string fullPath)
-            : base(fullPath, "WpfTestApplicationMainWindow")
+            : base(fullPath)
         {
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public MainWindow MainWindow
+        {
+            get
+            {
+                return new MainWindow(CruciatusFactory.Root, By.Uid(TreeScope.Children, "WpfTestApplicationMainWindow"));
+            }
+        }
+
+        #endregion
     }
 }

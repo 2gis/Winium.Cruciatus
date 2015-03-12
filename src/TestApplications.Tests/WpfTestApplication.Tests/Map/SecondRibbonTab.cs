@@ -2,19 +2,30 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
     public class SecondRibbonTab : TabItem
     {
+        #region Constructors and Destructors
+
+        public SecondRibbonTab(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
         public CheckBox RibbonCheckBox
         {
             get
             {
-                return GetElement<CheckBox>("RibbonCheckBox");
+                return this.FindElementByUid("RibbonCheckBox").ToCheckBox();
             }
         }
 
@@ -22,15 +33,10 @@
         {
             get
             {
-                return GetElement<CheckBox>("RibbonToggleButton");
+                return this.FindElementByUid("RibbonToggleButton").ToCheckBox();
             }
         }
 
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
-        }
+        #endregion
     }
 }

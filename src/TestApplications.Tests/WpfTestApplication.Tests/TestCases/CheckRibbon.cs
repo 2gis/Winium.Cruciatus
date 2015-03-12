@@ -2,171 +2,167 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
 
-    using Microsoft.VisualStudio.TestTools.UITesting;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     using WpfTestApplication.Tests.Map;
 
     #endregion
 
-    [CodedUITest]
+    [TestFixture]
     public class CheckRibbon
     {
-        private static bool _firstClassStartFlag = true;
+        #region Fields
 
-        private static WpfTestApplicationApp _application;
+        private WpfTestApplicationApp application;
 
-        private FirstRibbonTab _firstRibbonTab;
+        private FirstRibbonTab firstRibbonTab;
 
-        private SecondRibbonTab _secondRibbonTab;
+        private Menu ribbonMenu;
 
-        private RibbonApplicationMenu _ribbonMenu;
+        private SecondRibbonTab secondRibbonTab;
 
-        private Menu _simpleMenu;
+        private Menu simpleMenu;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
-        {
-            TestClassHelper.ClassInitialize(out _application);
-        }
+        #endregion
 
-        [ClassCleanup]
-        public static void ClassCleanup()
-        {
-            TestClassHelper.ClassCleanup(_application);
-        }
+        #region Public Methods and Operators
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            _simpleMenu = _application.MainWindow.SimpleMenu;
-            _ribbonMenu = _application.MainWindow.RibbonMenu;
-            _firstRibbonTab = _application.MainWindow.RibbonTabItem1;
-            _secondRibbonTab = _application.MainWindow.RibbonTabItem2;
-
-            if (_firstClassStartFlag)
-            {
-                _firstClassStartFlag = false;
-            }
-        }
-
-        [TestMethod]
-        public void SimpleMenuTestMethod1()
-        {
-            const string headersPath = "Level1$MultiLevel2$Level3";
-            Assert.IsTrue(_simpleMenu.SelectItem(headersPath), _simpleMenu.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void SimpleMenuTestMethod2()
-        {
-            const string headersPath = "Level1$MultiLevel2$MultiLevel3$MultiLevel4$Level5";
-            Assert.IsTrue(_simpleMenu.SelectItem(headersPath), _simpleMenu.LastErrorMessage);
-            Assert.IsTrue(_simpleMenu.SelectItem(headersPath), _simpleMenu.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void RibbonMenuTestMethod1()
-        {
-            Assert.IsTrue(_ribbonMenu.SelectItem("Print$Open"), _ribbonMenu.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void RibbonMenuTestMethod2()
-        {
-            Assert.IsTrue(_ribbonMenu.SelectItem("Print$New$Save"), _ribbonMenu.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void CheckingTabItem1()
-        {
-            Assert.IsTrue(_application.MainWindow.TabItem1.Select(), _application.MainWindow.TabItem1.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void CheckingRibbonTabItem1()
-        {
-            Assert.IsTrue(_firstRibbonTab.Select(), _firstRibbonTab.LastErrorMessage);
-        }
-
-        [TestMethod]
+        [Test]
         public void CheckingRibbonButton()
         {
-            Assert.IsTrue(_firstRibbonTab.Select(), _firstRibbonTab.LastErrorMessage);
+            this.firstRibbonTab.Select();
 
-            Assert.IsTrue(_firstRibbonTab.RibbonButton.Click(), _firstRibbonTab.RibbonButton.LastErrorMessage);
+            this.firstRibbonTab.RibbonButton.Click();
         }
 
-        [TestMethod]
-        public void CheckingRibbonTextComboBox()
-        {
-            Assert.IsTrue(_firstRibbonTab.Select(), _firstRibbonTab.LastErrorMessage);
-
-            Assert.IsTrue(_firstRibbonTab.RibbonTextComboBox.Expand(), 
-                          _firstRibbonTab.RibbonTextComboBox.LastErrorMessage);
-
-            var element = _firstRibbonTab.RibbonTextComboBox.Item<TextBlock>("Quarter");
-            Assert.IsNotNull(element, _firstRibbonTab.RibbonTextComboBox.LastErrorMessage);
-
-            Assert.IsTrue(element.Click(), element.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void CheckingRibbonCheckComboBox()
-        {
-            Assert.IsTrue(_firstRibbonTab.Select(), _firstRibbonTab.LastErrorMessage);
-
-            Assert.IsTrue(_firstRibbonTab.RibbonCheckComboBox.Expand(), 
-                          _firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
-
-            var element = _firstRibbonTab.RibbonCheckComboBox.Item<CheckBox>("Quarter");
-            Assert.IsNotNull(element, _firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
-
-            Assert.IsTrue(element.Check(), element.LastErrorMessage);
-            Assert.IsTrue(element.IsChecked, "Чекбокс Quarter в uncheck состоянии после check.");
-
-            element = _firstRibbonTab.RibbonCheckComboBox.Item<CheckBox>("Week");
-            Assert.IsNotNull(element, _firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
-
-            Assert.IsTrue(element.Check(), element.LastErrorMessage);
-            Assert.IsTrue(element.IsChecked, "Чекбокс Week в uncheck состоянии после check.");
-
-            Assert.IsTrue(_firstRibbonTab.RibbonCheckComboBox.Collapse(), 
-                          _firstRibbonTab.RibbonCheckComboBox.LastErrorMessage);
-        }
-
-        [TestMethod]
-        public void CheckingRibbonTabItem2()
-        {
-            Assert.IsTrue(_secondRibbonTab.Select(), _secondRibbonTab.LastErrorMessage);
-        }
-
-        [TestMethod]
+        [Test]
         public void CheckingRibbonCheckBox()
         {
-            Assert.IsTrue(_secondRibbonTab.Select(), _secondRibbonTab.LastErrorMessage);
+            this.secondRibbonTab.Select();
 
-            Assert.IsTrue(_secondRibbonTab.RibbonCheckBox.Uncheck(), _secondRibbonTab.RibbonCheckBox.LastErrorMessage);
-            Assert.IsFalse(_secondRibbonTab.RibbonCheckBox.IsChecked, "Чекбокс в check состоянии после uncheck.");
+            this.secondRibbonTab.RibbonCheckBox.Uncheck();
+            Assert.IsFalse(this.secondRibbonTab.RibbonCheckBox.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
 
-            Assert.IsTrue(_secondRibbonTab.RibbonCheckBox.Check(), _secondRibbonTab.RibbonCheckBox.LastErrorMessage);
-            Assert.IsTrue(_secondRibbonTab.RibbonCheckBox.IsChecked, "Чекбокс в uncheck состоянии после check.");
+            this.secondRibbonTab.RibbonCheckBox.Check();
+            Assert.IsTrue(this.secondRibbonTab.RibbonCheckBox.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
         }
 
-        [TestMethod]
+        [Test]
+        public void CheckingRibbonCheckComboBox()
+        {
+            this.firstRibbonTab.Select();
+
+            this.firstRibbonTab.RibbonCheckComboBox.Expand();
+            Assert.IsTrue(this.firstRibbonTab.RibbonCheckComboBox.IsExpanded);
+
+            var element = this.firstRibbonTab.RibbonCheckComboBox.GetCheckBoxByName("Quarter");
+            element.Check();
+            Assert.IsTrue(element.IsToggleOn, "Чекбокс Quarter в uncheck состоянии после check.");
+
+            element = this.firstRibbonTab.RibbonCheckComboBox.GetCheckBoxByName("Week");
+            element.Check();
+            Assert.IsTrue(element.IsToggleOn, "Чекбокс Week в uncheck состоянии после check.");
+
+            this.firstRibbonTab.RibbonCheckComboBox.Collapse();
+        }
+
+        [Test]
+        public void CheckingRibbonTabItem1()
+        {
+            this.firstRibbonTab.Select();
+            Assert.IsTrue(this.firstRibbonTab.IsSelection);
+        }
+
+        [Test]
+        public void CheckingRibbonTabItem2()
+        {
+            this.secondRibbonTab.Select();
+            Assert.IsTrue(this.secondRibbonTab.IsSelection);
+        }
+
+        [Test]
+        public void CheckingRibbonTextComboBox()
+        {
+            this.firstRibbonTab.Select();
+
+            this.firstRibbonTab.RibbonTextComboBox.Expand();
+            Assert.IsTrue(this.firstRibbonTab.RibbonTextComboBox.IsExpanded);
+
+            this.firstRibbonTab.RibbonTextComboBox.FindElement(By.Name("Quarter")).Click();
+        }
+
+        [Test]
         public void CheckingRibbonToggleButton()
         {
-            Assert.IsTrue(_secondRibbonTab.Select(), _secondRibbonTab.LastErrorMessage);
+            this.secondRibbonTab.Select();
 
-            Assert.IsTrue(_secondRibbonTab.RibbonToggleButton.Uncheck(), 
-                          _secondRibbonTab.RibbonToggleButton.LastErrorMessage);
-            Assert.IsFalse(_secondRibbonTab.RibbonToggleButton.IsChecked, "Чекбокс в check состоянии после uncheck.");
+            this.secondRibbonTab.RibbonToggleButton.Uncheck();
+            Assert.IsFalse(
+                this.secondRibbonTab.RibbonToggleButton.IsToggleOn, 
+                "Чекбокс в check состоянии после uncheck.");
 
-            Assert.IsTrue(_secondRibbonTab.RibbonToggleButton.Check(), 
-                          _secondRibbonTab.RibbonToggleButton.LastErrorMessage);
-            Assert.IsTrue(_secondRibbonTab.RibbonToggleButton.IsChecked, "Чекбокс в uncheck состоянии после check.");
+            this.secondRibbonTab.RibbonToggleButton.Check();
+            Assert.IsTrue(
+                this.secondRibbonTab.RibbonToggleButton.IsToggleOn, 
+                "Чекбокс в uncheck состоянии после check.");
         }
+
+        [Test]
+        public void CheckingTabItem1()
+        {
+            this.application.MainWindow.TabItem1.Select();
+            Assert.IsTrue(this.application.MainWindow.TabItem1.IsSelection);
+        }
+
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            TestClassHelper.Initialize(out this.application);
+
+            this.simpleMenu = this.application.MainWindow.SimpleMenu;
+            this.ribbonMenu = this.application.MainWindow.RibbonMenu;
+            this.firstRibbonTab = this.application.MainWindow.RibbonTabItem1;
+            this.secondRibbonTab = this.application.MainWindow.RibbonTabItem2;
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(this.application);
+        }
+
+        [Test]
+        public void RibbonMenuTestMethod1()
+        {
+            this.ribbonMenu.Click();
+            this.ribbonMenu.SelectItem("Print$Open");
+        }
+
+        [Test]
+        public void RibbonMenuTestMethod2()
+        {
+            this.ribbonMenu.Click();
+            this.ribbonMenu.SelectItem("Print$New$Save");
+        }
+
+        [Test]
+        public void SimpleMenuTestMethod1()
+        {
+            const string HeadersPath = "Level1$MultiLevel2$Level3";
+            this.simpleMenu.SelectItem(HeadersPath);
+        }
+
+        [Test]
+        public void SimpleMenuTestMethod2()
+        {
+            const string HeadersPath = "Level1$MultiLevel2$MultiLevel3$MultiLevel4$Level5";
+            this.simpleMenu.SelectItem(HeadersPath);
+            this.simpleMenu.SelectItem(HeadersPath);
+        }
+
+        #endregion
     }
 }

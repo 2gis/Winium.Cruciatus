@@ -1,12 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusException.cs" company="2GIS">
-//   UITestLibrary.Exceptions
-// </copyright>
-// <summary>
-//   Определяет базовый класс исключений CruciatusException.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Exceptions
+﻿namespace Cruciatus.Exceptions
 {
     #region using
 
@@ -15,26 +7,45 @@ namespace Cruciatus.Exceptions
 
     #endregion
 
+    /// <summary>
+    /// Исключение фреймворка Cruciatus.
+    /// </summary>
     [Serializable]
     public class CruciatusException : Exception
     {
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Конструктор по умолчанию.
+        /// </summary>
         public CruciatusException()
         {
         }
 
+        /// <summary>
+        /// Параметризованный конструктор.
+        /// </summary>
         public CruciatusException(string message)
             : base(message)
         {
         }
 
+        /// <summary>
+        /// Параметризованный конструктор.
+        /// </summary>
         public CruciatusException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
+        /// <summary>
+        /// Параметризованный конструктор.
+        /// </summary>
         protected CruciatusException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+
+        #endregion
     }
 }

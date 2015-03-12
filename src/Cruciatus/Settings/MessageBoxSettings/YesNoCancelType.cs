@@ -6,17 +6,37 @@
 
     #endregion
 
+    /// <summary>
+    /// Класс описывающий набор из 3 кнопок - Да, Нет и Отмена.
+    /// </summary>
     public class YesNoCancelType : ICloneable
     {
-        public string Yes { get; set; }
+        #region Public Properties
 
+        /// <summary>
+        /// Уникальный идентификатор кнопки Отмена.
+        /// </summary>
+        public string Cancel { get; set; }
+
+        /// <summary>
+        /// Уникальный идентификатор кнопки Нет.
+        /// </summary>
         public string No { get; set; }
 
-        public string Cancel { get; set; }
+        /// <summary>
+        /// Уникальный идентификатор кнопки Да.
+        /// </summary>
+        public string Yes { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         public object Clone()
         {
-            return new YesNoCancelType { Yes = Yes, No = No, Cancel = Cancel };
+            return new YesNoCancelType { Yes = this.Yes, No = this.No, Cancel = this.Cancel };
         }
+
+        #endregion
     }
 }

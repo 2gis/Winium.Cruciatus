@@ -2,35 +2,38 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
-    public class MainWindow : Window
+    public class MainWindow : CruciatusElement
     {
-        public FirstTab TabItem1
+        #region Constructors and Destructors
+
+        public MainWindow(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public OpenFileDialog OpenFileDialog
         {
             get
             {
-                return GetElement<FirstTab>("TabItem1");
+                return new OpenFileDialog(this, By.Name("Открытие").OrName("Open"));
             }
         }
 
-        public SecondTab TabItem2
+        public Menu RibbonMenu
         {
             get
             {
-                return GetElement<SecondTab>("TabItem2");
-            }
-        }
-
-        public ThirdTab TabItem3
-        {
-            get
-            {
-                return GetElement<ThirdTab>("TabItem3");
+                return new Menu(this, By.Uid("RibbonMenu"));
             }
         }
 
@@ -38,7 +41,7 @@
         {
             get
             {
-                return GetElement<FirstRibbonTab>("RibbonTabItem1");
+                return new FirstRibbonTab(this, By.Uid("RibbonTabItem1"));
             }
         }
 
@@ -46,15 +49,23 @@
         {
             get
             {
-                return GetElement<SecondRibbonTab>("RibbonTabItem2");
+                return new SecondRibbonTab(this, By.Uid("RibbonTabItem2"));
             }
         }
 
-        public RibbonApplicationMenu RibbonMenu
+        public SaveFileDialog SaveFileDialog
         {
             get
             {
-                return GetElement<RibbonApplicationMenu>("RibbonMenu");
+                return new SaveFileDialog(this, By.Name("Сохранение").OrName("Save As"));
+            }
+        }
+
+        public Menu SetTextButtonContextMenu
+        {
+            get
+            {
+                return new Menu(this, By.Uid("SetTextButtonContextMenu"));
             }
         }
 
@@ -62,23 +73,34 @@
         {
             get
             {
-                return GetElement<Menu>("SimpleMenu");
+                return this.FindElementByUid("SimpleMenu").ToMenu();
             }
         }
 
-        public ContextMenu SetTextButtonContextMenu
+        public FirstTab TabItem1
         {
             get
             {
-                return GetElement<ContextMenu>("SetTextButtonContextMenu");
+                return new FirstTab(this, By.Uid("TabItem1"));
             }
         }
 
-        public override T GetElement<T>(string automationId)
+        public SecondTab TabItem2
         {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
+            get
+            {
+                return new SecondTab(this, By.Uid("TabItem2"));
+            }
         }
+
+        public ThirdTab TabItem3
+        {
+            get
+            {
+                return new ThirdTab(this, By.Uid("TabItem3"));
+            }
+        }
+
+        #endregion
     }
 }

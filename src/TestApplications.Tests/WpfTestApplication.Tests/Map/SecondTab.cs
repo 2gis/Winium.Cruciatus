@@ -2,35 +2,30 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
     public class SecondTab : TabItem
     {
-        public Button ChangeEnabledButton
+        #region Constructors and Destructors
+
+        public SecondTab(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
         {
-            get
-            {
-                return GetElement<Button>("ChangeEnabledButton");
-            }
         }
 
-        public TextBox TextBox2
-        {
-            get
-            {
-                return GetElement<TextBox>("TextBox2");
-            }
-        }
+        #endregion
 
-        public ComboBox CheckComboBox
+        #region Public Properties
+
+        public CruciatusElement ChangeEnabledButton
         {
             get
             {
-                return GetElement<ComboBox>("CheckComboBox");
+                return this.FindElementByUid("ChangeEnabledButton");
             }
         }
 
@@ -38,7 +33,15 @@
         {
             get
             {
-                return GetElement<CheckBox>("CheckBox2");
+                return this.FindElementByUid("CheckBox2").ToCheckBox();
+            }
+        }
+
+        public ComboBox CheckComboBox
+        {
+            get
+            {
+                return this.FindElementByUid("CheckComboBox").ToComboBox();
             }
         }
 
@@ -46,15 +49,18 @@
         {
             get
             {
-                return GetElement<ListBox>("CheckListBox");
+                return this.FindElementByUid("CheckListBox").ToListBox();
             }
         }
 
-        public override T GetElement<T>(string automationId)
+        public CruciatusElement TextBox2
         {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
+            get
+            {
+                return this.FindElementByUid("TextBox2");
+            }
         }
+
+        #endregion
     }
 }

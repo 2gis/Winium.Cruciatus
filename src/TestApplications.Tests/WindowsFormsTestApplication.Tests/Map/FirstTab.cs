@@ -2,27 +2,46 @@
 {
     #region using
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Cruciatus.Extensions;
 
     #endregion
 
     public class FirstTab : TabItem
     {
-        public Button SetTextButton
+        #region Constructors and Destructors
+
+        public FirstTab(CruciatusElement parent, By getStrategy)
+            : base(parent, getStrategy)
+        {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public CheckBox CheckBox1
         {
             get
             {
-                return GetElement<Button>("SetTextButton");
+                return this.FindElementByUid("CheckBox1").ToCheckBox();
             }
         }
 
-        public TextBox TextBox1
+        public CruciatusElement SetTextButton
         {
             get
             {
-                return GetElement<TextBox>("TextBox1");
+                return this.FindElementByUid("SetTextButton");
+            }
+        }
+
+        public CruciatusElement TextBox1
+        {
+            get
+            {
+                return this.FindElementByUid("TextBox1");
             }
         }
 
@@ -30,15 +49,7 @@
         {
             get
             {
-                return GetElement<ComboBox>("TextComboBox");
-            }
-        }
-
-        public CheckBox CheckBox1
-        {
-            get
-            {
-                return GetElement<CheckBox>("CheckBox1");
+                return this.FindElementByUid("TextComboBox").ToComboBox();
             }
         }
 
@@ -46,15 +57,10 @@
         {
             get
             {
-                return GetElement<ListBox>("TextListBox");
+                return this.FindElementByUid("TextListBox").ToListBox();
             }
         }
 
-        public override T GetElement<T>(string automationId)
-        {
-            var element = base.GetElement<T>(automationId);
-            Assert.IsNotNull(element, LastErrorMessage);
-            return element;
-        }
+        #endregion
     }
 }

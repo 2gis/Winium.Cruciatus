@@ -5,26 +5,30 @@
     using System;
     using System.Configuration;
 
-    using WindowsFormsTestApplication.Tests.Map;
+    using NUnit.Framework;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using WindowsFormsTestApplication.Tests.Map;
 
     #endregion
 
     public static class TestClassHelper
     {
-        public static void ClassInitialize(out WindowsFormsTestApplicationApp application)
+        #region Public Methods and Operators
+
+        public static void Cleanup(WindowsFormsTestApplicationApp application)
+        {
+            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WindowsFormsTestApplication.");
+        }
+
+        public static void Initialize(out WindowsFormsTestApplicationApp application)
         {
             var appsFolderEnvVar = ConfigurationManager.AppSettings.Get("AppsFolderEnvVar");
             var appsFolder = Environment.GetEnvironmentVariable(appsFolderEnvVar);
             var appPath = appsFolder + ConfigurationManager.AppSettings.Get("PathToExe");
             application = new WindowsFormsTestApplicationApp(appPath);
-            Assert.IsTrue(application.Start(), "Не удалось запустить приложение WindowsFormsTestApplication.");
+            application.Start();
         }
 
-        public static void ClassCleanup(WindowsFormsTestApplicationApp application)
-        {
-            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WindowsFormsTestApplication.");
-        }
+        #endregion
     }
 }

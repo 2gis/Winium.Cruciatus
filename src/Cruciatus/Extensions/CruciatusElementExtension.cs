@@ -1,66 +1,112 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusElementExtension.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет расширения для элементов, наследующихся от CruciatusElement.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Extensions
+﻿namespace Cruciatus.Extensions
 {
     #region using
 
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows.Automation;
 
+    using Cruciatus.Core;
     using Cruciatus.Elements;
     using Cruciatus.Exceptions;
+    using Cruciatus.Settings;
+
+    using WindowsInput.Native;
 
     #endregion
 
+    /// <summary>
+    /// Набор расширений для объектов CruciatusElement.
+    /// </summary>
     public static class CruciatusElementExtension
     {
+        #region Public Methods and Operators
+
         /// <summary>
-        /// Возвращает значение заданного свойства, приведенное к указанному типу.
+        /// Кликнуть по элементу с зажатой кнопкой Control
+        /// </summary>
+        public static void ClickWithPressedCtrl(this CruciatusElement element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element");
+            }
+
+            var keyboardSimulatorExt =
+                (KeyboardSimulatorExt)
+                CruciatusFactory.GetSpecificKeyboard(KeyboardSimulatorType.BasedOnInputSimulatorLib);
+            keyboardSimulatorExt.KeyDown(VirtualKeyCode.CONTROL);
+            element.Click();
+            keyboardSimulatorExt.KeyUp(VirtualKeyCode.CONTROL);
+        }
+
+        /// <summary>
+        /// Получает у элемента значение заданного свойства.
         /// </summary>
         /// <param name="cruciatusElement">
-        /// Текущий элемент, свойство которого необходимо получить.
+        /// Экземпляр элемента.
         /// </param>
         /// <param name="property">
-        /// Свойство, которое необходимо получить.
-        /// </param>
-        /// <typeparam name="TOut">
-        /// Тип значения получаемого свойства.
-        /// </typeparam>
-        /// <returns>
-        /// Значение заданного свойства, приведенное к указанному типу.
-        /// </returns>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Элемент не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// Нельзя привести значение свойства к указанному типу.
-        /// </exception>
-        internal static TOut GetPropertyValue<TOut>(this CruciatusElement cruciatusElement, AutomationProperty property)
+        /// Целевое свойство.
+        /// </param> 
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", 
+            Justification = "First parameter in extension cannot be null.")]
+        public static TOut GetAutomationPropertyValue<TOut>(
+            this CruciatusElement cruciatusElement, 
+            AutomationProperty property)
         {
             try
             {
-                return cruciatusElement.Element.GetPropertyValue<TOut>(property);
+                return cruciatusElement.Instance.GetPropertyValue<TOut>(property);
             }
             catch (NotSupportedException)
             {
-                throw new PropertyNotSupportedException(cruciatusElement.ToString(), property.ProgrammaticName);
-            }
-            catch (InvalidCastException exc)
-            {
-                var err = string.Format(
-                    "При получении значения свойства {0} у элемента {1} произошла ошибка. ", 
-                    property, 
-                    cruciatusElement.ToString());
-                err += exc.Message;
+                var msg = string.Format("Element '{0}' not support '{1}'", cruciatusElement, property.ProgrammaticName);
+                CruciatusFactory.Logger.Error(msg);
 
-                throw new PropertyInvalidCastException(err);
+                throw new CruciatusException("GET PROPERTY VALUE FAILED");
+            }
+            catch (InvalidCastException invalidCastException)
+            {
+                var msg = string.Format("Invalid cast from '{0}' to '{1}'.", invalidCastException.Message, typeof(TOut));
+                CruciatusFactory.Logger.Error(msg);
+
+                throw new CruciatusException("GET PROPERTY VALUE FAILED");
             }
         }
+
+        /// <summary>
+        /// Преобразовать элемент в CheckBox.
+        /// </summary>
+        public static CheckBox ToCheckBox(this CruciatusElement element)
+        {
+            return new CheckBox(element);
+        }
+
+        /// <summary>
+        /// Преобразовать элемент в CheckBox.
+        /// </summary>
+        public static ComboBox ToComboBox(this CruciatusElement element)
+        {
+            return new ComboBox(element);
+        }
+
+        /// <summary>
+        /// Преобразовать элемент в ListBox.
+        /// </summary>
+        public static ListBox ToListBox(this CruciatusElement element)
+        {
+            return new ListBox(element);
+        }
+
+        /// <summary>
+        /// Преобразовать элемент в Menu.
+        /// </summary>
+        public static Menu ToMenu(this CruciatusElement element)
+        {
+            return new Menu(element);
+        }
+
+        #endregion
     }
 }

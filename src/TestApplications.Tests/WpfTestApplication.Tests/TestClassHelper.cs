@@ -5,7 +5,7 @@
     using System;
     using System.Configuration;
 
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NUnit.Framework;
 
     using WpfTestApplication.Tests.Map;
 
@@ -13,18 +13,26 @@
 
     public static class TestClassHelper
     {
-        public static void ClassInitialize(out WpfTestApplicationApp application)
+        #region Public Methods and Operators
+
+        public static void Cleanup(WpfTestApplicationApp application)
+        {
+            var isClose = application.Close();
+            if (!isClose)
+            {
+                Assert.IsTrue(application.Kill(), "Не удалось завершить и убить приложение WpfTestApplication.");
+            }
+        }
+
+        public static void Initialize(out WpfTestApplicationApp application)
         {
             var appsFolderEnvVar = ConfigurationManager.AppSettings.Get("AppsFolderEnvVar");
             var appsFolder = Environment.GetEnvironmentVariable(appsFolderEnvVar);
             var appPath = appsFolder + ConfigurationManager.AppSettings.Get("PathToExe");
             application = new WpfTestApplicationApp(appPath);
-            Assert.IsTrue(application.Start(15000), "Не удалось запустить приложение WpfTestApplication.");
+            application.Start();
         }
 
-        public static void ClassCleanup(WpfTestApplicationApp application)
-        {
-            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WpfTestApplication.");
-        }
+        #endregion
     }
 }
