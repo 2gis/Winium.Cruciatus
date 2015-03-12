@@ -1,20 +1,10 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CheckBox.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет элемент управления чекбокс.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Elements
+﻿namespace Cruciatus.Elements
 {
     #region using
 
-    using System;
     using System.Windows.Automation;
 
     using Cruciatus.Core;
-    using Cruciatus.Exceptions;
     using Cruciatus.Extensions;
 
     #endregion
@@ -24,52 +14,75 @@ namespace Cruciatus.Elements
     /// </summary>
     public class CheckBox : CruciatusElement
     {
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Создает экземпляр чекбокса.
+        /// </summary>
+        /// <param name="element">
+        /// Исходный элемент.
+        /// </param>
         public CheckBox(CruciatusElement element)
             : base(element)
         {
         }
 
+        /// <summary>
+        /// Создает экземпляр чекбокса. Поиск осуществится только при необходимости.
+        /// </summary>
+        /// <param name="parent">
+        /// Родительский элемент.
+        /// </param>
+        /// <param name="getStrategy">
+        /// Стратегия поиска элемента.
+        /// </param>
         public CheckBox(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
+        #endregion
+
+        #region Public Properties
+
         /// <summary>
         /// Возвращает значение, указывающее, чекнут ли чекбокс.
         /// </summary>
-        /// <exception cref="PropertyNotSupportedException">
-        /// Чекбокс не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// При получении значения свойства не удалось привести его к ожидаемому типу.
-        /// </exception>
         public bool IsToggleOn
         {
             get
             {
-                return ToggleState == ToggleState.On;
+                return this.ToggleState == ToggleState.On;
             }
         }
+
+        #endregion
+
+        #region Properties
 
         internal ToggleState ToggleState
         {
             get
             {
-                return this.GetPropertyValue<ToggleState>(TogglePattern.ToggleStateProperty);
+                return this.GetAutomationPropertyValue<ToggleState>(TogglePattern.ToggleStateProperty);
             }
         }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
         /// Устанавливает чекбокс в состояние чекнут.
         /// </summary>
         public void Check()
         {
-            if (IsToggleOn)
+            if (this.IsToggleOn)
             {
                 return;
             }
 
-            Click();
+            this.Click();
         }
 
         /// <summary>
@@ -77,12 +90,14 @@ namespace Cruciatus.Elements
         /// </summary>
         public void Uncheck()
         {
-            if (!IsToggleOn)
+            if (!this.IsToggleOn)
             {
                 return;
             }
 
-            Click();
+            this.Click();
         }
+
+        #endregion
     }
 }

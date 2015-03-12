@@ -11,24 +11,34 @@
 
     public class RibbonTabExt : RibbonTab
     {
+        #region Methods
+
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new RibbonTabAutomationPeerExt(this);
         }
 
+        #endregion
+
         // Класс наследуется от стандартного Peer для RibbonTab
         private class RibbonTabAutomationPeerExt : RibbonTabAutomationPeer
         {
+            #region Constructors and Destructors
+
             public RibbonTabAutomationPeerExt(RibbonTab owner)
                 : base(owner)
             {
             }
 
+            #endregion
+
             // Меняем только возврат точки клика
+            #region Methods
+
             protected override Point GetClickablePointCore()
             {
                 // Получаем детей элемента
-                var childs = GetChildrenCore();
+                var childs = this.GetChildrenCore();
 
                 if (childs != null)
                 {
@@ -46,6 +56,8 @@
                 // Если с заголовком что-то пошло не так, то...по дефолту
                 return base.GetClickablePointCore();
             }
+
+            #endregion
         }
     }
 }

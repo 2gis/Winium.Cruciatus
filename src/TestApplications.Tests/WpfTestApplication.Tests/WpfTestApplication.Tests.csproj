@@ -57,9 +57,7 @@
     <Compile Include="TestCases\CheckThirdTab.cs" />
     <Compile Include="TestClassHelper.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Actions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />

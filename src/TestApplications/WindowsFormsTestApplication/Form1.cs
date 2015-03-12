@@ -13,76 +13,84 @@
     /// </summary>
     public partial class Form1 : Form
     {
-        #region monthsList, timeSizeList
+        #region Fields
 
-        private readonly List<string> _monthsList = new List<string>
-        {
-            "January", 
-            "February", 
-            "March", 
-            "April", 
-            "May", 
-            "June", 
-            "July", 
-            "August", 
-            "September", 
-            "October", 
-            "November", 
-            "December"
-        };
+        private readonly List<string> monthsList = new List<string>
+                                                       {
+                                                           "January", 
+                                                           "February", 
+                                                           "March", 
+                                                           "April", 
+                                                           "May", 
+                                                           "June", 
+                                                           "July", 
+                                                           "August", 
+                                                           "September", 
+                                                           "October", 
+                                                           "November", 
+                                                           "December"
+                                                       };
 
-        private readonly List<string> _timeSizeList = new List<string>
-        {
-            "Day", 
-            "Week", 
-            "Decade", 
-            "Month", 
-            "Quarter", 
-            "Year"
-        };
+        private readonly List<string> timeSizeList = new List<string>
+                                                         {
+                                                             "Day", 
+                                                             "Week", 
+                                                             "Decade", 
+                                                             "Month", 
+                                                             "Quarter", 
+                                                             "Year"
+                                                         };
 
         #endregion
 
+        #region Constructors and Destructors
+
         public Form1()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
-            CheckBox1.Checked = true;
+            this.CheckBox1.Checked = true;
 
-            // Fill TextkComboBox
-            TextComboBox.DataSource = _timeSizeList;
-            TextComboBox.SelectedIndex = -1;
+            // Fill TextComboBox
+            this.TextComboBox.DataSource = this.timeSizeList;
+            this.TextComboBox.SelectedIndex = -1;
 
-            // Fill TextkListBox
-            TextListBox.DataSource = _monthsList;
-            TextListBox.SelectedIndex = -1;
+            // Fill TextListBox
+            this.TextListBox.DataSource = this.monthsList;
+            this.TextListBox.SelectedIndex = -1;
 
             // Fill CheckListBox
-            CheckListBox.DataSource = _monthsList;
+            this.CheckListBox.DataSource = this.monthsList;
         }
 
-        private void SetTextButtonClick(object sender, EventArgs e)
+        #endregion
+
+        #region Methods
+
+        private void ChangeEnabledButtonClick(object sender, EventArgs e)
         {
-            TextBox1.Text = @"CARAMBA";
+            this.TextBox2.Enabled = !this.TextBox2.Enabled;
         }
 
         private void CheckBox1CheckedChanged(object sender, EventArgs e)
         {
-            TextListBox.Enabled = CheckBox1.Checked;
-        }
-
-        private void ChangeEnabledButtonClick(object sender, EventArgs e)
-        {
-            TextBox2.Enabled = !TextBox2.Enabled;
+            this.TextListBox.Enabled = this.CheckBox1.Checked;
         }
 
         private void CheckBox2CheckedChanged(object sender, EventArgs e)
         {
-            var check = CheckBox2.Checked;
-            for (int i = 0; i < CheckListBox.Items.Count; ++i)
+            var check = this.CheckBox2.Checked;
+            for (int i = 0; i < this.CheckListBox.Items.Count; ++i)
             {
-                CheckListBox.SetItemChecked(i, check);
+                this.CheckListBox.SetItemChecked(i, check);
             }
         }
+
+        private void SetTextButtonClick(object sender, EventArgs e)
+        {
+            this.TextBox1.Text = @"CARAMBA";
+        }
+
+        #endregion
     }
 }

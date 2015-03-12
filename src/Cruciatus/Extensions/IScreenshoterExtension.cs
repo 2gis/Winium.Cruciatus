@@ -10,9 +10,30 @@
 
     #endregion
 
+    /// <summary>
+    /// Набор расширений для объектов, реализующих интерфейс IScreenshoter.
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
     public static class IScreenshoterExtension
     {
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0",
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Снимает и сохраняет скриншот в случае когда флаг 
+        /// CruciatusFactory.Settings.AutomaticScreenshotCapture равен true.
+        /// </summary>
+        public static void AutomaticScreenshotCaptureIfNeeded(this IScreenshoter screenshoter)
+        {
+            if (CruciatusFactory.Settings.AutomaticScreenshotCapture)
+            {
+                screenshoter.TakeScreenshot();
+            }
+        }
+
+        /// <summary>
+        /// Снимает и сохраняет скриншот.
+        /// </summary>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", 
             Justification = "Main argument in extension method cannot be null")]
         public static void TakeScreenshot(this IScreenshoter screenshoter)
         {
@@ -22,12 +43,6 @@
             CruciatusFactory.Logger.Info("Saved screenshot to '{0}' file.", Path.GetFullPath(screenshotPath));
         }
 
-        internal static void AutomaticScreenshotCaptureIfNeeded(this IScreenshoter screenshoter)
-        {
-            if (CruciatusFactory.Settings.AutomaticScreenshotCapture)
-            {
-                screenshoter.TakeScreenshot();
-            }
-        }
+        #endregion
     }
 }

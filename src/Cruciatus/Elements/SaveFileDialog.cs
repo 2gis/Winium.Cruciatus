@@ -1,12 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SaveFileDialog.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет класс для работы с диалоговым окном Microsoft.Win32.SaveFileDialog.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Elements
+﻿namespace Cruciatus.Elements
 {
     #region using
 
@@ -22,6 +14,8 @@ namespace Cruciatus.Elements
     /// </summary>
     public class SaveFileDialog : CruciatusElement
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Создает экземпляр диалогового окна.
         /// </summary>
@@ -34,30 +28,22 @@ namespace Cruciatus.Elements
         }
 
         /// <summary>
-        /// Создает экземпляр диалогового окна.
+        /// Создает экземпляр диалогового окна. Поиск осуществится только при необходимости.
         /// </summary>
         /// <param name="parent">
         /// Родительский элемент.
         /// </param>
         /// <param name="getStrategy">
-        /// Стратегия получения элемента.
+        /// Стратегия поиска элемента.
         /// </param>
         public SaveFileDialog(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
-        /// <summary>
-        /// Возвращает кнопку Сохранить.
-        /// </summary>
-        public CruciatusElement SaveButton
-        {
-            get
-            {
-                var uid = CruciatusFactory.Settings.SaveFileDialogUid.SaveButton;
-                return Get(By.Uid(TreeScope.Children, uid));
-            }
-        }
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
         /// Возвращает кнопку Отмена.
@@ -67,7 +53,7 @@ namespace Cruciatus.Elements
             get
             {
                 var uid = CruciatusFactory.Settings.SaveFileDialogUid.CancelButton;
-                return Get(By.Uid(TreeScope.Children, uid));
+                return this.FindElement(By.Uid(TreeScope.Children, uid));
             }
         }
 
@@ -79,7 +65,7 @@ namespace Cruciatus.Elements
             get
             {
                 var uid = CruciatusFactory.Settings.SaveFileDialogUid.FileNameEditableComboBox;
-                return Get(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
+                return this.FindElement(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
             }
         }
 
@@ -91,8 +77,22 @@ namespace Cruciatus.Elements
             get
             {
                 var uid = CruciatusFactory.Settings.SaveFileDialogUid.FileTypeComboBox;
-                return Get(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
+                return this.FindElement(By.Uid(TreeScope.Subtree, uid)).ToComboBox();
             }
         }
+
+        /// <summary>
+        /// Возвращает кнопку Сохранить.
+        /// </summary>
+        public CruciatusElement SaveButton
+        {
+            get
+            {
+                var uid = CruciatusFactory.Settings.SaveFileDialogUid.SaveButton;
+                return this.FindElement(By.Uid(TreeScope.Children, uid));
+            }
+        }
+
+        #endregion
     }
 }

@@ -23,41 +23,59 @@
 
     internal struct Info
     {
+        #region Fields
+
         internal ConditionType ConditionType;
 
         internal AutomationProperty Property;
 
         internal object Value;
 
+        #endregion
+
+        #region Constructors and Destructors
+
         internal Info(AutomationProperty property, object value, ConditionType conditionType)
         {
-            Property = property;
-            Value = value;
-            ConditionType = conditionType;
+            this.Property = property;
+            this.Value = value;
+            this.ConditionType = conditionType;
         }
+
+        #endregion
     }
 
     internal struct ElementFindInfo
     {
-        private readonly List<Info> _infoList;
+        #region Fields
 
         internal TreeScope TreeScope;
 
+        private readonly List<Info> infoList;
+
+        #endregion
+
+        #region Constructors and Destructors
+
         internal ElementFindInfo(TreeScope scope, Info info)
         {
-            TreeScope = scope;
-            _infoList = new List<Info> { info };
+            this.TreeScope = scope;
+            this.infoList = new List<Info> { info };
         }
+
+        #endregion
+
+        #region Properties
 
         internal Condition Condition
         {
             get
             {
-                var info = _infoList[0];
+                var info = this.infoList[0];
                 Condition result = new PropertyCondition(info.Property, info.Value);
-                for (var i = 1; i < _infoList.Count; ++i)
+                for (var i = 1; i < this.infoList.Count; ++i)
                 {
-                    info = _infoList[i];
+                    info = this.infoList[i];
                     var condition = new PropertyCondition(info.Property, info.Value);
                     switch (info.ConditionType)
                     {
@@ -78,18 +96,20 @@
             }
         }
 
-        internal void Add(Info info)
-        {
-            _infoList.Add(info);
-        }
+        #endregion
 
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Возвращает строковое представление стратегии поиска.
+        /// </summary>
         public override string ToString()
         {
-            var info = _infoList[0];
+            var info = this.infoList[0];
             var str = GetPropertyName(info.Property) + ": " + info.Value;
-            for (var i = 1; i < _infoList.Count; ++i)
+            for (var i = 1; i < this.infoList.Count; ++i)
             {
-                info = _infoList[i];
+                info = this.infoList[i];
                 string condition;
                 switch (info.ConditionType)
                 {
@@ -112,54 +132,116 @@
             return str;
         }
 
+        #endregion
+
+        #region Methods
+
+        internal void Add(Info info)
+        {
+            this.infoList.Add(info);
+        }
+
         private static string GetPropertyName(AutomationIdentifier property)
         {
             var pattern = new Regex(@".*\.(?<name>.*)Property");
             return pattern.Match(property.ProgrammaticName).Groups["name"].Value;
         }
+
+        #endregion
     }
 
+    /// <summary>
+    /// Класс-конструктор стратегии поиска элементов.
+    /// </summary>
     public class By
     {
+        #region Fields
+
         internal readonly List<ElementFindInfo> FindInfoList = new List<ElementFindInfo>();
+
+        #endregion
+
+        #region Constructors and Destructors
 
         internal By(TreeScope scope, Info info)
         {
-            FindInfoList.Add(new ElementFindInfo(scope, info));
+            this.FindInfoList.Add(new ElementFindInfo(scope, info));
         }
 
         internal By(List<ElementFindInfo> findInfoList)
         {
-            FindInfoList = findInfoList;
+            this.FindInfoList = findInfoList;
         }
 
-        #region Create By (static)
+        #endregion
 
-        public static By Uid(string value)
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Поиск по AutomationProperty. 
+        /// Требуется подключить ссылку на UIAutomationClient.
+        /// </summary>
+        /// <param name="property">
+        /// Целевое свойство.
+        /// </param>
+        /// <param name="value">
+        /// Значение целевого свойства.
+        /// </param>
+        public static By AutomationProperty(AutomationProperty property, object value)
         {
-            return Uid(TreeScope.Subtree, value);
+            return AutomationProperty(TreeScope.Subtree, property, value);
         }
 
-        public static By Uid(TreeScope scope, string value)
-        {
-            return AutomationProperty(scope, AutomationElement.AutomationIdProperty, value);
-        }
-
-        public static By Name(string value)
-        {
-            return Name(TreeScope.Subtree, value);
-        }
-
-        public static By Name(TreeScope scope, string value)
-        {
-            return AutomationProperty(scope, AutomationElement.NameProperty, value);
-        }
-
+        /// <summary>
+        /// Поиск по AutomationProperty с заданием глубины. 
+        /// Требуется подключить ссылку на UIAutomationClient.
+        /// </summary>
+        /// <param name="scope">
+        /// Глубина поиска.
+        /// </param>
+        /// <param name="property">
+        /// Целевое свойство.
+        /// </param>
+        /// <param name="value">
+        /// Значение целевого свойства.
+        /// </param>
         public static By AutomationProperty(TreeScope scope, AutomationProperty property, object value)
         {
             return new By(scope, new Info(property, value, ConditionType.None));
         }
 
+        /// <summary>
+        /// Поиск по Name.
+        /// </summary>
+        /// <param name="value">
+        /// Имя элемента.
+        /// </param>
+        public static By Name(string value)
+        {
+            return Name(TreeScope.Subtree, value);
+        }
+
+        /// <summary>
+        /// Поиск по Name с заданием глубины.
+        /// </summary>
+        /// <param name="scope">
+        /// Глубина поиска.
+        /// </param>
+        /// <param name="value">
+        /// Имя элемента.
+        /// </param>
+        public static By Name(TreeScope scope, string value)
+        {
+            return AutomationProperty(scope, AutomationElement.NameProperty, value);
+        }
+
+        /// <summary>
+        /// Поиск по заданному Path. Например: /#ElementUid//%ElementName, 
+        /// где '/' - в детях, '//' - в глубину; # - по AutomationId, % - по Name.
+        /// </summary>
+        /// <param name="value">
+        /// Строка в требуемом формате.
+        /// </param>
         public static By Path(string value)
         {
             var findInfoList = new List<ElementFindInfo>();
@@ -221,35 +303,96 @@
             return new By(findInfoList);
         }
 
-        #endregion
-
-        public By AndType(ControlType value)
+        /// <summary>
+        /// Поиск по  AutomationId.
+        /// </summary>
+        /// <param name="value">
+        /// Уникальный идентификатор элемента.
+        /// </param>
+        public static By Uid(string value)
         {
-            And(AutomationElement.ControlTypeProperty, value);
-            return this;
+            return Uid(TreeScope.Subtree, value);
         }
 
-        public By OrName(string value)
+        /// <summary>
+        /// Поиск по AutomationId.
+        /// </summary>
+        /// <param name="scope">
+        /// Глубина поиска.
+        /// </param>
+        /// <param name="value">
+        /// Уникальный идентификатор элемента.
+        /// </param>
+        public static By Uid(TreeScope scope, string value)
         {
-            Or(AutomationElement.NameProperty, value);
-            return this;
+            return AutomationProperty(scope, AutomationElement.AutomationIdProperty, value);
         }
 
+        /// <summary>
+        /// Уточнить поиск по AutomationProperty через логическое И. 
+        /// Требуется подключить ссылку на UIAutomationClient.
+        /// </summary>
+        /// <param name="property">
+        /// Целевое свойство.
+        /// </param>
+        /// <param name="value">
+        /// Значение целевого свойства.
+        /// </param>
         public By And(AutomationProperty property, object value)
         {
-            AddInfoToLast(property, value, ConditionType.And);
+            this.AddInfoToLast(property, value, ConditionType.And);
             return this;
         }
 
-        public By Or(AutomationProperty property, object value)
+        /// <summary>
+        /// Уточнить поиск по ControlType через логическое И.
+        /// </summary>
+        /// <param name="value">
+        /// Тип элемента.
+        /// </param>
+        public By AndType(ControlType value)
         {
-            AddInfoToLast(property, value, ConditionType.Or);
+            this.And(AutomationElement.ControlTypeProperty, value);
             return this;
         }
+
+        /// <summary>
+        /// Уточнить поиск по AutomationProperty через логическое ИЛИ. 
+        /// Требуется подключить ссылку на UIAutomationClient.
+        /// </summary>
+        /// <param name="property">
+        /// Целевое свойство.
+        /// </param>
+        /// <param name="value">
+        /// Значение целевого свойства.
+        /// </param>
+        public By Or(AutomationProperty property, object value)
+        {
+            this.AddInfoToLast(property, value, ConditionType.Or);
+            return this;
+        }
+
+        /// <summary>
+        /// Уточнить поиск по Name элемента через логическое ИЛИ.
+        /// </summary>
+        /// <param name="value">
+        /// Имя элемента.
+        /// </param>
+        public By OrName(string value)
+        {
+            this.Or(AutomationElement.NameProperty, value);
+            return this;
+        }
+
+        #endregion
+
+        #region Methods
 
         private void AddInfoToLast(AutomationProperty property, object value, ConditionType conditionType)
         {
-            FindInfoList.Last().Add(new Info(property, value, conditionType));
+            this.FindInfoList.Last().Add(new Info(property, value, conditionType));
         }
+
+        #endregion
     }
 }

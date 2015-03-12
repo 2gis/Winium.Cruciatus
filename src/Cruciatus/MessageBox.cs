@@ -1,17 +1,8 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MessageBox.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет класс для работы с диалогом MessageBox.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus
+﻿namespace Cruciatus
 {
     #region using
 
     using System;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Automation;
 
@@ -21,35 +12,44 @@ namespace Cruciatus
 
     #endregion
 
+    /// <summary>
+    /// Класс для работы с диалоговым окном MessageBox.
+    /// </summary>
     public static class MessageBox
     {
-        public static int NumberOfOpenModalWindow(CruciatusElement parent)
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Кликает по заданной кнопке диалогового окна.
+        /// </summary>
+        /// <param name="dialogWindow">
+        /// Диалоговое окно.
+        /// </param>
+        /// <param name="buttonsType">
+        /// Тип набора кнопок диалогово окна.
+        /// </param>
+        /// <param name="targetButton">
+        /// Целевая кнопка.
+        /// </param>
+        public static void ClickButton(
+            CruciatusElement dialogWindow, 
+            MessageBoxButton buttonsType, 
+            MessageBoxResult targetButton)
         {
-            if (parent == null)
+            if (dialogWindow == null)
             {
-                throw new ArgumentNullException("parent");
+                throw new ArgumentNullException("dialogWindow");
             }
 
             var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            return AutomationElementHelper.FindAll(parent.Instanse, TreeScope.Children, condition, 60).Count();
-        }
-
-        public static void ClickButton(CruciatusElement parent, MessageBoxButton buttonsType, MessageBoxResult button)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            var condition = new PropertyCondition(WindowPattern.IsModalProperty, true);
-            var modalwindow = AutomationElementHelper.FindFirst(parent.Instanse, TreeScope.Children, condition);
+            var modalwindow = AutomationElementHelper.FindFirst(dialogWindow.Instance, TreeScope.Children, condition);
             if (modalwindow == null)
             {
                 throw new CruciatusException("NOT CLICK BUTTON");
             }
 
             string uid;
-            if (button == MessageBoxResult.None)
+            if (targetButton == MessageBoxResult.None)
             {
                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.CloseButton;
             }
@@ -58,7 +58,7 @@ namespace Cruciatus
                 switch (buttonsType)
                 {
                     case MessageBoxButton.OK:
-                        switch (button)
+                        switch (targetButton)
                         {
                             case MessageBoxResult.OK:
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkType.Ok;
@@ -70,7 +70,7 @@ namespace Cruciatus
                         break;
 
                     case MessageBoxButton.OKCancel:
-                        switch (button)
+                        switch (targetButton)
                         {
                             case MessageBoxResult.OK:
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.OkCancelType.Ok;
@@ -85,7 +85,7 @@ namespace Cruciatus
                         break;
 
                     case MessageBoxButton.YesNo:
-                        switch (button)
+                        switch (targetButton)
                         {
                             case MessageBoxResult.Yes:
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoType.Yes;
@@ -100,7 +100,7 @@ namespace Cruciatus
                         break;
 
                     case MessageBoxButton.YesNoCancel:
-                        switch (button)
+                        switch (targetButton)
                         {
                             case MessageBoxResult.Yes:
                                 uid = CruciatusFactory.Settings.MessageBoxButtonUid.YesNoCancelType.Yes;
@@ -122,8 +122,10 @@ namespace Cruciatus
                 }
             }
 
-            var buttonElement = new CruciatusElement(parent, modalwindow, null).Get(By.Uid(uid));
+            var buttonElement = new CruciatusElement(dialogWindow, modalwindow, null).FindElement(By.Uid(uid));
             buttonElement.Click();
         }
+
+        #endregion
     }
 }

@@ -2,106 +2,110 @@
 {
     #region using
 
-    using WindowsFormsTestApplication.Tests.Map;
-
     using NUnit.Framework;
+
+    using WindowsFormsTestApplication.Tests.Map;
 
     #endregion
 
     [TestFixture]
     public class CheckSecondTab
     {
-        #region Бесполезно, пока не работает переключение вкладок
+        #region Fields
 
-        private WindowsFormsTestApplicationApp _application;
+        private WindowsFormsTestApplicationApp application;
 
-        private SecondTab _secondTab;
+        private SecondTab secondTab;
 
-        [TestFixtureSetUp]
-        public void FixtureSetUp()
-        {
-            TestClassHelper.Initialize(out _application);
+        #endregion
 
-            _secondTab = _application.Window.TabItem2;
-            _secondTab.Select();
-        }
-
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
-        {
-            TestClassHelper.Cleanup(_application);
-        }
+        #region Public Methods and Operators
 
         [Test]
-        public void CheckingTabItem2()
+        public void CheckingChangeAfterCheckBox2()
         {
-            _secondTab.Select();
-            Assert.AreEqual(true, _secondTab.IsSelection, "Вкладка 2 оказалась не выбрана");
+            var monthMarch = this.secondTab.CheckListBox.ScrollToCheckBoxByName("March");
+            Assert.AreEqual(false, monthMarch.IsToggleOn, "Чекбокс March в check состоянии.");
+
+            var monthDecember = this.secondTab.CheckListBox.ScrollToCheckBoxByName("December");
+            Assert.AreEqual(false, monthDecember.IsToggleOn, "Чекбокс December в check состоянии.");
+
+            this.secondTab.CheckBox2.Check();
+            Assert.AreEqual(true, this.secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
+
+            this.secondTab.CheckListBox.ScrollToCheckBoxByName("March");
+            Assert.AreEqual(true, monthMarch.IsToggleOn, "Чекбокс March остался в uncheck состоянии.");
+
+            this.secondTab.CheckListBox.ScrollToCheckBoxByName("December");
+            Assert.AreEqual(true, monthDecember.IsToggleOn, "Чекбокс December остался в uncheck состоянии.");
         }
 
         [Test]
         public void CheckingChangeEnabledButton()
         {
-            if (!_secondTab.TextBox2.Properties.IsEnabled)
+            if (!this.secondTab.TextBox2.Properties.IsEnabled)
             {
-                _secondTab.ChangeEnabledButton.Click();
+                this.secondTab.ChangeEnabledButton.Click();
             }
 
-            _secondTab.ChangeEnabledButton.Click();
-            Assert.AreEqual(false, _secondTab.TextBox2.Properties.IsEnabled);
+            this.secondTab.ChangeEnabledButton.Click();
+            Assert.AreEqual(false, this.secondTab.TextBox2.Properties.IsEnabled);
 
-            _secondTab.ChangeEnabledButton.Click();
-            Assert.AreEqual(true, _secondTab.TextBox2.Properties.IsEnabled);
-        }
-
-        [Test]
-        public void CheckingTextBox2()
-        {
-            _secondTab.TextBox2.SetText("start test text");
-            var startText = _secondTab.TextBox2.Text();
-
-            _secondTab.TextBox2.SetText("new test text");
-            var currentText = _secondTab.TextBox2.Text();
-
-            Assert.AreNotEqual(startText, currentText, "Текст не изменился.");
+            this.secondTab.ChangeEnabledButton.Click();
+            Assert.AreEqual(true, this.secondTab.TextBox2.Properties.IsEnabled);
         }
 
         [Test]
         public void CheckingCheckBox2()
         {
-            _secondTab.CheckBox2.Uncheck();
-            Assert.AreEqual(false, _secondTab.CheckBox2.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
+            this.secondTab.CheckBox2.Uncheck();
+            Assert.AreEqual(false, this.secondTab.CheckBox2.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
 
-            _secondTab.CheckBox2.Check();
-            Assert.AreEqual(true, _secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
+            this.secondTab.CheckBox2.Check();
+            Assert.AreEqual(true, this.secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
         }
 
         [Test]
         public void CheckingCheckListBox()
         {
-            var month = _secondTab.CheckListBox.ScrollToCheckBoxByName("December");
-            
+            var month = this.secondTab.CheckListBox.ScrollToCheckBoxByName("December");
+
             month.Check();
             Assert.AreEqual(true, month.IsToggleOn, "Чекбокс December в uncheck состоянии после check.");
         }
 
         [Test]
-        public void CheckingChangeAfterCheckBox2()
+        public void CheckingTabItem2()
         {
-            var monthMarch = _secondTab.CheckListBox.ScrollToCheckBoxByName("March");
-            Assert.AreEqual(false, monthMarch.IsToggleOn, "Чекбокс March в check состоянии.");
+            this.secondTab.Select();
+            Assert.AreEqual(true, this.secondTab.IsSelection, "Вкладка 2 оказалась не выбрана");
+        }
 
-            var monthDecember = _secondTab.CheckListBox.ScrollToCheckBoxByName("December");
-            Assert.AreEqual(false, monthDecember.IsToggleOn, "Чекбокс December в check состоянии.");
+        [Test]
+        public void CheckingTextBox2()
+        {
+            this.secondTab.TextBox2.SetText("start test text");
+            var startText = this.secondTab.TextBox2.Text();
 
-            _secondTab.CheckBox2.Check();
-            Assert.AreEqual(true, _secondTab.CheckBox2.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
+            this.secondTab.TextBox2.SetText("new test text");
+            var currentText = this.secondTab.TextBox2.Text();
 
-            _secondTab.CheckListBox.ScrollToCheckBoxByName("March");
-            Assert.AreEqual(true, monthMarch.IsToggleOn, "Чекбокс March остался в uncheck состоянии.");
+            Assert.AreNotEqual(startText, currentText, "Текст не изменился.");
+        }
 
-            _secondTab.CheckListBox.ScrollToCheckBoxByName("December");
-            Assert.AreEqual(true, monthDecember.IsToggleOn, "Чекбокс December остался в uncheck состоянии.");
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            TestClassHelper.Initialize(out this.application);
+
+            this.secondTab = this.application.Window.TabItem2;
+            this.secondTab.Select();
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(this.application);
         }
 
         #endregion

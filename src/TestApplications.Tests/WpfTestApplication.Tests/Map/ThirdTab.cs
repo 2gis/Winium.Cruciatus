@@ -9,16 +9,22 @@
 
     public class ThirdTab : TabItem
     {
+        #region Constructors and Destructors
+
         public ThirdTab(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
+        #endregion
+
+        #region Public Properties
+
         public CruciatusElement OpenFileDialogButton
         {
             get
             {
-                return GetByUid("OpenFileDialogButton");
+                return this.FindElementByUid("OpenFileDialogButton");
             }
         }
 
@@ -26,8 +32,10 @@
         {
             get
             {
-                return GetByUid("SaveFileDialogButton");
+                return this.FindElementByUid("SaveFileDialogButton");
             }
         }
+
+        #endregion
     }
 }

@@ -67,7 +67,7 @@
     <Compile Include="Core\GetTextStrategy.cs" />
     <Compile Include="Core\IKeyboard.cs" />
     <Compile Include="Core\KeyboardSimulatorExt.cs" />
-    <Compile Include="Core\Mouse.cs" />
+    <Compile Include="Core\MouseSimulatorExt.cs" />
     <Compile Include="Core\MouseButtons.cs" />
     <Compile Include="Core\ScreenCoordinatesHelper.cs" />
     <Compile Include="CruciatusCommand.cs" />
@@ -83,11 +83,8 @@
     <Compile Include="Elements\CruciatusElement.cs" />
     <Compile Include="Elements\DataGrid.cs" />
     <Compile Include="Elements\ListBox.cs" />
-    <Compile Include="Elements\RibbonApplicationMenu.cs" />
     <Compile Include="Elements\TabItem.cs" />
     <Compile Include="Exceptions\CruciatusException.cs" />
-    <Compile Include="Exceptions\PropertyInvalidCastException.cs" />
-    <Compile Include="Exceptions\PropertyNotSupportedException.cs" />
     <Compile Include="Extensions\AutomationElementExtension.cs" />
     <Compile Include="Extensions\CruciatusElementExtension.cs" />
     <Compile Include="MessageBox.cs" />

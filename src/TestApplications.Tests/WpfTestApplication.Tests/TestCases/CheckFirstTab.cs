@@ -15,109 +15,119 @@
     [TestFixture]
     public class CheckFirstTab
     {
-        private static WpfTestApplicationApp _application;
+        #region Static Fields
 
-        private static FirstTab _firstTab;
+        private static WpfTestApplicationApp application;
 
-        private static Menu _setTextButtonContextMenu;
+        private static FirstTab firstTab;
 
-        [TestFixtureSetUp]
-        public void FixtureSetUp()
+        private static Menu setTextButtonContextMenu;
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        [Test]
+        public void CheckingChangeEnabledTextListBox()
         {
-            TestClassHelper.Initialize(out _application);
+            Assert.IsTrue(firstTab.TextListBox.Properties.IsEnabled, "TextListBox в начале оказался не включен.");
 
-            _firstTab = _application.MainWindow.TabItem1;
-            _setTextButtonContextMenu = _application.MainWindow.SetTextButtonContextMenu;
+            firstTab.CheckBox1.Uncheck();
+            Assert.IsFalse(firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
 
-            _firstTab.Select();
-        }
-
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
-        {
-            TestClassHelper.Cleanup(_application);
+            Assert.IsFalse(firstTab.TextListBox.Properties.IsEnabled, "TextListBox не стал включенным.");
         }
 
         [Test]
-        public void CheckingTabItem2()
+        public void CheckingCheckBox1()
         {
-            _firstTab.Select();
+            firstTab.CheckBox1.Uncheck();
+            Assert.IsFalse(firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
+
+            firstTab.CheckBox1.Check();
+            Assert.IsTrue(firstTab.CheckBox1.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
         }
 
         [Test]
         public void CheckingSetTextButton()
         {
-            _firstTab.SetTextButton.Click();
+            firstTab.SetTextButton.Click();
 
-            var currentText = _firstTab.TextBox1.Text();
+            var currentText = firstTab.TextBox1.Text();
             Assert.AreEqual(currentText, "CARAMBA", "Верный текст не установлен в текстовое поле.");
         }
 
         [Test]
         public void CheckingSetTextButtonContextMenu1()
         {
-            _firstTab.SetTextButton.Click(MouseButton.Right);
-            _setTextButtonContextMenu.SelectItem("Menu item 1");
+            firstTab.SetTextButton.Click(MouseButton.Right);
+            setTextButtonContextMenu.SelectItem("Menu item 1");
 
-            _firstTab.SetTextButton.Click(MouseButton.Right);
-            Assert.IsFalse(_setTextButtonContextMenu.GetItem("Menu item 3").Properties.IsEnabled, "Пункт Menu item 3 оказался активен.");
+            firstTab.SetTextButton.Click(MouseButton.Right);
+            Assert.IsFalse(
+                setTextButtonContextMenu.GetItem("Menu item 3").Properties.IsEnabled, 
+                "Пункт Menu item 3 оказался активен.");
             CruciatusFactory.Keyboard.SendEscape();
+        }
+
+        [Test]
+        public void CheckingTabItem2()
+        {
+            firstTab.Select();
         }
 
         [Test]
         public void CheckingTextBox1()
         {
-            const string text = "new test text";
-            
-            _firstTab.TextBox1.SetText(text);
-            var currentText = _firstTab.TextBox1.Text();
+            const string Text = "new test text";
 
-            Assert.AreEqual(text, currentText, "Текст не изменился.");
+            firstTab.TextBox1.SetText(Text);
+            var currentText = firstTab.TextBox1.Text();
+
+            Assert.AreEqual(Text, currentText, "Текст не изменился.");
         }
 
         [Test]
         public void CheckingTextComboBox()
         {
-            _firstTab.TextComboBox.Expand();
+            firstTab.TextComboBox.Expand();
 
-            var element = _firstTab.TextComboBox.Get(By.Name("Quarter"));
+            var element = firstTab.TextComboBox.FindElement(By.Name("Quarter"));
             Assert.IsNotNull(element);
-            
+
             element.Click();
-        }
-
-        [Test]
-        public void CheckingCheckBox1()
-        {
-            _firstTab.CheckBox1.Uncheck();
-            Assert.IsFalse(_firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
-
-            _firstTab.CheckBox1.Check();
-            Assert.IsTrue(_firstTab.CheckBox1.IsToggleOn, "Чекбокс в uncheck состоянии после check.");
         }
 
         [Test]
         public void CheckingTextListBox()
         {
-            if (!_firstTab.TextListBox.Properties.IsEnabled)
+            if (!firstTab.TextListBox.Properties.IsEnabled)
             {
-                _firstTab.CheckBox1.Check();
+                firstTab.CheckBox1.Check();
             }
 
-            _firstTab.TextListBox.ScrollTo(By.Name("December")).Click();
+            firstTab.TextListBox.ScrollTo(By.Name("December")).Click();
 
-            _firstTab.TextListBox.ScrollTo(By.Name("October")).Click();
+            firstTab.TextListBox.ScrollTo(By.Name("October")).Click();
         }
 
-        [Test]
-        public void CheckingChangeEnabledTextListBox()
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
         {
-            Assert.IsTrue(_firstTab.TextListBox.Properties.IsEnabled, "TextListBox в начале оказался не включен.");
+            TestClassHelper.Initialize(out application);
 
-            _firstTab.CheckBox1.Uncheck();
-            Assert.IsFalse(_firstTab.CheckBox1.IsToggleOn, "Чекбокс в check состоянии после uncheck.");
+            firstTab = application.MainWindow.TabItem1;
+            setTextButtonContextMenu = application.MainWindow.SetTextButtonContextMenu;
 
-            Assert.IsFalse(_firstTab.TextListBox.Properties.IsEnabled, "TextListBox не стал включенным.");
+            firstTab.Select();
         }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(application);
+        }
+
+        #endregion
     }
 }

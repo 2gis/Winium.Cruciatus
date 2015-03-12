@@ -1,21 +1,8 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusFactory.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет фабрику Cruciatus.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus
+﻿namespace Cruciatus
 {
     #region using
 
-    using System;
-    using System.Diagnostics;
-    using System.Threading;
     using System.Windows.Automation;
-
-    using WindowsInput;
 
     using Cruciatus.Core;
     using Cruciatus.Elements;
@@ -26,15 +13,28 @@ namespace Cruciatus
     using NLog.Config;
     using NLog.Targets;
 
+    using WindowsInput;
+
     #endregion
 
+    /// <summary>
+    /// Класс доступа к инфраструктуре Cruciatus.
+    /// </summary>
     public static class CruciatusFactory
     {
-        private static SendKeysExt _sendKeysExt;
+        #region Static Fields
 
-        private static Mouse _mouse;
+        private static KeyboardSimulatorExt keyboardSimulatorExt;
 
-        private static Screenshoter _screenshoter;
+        private static MouseSimulatorExt mouseSimulatorExt;
+
+        private static Screenshoter screenshoter;
+
+        private static SendKeysExt sendKeysExt;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         static CruciatusFactory()
         {
@@ -43,6 +43,24 @@ namespace Cruciatus
             ScreenshotersInit();
         }
 
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// Возвращает текущий симулятор клавиатуры.
+        /// </summary>
+        public static IKeyboard Keyboard
+        {
+            get
+            {
+                return GetSpecificKeyboard(Settings.KeyboardSimulatorType);
+            }
+        }
+
+        /// <summary>
+        /// Возвращает объект, используемый для ведения логов.
+        /// </summary>
         public static Logger Logger
         {
             get
@@ -51,14 +69,20 @@ namespace Cruciatus
             }
         }
 
-        public static CruciatusSettings Settings
+        /// <summary>
+        /// Возвращает симулятор мыши.
+        /// </summary>
+        public static MouseSimulatorExt Mouse
         {
             get
             {
-                return CruciatusSettings.Instance;
+                return mouseSimulatorExt;
             }
         }
 
+        /// <summary>
+        /// Возвращает корневой элемент - Рабочий стол.
+        /// </summary>
         public static CruciatusElement Root
         {
             get
@@ -67,39 +91,62 @@ namespace Cruciatus
             }
         }
 
-        public static IKeyboard Keyboard
-        {
-            get
-            {
-                return GetCurrentKeyboard();
-            }
-        }
-
-        public static Mouse Mouse
-        {
-            get
-            {
-                return _mouse;
-            }
-        }
-
+        /// <summary>
+        /// Возвращает объект, используемый для снятия скриншотов.
+        /// </summary>
         public static IScreenshoter Screenshoter
         {
             get
             {
-                return _screenshoter;
+                return screenshoter;
             }
         }
 
-        internal static KeyboardSimulatorExt KeyboardSimulatorExt { get; private set; }
+        /// <summary>
+        /// Возвращает объект по управлению настройками Crucaitus.
+        /// </summary>
+        public static CruciatusSettings Settings
+        {
+            get
+            {
+                return CruciatusSettings.Instance;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Возвращает специфичный симулятор клавиатуры по заданному типу.
+        /// </summary>
+        /// <param name="keyboardSimulatorType">
+        /// Тип симулятора клавиатуры.
+        /// </param>
+        public static IKeyboard GetSpecificKeyboard(KeyboardSimulatorType keyboardSimulatorType)
+        {
+            switch (keyboardSimulatorType)
+            {
+                case KeyboardSimulatorType.BasedOnInputSimulatorLib:
+                    return keyboardSimulatorExt;
+                case KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass:
+                    return sendKeysExt;
+            }
+
+            throw new CruciatusException("Unknown KeyboardSimulatorType");
+        }
+
+        #endregion
+
+        #region Methods
 
         private static void InputSimulatorsInit()
         {
             var inputSimulator = new InputSimulator();
-            KeyboardSimulatorExt = new KeyboardSimulatorExt(inputSimulator.Keyboard, Logger);
-            _mouse = new Mouse(inputSimulator.Mouse);
+            keyboardSimulatorExt = new KeyboardSimulatorExt(inputSimulator.Keyboard, Logger);
+            mouseSimulatorExt = new MouseSimulatorExt(inputSimulator.Mouse);
 
-            _sendKeysExt = new SendKeysExt(Logger);
+            sendKeysExt = new SendKeysExt(Logger);
         }
 
         private static void LoggerInit()
@@ -114,13 +161,14 @@ namespace Cruciatus
             var fileTarget = new FileTarget();
             config.AddTarget("file", fileTarget);
 
-            const string layout = @"[${date:format=HH\:mm\:ss}] [${level}] ${message} "
-                                  + "${onexception:${exception:format=tostring,stacktrace}${newline}${stacktrace}}";
+            const string Layout =
+                @"[${date:format=HH\:mm\:ss}] [${level}] ${message} "
+                + "${onexception:${exception:format=tostring,stacktrace}${newline}${stacktrace}}";
 
             // Step 3. Set target properties 
-            consoleTarget.Layout = layout;
+            consoleTarget.Layout = Layout;
             fileTarget.FileName = "Cruciatus.log";
-            fileTarget.Layout = layout;
+            fileTarget.Layout = Layout;
 
             // Step 4. Define rules
             var rule1 = new LoggingRule("*", LogLevel.Debug, consoleTarget);
@@ -135,50 +183,9 @@ namespace Cruciatus
 
         private static void ScreenshotersInit()
         {
-            _screenshoter = new Screenshoter();
+            screenshoter = new Screenshoter();
         }
 
-        private static IKeyboard GetCurrentKeyboard()
-        {
-            switch (Settings.KeyboardSimulatorType)
-            {
-                case KeyboardSimulatorType.BasedOnInputSimulatorLib:
-                    return KeyboardSimulatorExt;
-                case KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass:
-                    return _sendKeysExt;
-            }
-
-            throw new CruciatusException("Unknown KeyboardSimulatorType");
-        }
-
-        internal static TOut WaitingValues<TOut>(
-            Func<TOut> getValueFunc, 
-            Func<TOut, bool> compareFunc)
-        {
-            return WaitingValues(getValueFunc, compareFunc, Settings.WaitForGetValueTimeout);
-        }
-
-        internal static TOut WaitingValues<TOut>(
-            Func<TOut> getValueFunc, 
-            Func<TOut, bool> compareFunc, 
-            int waitingTime)
-        {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var value = getValueFunc();
-            while (compareFunc(value))
-            {
-                Thread.Sleep(Settings.WaitingPeriod);
-                if (stopwatch.ElapsedMilliseconds > waitingTime)
-                {
-                    break;
-                }
-
-                value = getValueFunc();
-            }
-
-            stopwatch.Stop();
-            return value;
-        }
+        #endregion
     }
 }

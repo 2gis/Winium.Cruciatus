@@ -6,19 +6,25 @@
 
     #endregion
 
-    public static class ScreenCoordinatesHelper
+    internal static class ScreenCoordinatesHelper
     {
-        public static readonly Point VirtualScreenLowerRightCorner = new Point(65535, 65535);
+        #region Static Fields
 
-        public static Point ScreenPointToVirtualScreenPoint(Point point)
+        internal static readonly Point VirtualScreenLowerRightCorner = new Point(65535, 65535);
+
+        #endregion
+
+        #region Methods
+
+        internal static Point ScreenPointToVirtualScreenPoint(Point point)
         {
             var sX = point.X;
             var sY = point.Y;
 
-            var vsLeft = SystemParameters.VirtualScreenLeft;
-            if (vsLeft < 0)
+            var virtualScreenLeft = SystemParameters.VirtualScreenLeft;
+            if (virtualScreenLeft < 0)
             {
-                sX -= vsLeft;
+                sX -= virtualScreenLeft;
             }
 
             var vsX = sX * (VirtualScreenLowerRightCorner.X / SystemParameters.VirtualScreenWidth);
@@ -26,5 +32,7 @@
 
             return new Point(vsX, vsY);
         }
+
+        #endregion
     }
 }

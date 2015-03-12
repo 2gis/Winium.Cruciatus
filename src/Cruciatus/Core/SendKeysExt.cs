@@ -9,70 +9,133 @@
 
     #endregion
 
+    /// <summary>
+    /// Симулятор клавиатуры. Обёртка над System.Windows.Forms.SendKeys .
+    /// </summary>
     public class SendKeysExt : IKeyboard
     {
-        public const string Enter = "{ENTER}";
+        #region Constants
 
-        public const string Backspace = "{BACKSPACE}";
-
-        public const string Escape = "{ESCAPE}";
-
-        public const char Ctrl = '^';
-
+        /// <summary>
+        /// Кнопка Alt.
+        /// </summary>
         public const char Alt = '%';
 
+        /// <summary>
+        /// Кнопка Backspace.
+        /// </summary>
+        public const string Backspace = "{BACKSPACE}";
+
+        /// <summary>
+        /// Кнопка Ctrl.
+        /// </summary>
+        public const char Ctrl = '^';
+
+        /// <summary>
+        /// Кнопка Enter.
+        /// </summary>
+        public const string Enter = "{ENTER}";
+
+        /// <summary>
+        /// Кнопка Escape.
+        /// </summary>
+        public const string Escape = "{ESCAPE}";
+
+        /// <summary>
+        /// Кнопка +
+        /// </summary>
         public const char Shift = '+';
 
-        private readonly Logger _logger;
+        #endregion
 
-        public SendKeysExt(Logger logger)
+        #region Fields
+
+        private readonly Logger logger;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        internal SendKeysExt(Logger logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
-        public IKeyboard SendText(string text)
-        {
-            _logger.Info("Send text '{0}'", text);
-            return SendWaitEx(text);
-        }
+        #endregion
 
-        public IKeyboard SendEnter()
-        {
-            return SendKeysPrivate(Enter);
-        }
+        #region Public Methods and Operators
 
+        /// <summary>
+        /// Эмулирует нажатие кнопки Backspace.
+        /// </summary>
         public IKeyboard SendBackspace()
         {
-            return SendKeysPrivate(Backspace);
+            return this.SendKeysPrivate(Backspace);
         }
 
-        public IKeyboard SendEscape()
-        {
-            return SendKeysPrivate(Escape);
-        }
-
+        /// <summary>
+        /// Эмулирует нажатие сочетания кнопок Ctrl + A.
+        /// </summary>
         public IKeyboard SendCtrlA()
         {
-            return SendKeysPrivate(Ctrl + "a");
+            return this.SendKeysPrivate(Ctrl + "a");
         }
 
+        /// <summary>
+        /// Эмулирует нажатие сочетания кнопок Ctrl + C.
+        /// </summary>
         public IKeyboard SendCtrlC()
         {
-            return SendKeysPrivate(Ctrl + "c");
+            return this.SendKeysPrivate(Ctrl + "c");
         }
 
+        /// <summary>
+        /// Эмулирует нажатие сочетания кнопок Ctrl + V.
+        /// </summary>
         public IKeyboard SendCtrlV()
         {
-            return SendKeysPrivate(Ctrl + "v");
+            return this.SendKeysPrivate(Ctrl + "v");
         }
+
+        /// <summary>
+        /// Эмулирует нажатие кнопки Enter.
+        /// </summary>
+        public IKeyboard SendEnter()
+        {
+            return this.SendKeysPrivate(Enter);
+        }
+
+        /// <summary>
+        /// Эмулирует нажатие кнопки Escape.
+        /// </summary>
+        public IKeyboard SendEscape()
+        {
+            return this.SendKeysPrivate(Escape);
+        }
+
+        /// <summary>
+        /// Эмулирует ввод текста.
+        /// </summary>
+        /// <param name="text">
+        /// Текст.
+        /// </param>
+        public IKeyboard SendText(string text)
+        {
+            this.logger.Info("Send text '{0}'", text);
+            return this.SendWaitPrivate(text);
+        }
+
+        #endregion
+
+        #region Methods
 
         private IKeyboard SendKeysPrivate(string keys)
         {
-            _logger.Info("Send keys '{0}'", keys);
-            return SendWaitEx(keys);
+            this.logger.Info("Send keys '{0}'", keys);
+            return this.SendWaitPrivate(keys);
         }
 
-        private IKeyboard SendWaitEx(string text)
+        private IKeyboard SendWaitPrivate(string text)
         {
             if (!string.IsNullOrEmpty(text))
             {
@@ -82,5 +145,7 @@
 
             return this;
         }
+
+        #endregion
     }
 }

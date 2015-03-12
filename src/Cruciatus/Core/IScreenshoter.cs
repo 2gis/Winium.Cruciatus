@@ -6,9 +6,15 @@
 
     #endregion
 
+    /// <summary>
+    /// Интерфейс снимателя скриншотов.
+    /// </summary>
     public interface IScreenshoter
     {
-        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        /// <summary>
+        /// Возвращает скриншот рабочего стола.
+        /// </summary>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Reviewed.")]
         Screenshot GetScreenshot();
     }
 }

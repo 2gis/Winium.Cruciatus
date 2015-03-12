@@ -2,65 +2,79 @@
 {
     #region using
 
-    using System;
     using System.Windows;
     using System.Windows.Automation;
 
-    using Cruciatus.Elements;
-
     #endregion
 
+    /// <summary>
+    /// Класс свойств CruciatusElement.
+    /// </summary>
     public class CruciatusElementProperties
     {
-        private readonly AutomationElement _element;
+        #region Fields
 
-        public CruciatusElementProperties(CruciatusElement element)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
+        private readonly AutomationElement element;
 
-            _element = element.Instanse;
-        }
+        #endregion
+
+        #region Constructors and Destructors
 
         internal CruciatusElementProperties(AutomationElement element)
         {
-            _element = element;
+            this.element = element;
         }
 
-        public string Name
-        {
-            get
-            {
-                return _element.Current.Name;
-            }
-        }
+        #endregion
 
-        public bool IsEnabled
-        {
-            get
-            {
-                return _element.Current.IsEnabled;
-            }
-        }
+        #region Public Properties
 
-        public bool IsOffscreen
-        {
-            get
-            {
-                return _element.Current.IsOffscreen;
-            }
-        }
-
+        /// <summary>
+        /// Свойство ClickablePoint. Внимание, значение может отсутствовать.
+        /// </summary>
         public Point? ClickablePoint
         {
             get
             {
                 Point point;
-                var exists = _element.TryGetClickablePoint(out point);
+                var exists = this.element.TryGetClickablePoint(out point);
                 return exists ? point : new Point?();
             }
         }
+
+        /// <summary>
+        /// Свойство IsEnabled.
+        /// </summary>
+        public bool IsEnabled
+        {
+            get
+            {
+                return this.element.Current.IsEnabled;
+            }
+        }
+
+        /// <summary>
+        /// Свойство IsOffscreen.
+        /// </summary>
+        public bool IsOffscreen
+        {
+            get
+            {
+                return this.element.Current.IsOffscreen;
+            }
+        }
+
+        /// <summary>
+        /// Свойство Name.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return this.element.Current.Name;
+            }
+        }
+
+        #endregion
     }
 }

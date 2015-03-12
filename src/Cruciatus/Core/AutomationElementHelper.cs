@@ -12,52 +12,30 @@ namespace Cruciatus.Core
 
     #endregion
 
-    public static class AutomationElementHelper
+    internal static class AutomationElementHelper
     {
+        #region Constants
+
         private const int FindTimeout = 500;
 
-        public static AutomationElement FindFirst(AutomationElement parent, TreeScope scope, Condition condition)
-        {
-            return FindFirst(parent, scope, condition, FindTimeout);
-        }
+        #endregion
 
-        public static AutomationElement FindFirst(AutomationElement parent, TreeScope scope, Condition condition,
-                                                  int timeout)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
+        #region Methods
 
-            var dtn = DateTime.Now.AddMilliseconds(timeout);
-
-            // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-            while (DateTime.Now <= dtn)
-            {
-                var element = parent.FindFirst(scope, condition);
-                if (element != null)
-                {
-                    return element;
-                }
-            }
-
-            return null;
-        }
-
-        public static IEnumerable<AutomationElement> FindAll(AutomationElement parent, TreeScope scope,
-                                                             Condition condition)
+        internal static IEnumerable<AutomationElement> FindAll(
+            AutomationElement parent, 
+            TreeScope scope, 
+            Condition condition)
         {
             return FindAll(parent, scope, condition, FindTimeout);
         }
 
-        public static IEnumerable<AutomationElement> FindAll(AutomationElement parent, TreeScope scope,
-                                                             Condition condition, int timeout)
+        internal static IEnumerable<AutomationElement> FindAll(
+            AutomationElement parent, 
+            TreeScope scope, 
+            Condition condition, 
+            int timeout)
         {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
             var dtn = DateTime.Now.AddMilliseconds(timeout);
 
             // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
@@ -73,23 +51,34 @@ namespace Cruciatus.Core
             return Enumerable.Empty<AutomationElement>();
         }
 
-        public static bool TryGetClickablePoint(AutomationElement element, out Point point)
+        internal static AutomationElement FindFirst(AutomationElement parent, TreeScope scope, Condition condition)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            return element.TryGetClickablePoint(out point);
+            return FindFirst(parent, scope, condition, FindTimeout);
         }
 
-        public static bool TryGetBoundingRectangleCenter(AutomationElement element, out Point point)
+        internal static AutomationElement FindFirst(
+            AutomationElement parent, 
+            TreeScope scope, 
+            Condition condition, 
+            int timeout)
         {
-            if (element == null)
+            var dtn = DateTime.Now.AddMilliseconds(timeout);
+
+            // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+            while (DateTime.Now <= dtn)
             {
-                throw new ArgumentNullException("element");
+                var element = parent.FindFirst(scope, condition);
+                if (element != null)
+                {
+                    return element;
+                }
             }
 
+            return null;
+        }
+
+        internal static bool TryGetBoundingRectangleCenter(AutomationElement element, out Point point)
+        {
             var rect = element.Current.BoundingRectangle;
             if (rect.IsEmpty)
             {
@@ -101,5 +90,12 @@ namespace Cruciatus.Core
             point.Offset(rect.Width / 2, rect.Height / 2);
             return true;
         }
+
+        internal static bool TryGetClickablePoint(AutomationElement element, out Point point)
+        {
+            return element.TryGetClickablePoint(out point);
+        }
+
+        #endregion
     }
 }

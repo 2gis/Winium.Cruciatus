@@ -10,16 +10,30 @@
 
     public class FirstTab : TabItem
     {
+        #region Constructors and Destructors
+
         public FirstTab(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        public CheckBox CheckBox1
+        {
+            get
+            {
+                return this.FindElementByUid("CheckBox1").ToCheckBox();
+            }
         }
 
         public CruciatusElement SetTextButton
         {
             get
             {
-                return GetByUid("SetTextButton");
+                return this.FindElementByUid("SetTextButton");
             }
         }
 
@@ -27,7 +41,7 @@
         {
             get
             {
-                return GetByUid("TextBox1");
+                return this.FindElementByUid("TextBox1");
             }
         }
 
@@ -35,15 +49,7 @@
         {
             get
             {
-                return GetByUid("TextComboBox").ToComboBox();
-            }
-        }
-
-        public CheckBox CheckBox1
-        {
-            get
-            {
-                return GetByUid("CheckBox1").ToCheckBox();
+                return this.FindElementByUid("TextComboBox").ToComboBox();
             }
         }
 
@@ -51,8 +57,10 @@
         {
             get
             {
-                return GetByUid("TextListBox").ToListBox();
+                return this.FindElementByUid("TextListBox").ToListBox();
             }
         }
+
+        #endregion
     }
 }

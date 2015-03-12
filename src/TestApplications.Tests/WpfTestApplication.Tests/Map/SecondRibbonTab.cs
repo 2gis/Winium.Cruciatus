@@ -10,16 +10,22 @@
 
     public class SecondRibbonTab : TabItem
     {
+        #region Constructors and Destructors
+
         public SecondRibbonTab(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
+        #endregion
+
+        #region Public Properties
+
         public CheckBox RibbonCheckBox
         {
             get
             {
-                return GetByUid("RibbonCheckBox").ToCheckBox();
+                return this.FindElementByUid("RibbonCheckBox").ToCheckBox();
             }
         }
 
@@ -27,8 +33,10 @@
         {
             get
             {
-                return GetByUid("RibbonToggleButton").ToCheckBox();
+                return this.FindElementByUid("RibbonToggleButton").ToCheckBox();
             }
         }
+
+        #endregion
     }
 }

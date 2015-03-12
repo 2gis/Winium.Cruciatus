@@ -1,41 +1,32 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusSettings.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет класс настроек Cruciatus.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Settings
+﻿namespace Cruciatus.Settings
 {
     #region using
-
-    using System.Diagnostics.CodeAnalysis;
 
     using Cruciatus.Core;
     using Cruciatus.Settings.MessageBoxSettings;
 
     #endregion
 
+    /// <summary>
+    /// Класс настроек Cruciatus.
+    /// </summary>
     public class CruciatusSettings
     {
-        private const int DefaultWaitingPeriod = 25;
+        #region Constants
+
+        private const MouseButton DefaultClickButton = MouseButton.Left;
+
+        private const int DefaultScrollBarHeight = 18;
+
+        private const int DefaultScrollBarWidth = 18;
 
         private const int DefaultSearchTimeout = 60000;
 
         private const int DefaultWaitForExitTimeout = 10000;
 
-        private const int DefaultWaitForReadyTimeout = 5000;
+        #endregion
 
-        private const int DefaultWaitForGetValueTimeout = 7500;
-
-        private const int DefaultMouseMoveSpeed = 2500;
-
-        private const int DefaultScrollBarWidth = 18;
-
-        private const int DefaultScrollBarHeight = 18;
-
-        private const MouseButton DefaultClickButton = MouseButton.Left;
+        #region Static Fields
 
         private static readonly MessageBoxButtonUid DefaultMessageBoxButtonUid = new MessageBoxButtonUid();
 
@@ -43,7 +34,11 @@ namespace Cruciatus.Settings
 
         private static readonly SaveFileDialogUid DefaultSaveFileDialogUid = new SaveFileDialogUid();
 
-        private static CruciatusSettings _instance;
+        private static CruciatusSettings instance;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         private CruciatusSettings()
         {
@@ -62,114 +57,103 @@ namespace Cruciatus.Settings
             DefaultSaveFileDialogUid.FileNameEditableComboBox = "FileNameControlHost";
             DefaultSaveFileDialogUid.FileTypeComboBox = "FileTypeControlHost";
 
-            ResetToDefault();
+            this.ResetToDefault();
         }
 
-        /// <summary>
-        /// Возвращает или задает период между запросами во время ожидания в миллисекундах.
-        /// </summary>
-        public int WaitingPeriod { get; set; }
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
-        /// Возвращает или задает время поиска элемента в миллисекундках.
+        /// Флаг автоматического снятия скриншотов. По умолчанию false.
         /// </summary>
-        public int SearchTimeout { get; set; }
+        public bool AutomaticScreenshotCapture { get; set; }
 
         /// <summary>
-        /// Возвращает или задает время ожидания завершения приложения в миллисекундках.
-        /// </summary>
-        public int WaitForExitTimeout { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает время ожидания готовности элемента в миллисекундках.
-        /// </summary>
-        public int WaitForReadyTimeout { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает время ожидания получения свойств элемента в миллисекундках.
-        /// </summary>
-        [SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", Justification = "Reviewed.")]
-        public int WaitForGetValueTimeout { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает скорость передвижения мыши.
-        /// </summary>
-        public int MouseMoveSpeed { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает ширину полосы прокрутки.
-        /// </summary>
-        public int ScrollBarWidth { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает высоту полосы прокрутки.
-        /// </summary>
-        public int ScrollBarHeight { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает кнопку мыши, которой производится нажатие (click).
+        /// Кнопка для клика по умолчанию.
         /// </summary>
         public MouseButton ClickButton { get; set; }
 
         /// <summary>
-        /// Возвращает или задает информацию о уникальных идентификаторах кнопок в MessageBox.
-        /// </summary>
-        public MessageBoxButtonUid MessageBoxButtonUid { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает информацию о уникальных идентификаторах элементов в OpenFileDialog.
-        /// </summary>
-        public OpenFileDialogUid OpenFileDialogUid { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает информацию о уникальных идентификаторах элементов в SaveFileDialog.
-        /// </summary>
-        public SaveFileDialogUid SaveFileDialogUid { get; set; }
-
-        /// <summary>
-        /// Возвращает или задает информацию о типе симулятора клавиатуры.
+        /// Информация о типе симулятора клавиатуры.
         /// </summary>
         public KeyboardSimulatorType KeyboardSimulatorType { get; set; }
 
         /// <summary>
-        /// Возвращает или задает директорию для скриншотов.
+        /// Информация о уникальных идентификаторах кнопок в диалоговом окне MessageBox.
+        /// </summary>
+        public MessageBoxButtonUid MessageBoxButtonUid { get; set; }
+
+        /// <summary>
+        /// Информация о уникальных идентификаторах элементов в OpenFileDialog.
+        /// </summary>
+        public OpenFileDialogUid OpenFileDialogUid { get; set; }
+
+        /// <summary>
+        /// Информация о уникальных идентификаторах элементов в SaveFileDialog.
+        /// </summary>
+        public SaveFileDialogUid SaveFileDialogUid { get; set; }
+
+        /// <summary>
+        /// Директорию для сохранения скриншотов. По умолчанию './Screenshots'.
         /// </summary>
         public string ScreenshotsPath { get; set; }
 
         /// <summary>
-        /// По умолчанию false.
+        /// Высота полосы прокрутки.
         /// </summary>
-        public bool AutomaticScreenshotCapture { get; set; }
+        public int ScrollBarHeight { get; set; }
+
+        /// <summary>
+        /// Ширина полосы прокрутки.
+        /// </summary>
+        public int ScrollBarWidth { get; set; }
+
+        /// <summary>
+        /// Время поиска элемента (миллисекунды).
+        /// </summary>
+        public int SearchTimeout { get; set; }
+
+        /// <summary>
+        /// Время ожидания завершения приложения (миллисекунды).
+        /// </summary>
+        public int WaitForExitTimeout { get; set; }
+
+        #endregion
+
+        #region Properties
 
         internal static CruciatusSettings Instance
         {
             get
             {
-                return _instance ?? (_instance = new CruciatusSettings());
+                return instance ?? (instance = new CruciatusSettings());
             }
         }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
         /// Сбрасывает значения настроек на исходные.
         /// </summary>
         public void ResetToDefault()
         {
-            WaitingPeriod = DefaultWaitingPeriod;
-            SearchTimeout = DefaultSearchTimeout;
-            WaitForExitTimeout = DefaultWaitForExitTimeout;
-            WaitForReadyTimeout = DefaultWaitForReadyTimeout;
-            WaitForGetValueTimeout = DefaultWaitForGetValueTimeout;
-            MouseMoveSpeed = DefaultMouseMoveSpeed;
-            ScrollBarWidth = DefaultScrollBarWidth;
-            ScrollBarHeight = DefaultScrollBarHeight;
-            ClickButton = DefaultClickButton;
-            KeyboardSimulatorType = KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass;
-            ScreenshotsPath = "Screenshots";
-            AutomaticScreenshotCapture = false;
+            this.SearchTimeout = DefaultSearchTimeout;
+            this.WaitForExitTimeout = DefaultWaitForExitTimeout;
+            this.ScrollBarWidth = DefaultScrollBarWidth;
+            this.ScrollBarHeight = DefaultScrollBarHeight;
+            this.ClickButton = DefaultClickButton;
+            this.KeyboardSimulatorType = KeyboardSimulatorType.BasedOnWindowsFormsSendKeysClass;
+            this.ScreenshotsPath = "Screenshots";
+            this.AutomaticScreenshotCapture = false;
 
-            MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
-            OpenFileDialogUid = (OpenFileDialogUid)DefaultOpenFileDialogUid.Clone();
-            SaveFileDialogUid = (SaveFileDialogUid)DefaultSaveFileDialogUid.Clone();
+            this.MessageBoxButtonUid = (MessageBoxButtonUid)DefaultMessageBoxButtonUid.Clone();
+            this.OpenFileDialogUid = (OpenFileDialogUid)DefaultOpenFileDialogUid.Clone();
+            this.SaveFileDialogUid = (SaveFileDialogUid)DefaultSaveFileDialogUid.Clone();
         }
+
+        #endregion
     }
 }

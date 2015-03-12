@@ -9,45 +9,24 @@
     #endregion
 
     [TestFixture]
-    public class CheckThirdTab 
+    public class CheckThirdTab
     {
-        private WpfTestApplicationApp _application;
+        #region Fields
 
-        private ThirdTab _thirdTab;
+        private WpfTestApplicationApp application;
 
-        [TestFixtureSetUp]
-        public void FixtureSetUp()
-        {
-            TestClassHelper.Initialize(out _application);
+        private ThirdTab thirdTab;
 
-            _thirdTab = _application.MainWindow.TabItem3;
-        }
+        #endregion
 
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
-        {
-            TestClassHelper.Cleanup(_application);
-        }
-
-        [SetUp]
-        public void TestSetUp()
-        {
-            _thirdTab.Select();
-        }
-
-        [Test]
-        public void CheckingTabItem3()
-        {
-            _thirdTab.Select();
-            Assert.AreEqual(true, _thirdTab.IsSelection, "Третья вкладка оказалось не выбранной");
-        }
+        #region Public Methods and Operators
 
         [Test]
         public void CheckingOpenFileDialog()
         {
-            _thirdTab.OpenFileDialogButton.Click();
+            this.thirdTab.OpenFileDialogButton.Click();
 
-            var openFileDialog = _application.MainWindow.OpenFileDialog;
+            var openFileDialog = this.application.MainWindow.OpenFileDialog;
             var fileName = openFileDialog.FileNameComboBox.Text();
             Assert.AreEqual("Program.cs", fileName);
 
@@ -57,9 +36,9 @@
         [Test]
         public void CheckingSaveFileDialog()
         {
-            _thirdTab.SaveFileDialogButton.Click();
+            this.thirdTab.SaveFileDialogButton.Click();
 
-            var saveFileDialog = _application.MainWindow.SaveFileDialog;
+            var saveFileDialog = this.application.MainWindow.SaveFileDialog;
             var fileName = saveFileDialog.FileNameComboBox.Text();
             Assert.AreEqual("Program.cs", fileName);
 
@@ -68,5 +47,34 @@
 
             saveFileDialog.CancelButton.Click();
         }
+
+        [Test]
+        public void CheckingTabItem3()
+        {
+            this.thirdTab.Select();
+            Assert.AreEqual(true, this.thirdTab.IsSelection, "Третья вкладка оказалось не выбранной");
+        }
+
+        [TestFixtureSetUp]
+        public void FixtureSetUp()
+        {
+            TestClassHelper.Initialize(out this.application);
+
+            this.thirdTab = this.application.MainWindow.TabItem3;
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            TestClassHelper.Cleanup(this.application);
+        }
+
+        [SetUp]
+        public void TestSetUp()
+        {
+            this.thirdTab.Select();
+        }
+
+        #endregion
     }
 }

@@ -11,10 +11,7 @@
     /// </summary>
     public class OpenFileDialogUid : ICloneable
     {
-        /// <summary>
-        /// Кнопка Открыть.
-        /// </summary>
-        public string OpenButton { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Кнопка Отмена.
@@ -26,14 +23,25 @@
         /// </summary>
         public string FileNameEditableComboBox { get; set; }
 
+        /// <summary>
+        /// Кнопка Открыть.
+        /// </summary>
+        public string OpenButton { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
         public object Clone()
         {
             return new OpenFileDialogUid
-            {
-                OpenButton = OpenButton,
-                CancelButton = CancelButton,
-                FileNameEditableComboBox = FileNameEditableComboBox
-            };
+                       {
+                           OpenButton = this.OpenButton, 
+                           CancelButton = this.CancelButton, 
+                           FileNameEditableComboBox = this.FileNameEditableComboBox
+                       };
         }
+
+        #endregion
     }
 }

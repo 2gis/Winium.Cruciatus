@@ -1,12 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="OpenFileDialog.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет класс для работы с диалоговым окном Microsoft.Win32.OpenFileDialog.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Elements
+﻿namespace Cruciatus.Elements
 {
     #region using
 
@@ -22,27 +14,36 @@ namespace Cruciatus.Elements
     /// </summary>
     public class OpenFileDialog : CruciatusElement
     {
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Конструктор класса по объекту диалогового окна.
+        /// </summary>
+        /// <param name="element">
+        /// Исходный элемент.
+        /// </param>
         public OpenFileDialog(CruciatusElement element)
             : base(element)
         {
         }
 
+        /// <summary>
+        /// Конструторк класса.  Поиск осуществится только при необходимости.
+        /// </summary>
+        /// <param name="parent">
+        /// Родительский элемент.
+        /// </param>
+        /// <param name="getStrategy">
+        /// Стретегия поиска.
+        /// </param>
         public OpenFileDialog(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
-        /// <summary>
-        /// Возвращает кнопку Открыть.
-        /// </summary>
-        public CruciatusElement OpenButton
-        {
-            get
-            {
-                var uid = CruciatusFactory.Settings.OpenFileDialogUid.OpenButton;
-                return Get(By.Uid(TreeScope.Children, uid));
-            }
-        }
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
         /// Возвращает кнопку Отмена.
@@ -52,7 +53,7 @@ namespace Cruciatus.Elements
             get
             {
                 var uid = CruciatusFactory.Settings.OpenFileDialogUid.CancelButton;
-                return Get(By.Uid(TreeScope.Children, uid));
+                return this.FindElement(By.Uid(TreeScope.Children, uid));
             }
         }
 
@@ -64,8 +65,22 @@ namespace Cruciatus.Elements
             get
             {
                 var uid = CruciatusFactory.Settings.OpenFileDialogUid.FileNameEditableComboBox;
-                return Get(By.Uid(TreeScope.Children, uid)).ToComboBox();
+                return this.FindElement(By.Uid(TreeScope.Children, uid)).ToComboBox();
             }
         }
+
+        /// <summary>
+        /// Возвращает кнопку Открыть.
+        /// </summary>
+        public CruciatusElement OpenButton
+        {
+            get
+            {
+                var uid = CruciatusFactory.Settings.OpenFileDialogUid.OpenButton;
+                return this.FindElement(By.Uid(TreeScope.Children, uid));
+            }
+        }
+
+        #endregion
     }
 }

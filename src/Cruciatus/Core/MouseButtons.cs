@@ -1,8 +1,18 @@
 ﻿namespace Cruciatus.Core
 {
+    /// <summary>
+    /// Перечисление поддерживаемых кнопок мыши.
+    /// </summary>
     public enum MouseButton
     {
-        Left,
+        /// <summary>
+        /// Левая кнопка мыши.
+        /// </summary>
+        Left, 
+
+        /// <summary>
+        /// Правая кнопка мыши.
+        /// </summary>
         Right
     }
 }

@@ -9,10 +9,16 @@
 
     public class MainWindow : CruciatusElement
     {
+        #region Constructors and Destructors
+
         public MainWindow(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
+
+        #endregion
+
+        #region Public Properties
 
         public FirstTab TabItem1
         {
@@ -29,5 +35,7 @@
                 return new SecondTab(this, By.Name("TabItem2"));
             }
         }
+
+        #endregion
     }
 }

@@ -11,10 +11,7 @@
     /// </summary>
     public class SaveFileDialogUid : ICloneable
     {
-        /// <summary>
-        /// Кнопка Сохранить.
-        /// </summary>
-        public string SaveButton { get; set; }
+        #region Public Properties
 
         /// <summary>
         /// Кнопка Отмена.
@@ -31,15 +28,26 @@
         /// </summary>
         public string FileTypeComboBox { get; set; }
 
+        /// <summary>
+        /// Кнопка Сохранить.
+        /// </summary>
+        public string SaveButton { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
         public object Clone()
         {
             return new SaveFileDialogUid
-            {
-                SaveButton = SaveButton,
-                CancelButton = CancelButton,
-                FileNameEditableComboBox = FileNameEditableComboBox,
-                FileTypeComboBox = FileTypeComboBox
-            };
+                       {
+                           SaveButton = this.SaveButton, 
+                           CancelButton = this.CancelButton, 
+                           FileNameEditableComboBox = this.FileNameEditableComboBox, 
+                           FileTypeComboBox = this.FileTypeComboBox
+                       };
         }
+
+        #endregion
     }
 }

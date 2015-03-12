@@ -1,12 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusElement.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет базу для элементов управления.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Elements
+﻿namespace Cruciatus.Elements
 {
     #region using
 
@@ -23,21 +15,30 @@ namespace Cruciatus.Elements
     #endregion
 
     /// <summary>
-    /// Базовый класс для элементов.
+    /// Базовый элемент управления.
     /// </summary>
     public class CruciatusElement
     {
+        #region Static Fields
+
         protected static readonly Logger Logger = CruciatusFactory.Logger;
 
-        private AutomationElement _instance;
+        #endregion
 
-        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By strategy)
-        {
-            Parent = parent;
-            Instanse = element;
-            GetStrategy = strategy;
-        }
+        #region Fields
 
+        private AutomationElement instance;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Создает экземпляр элемента.
+        /// </summary>
+        /// <param name="element">
+        /// Исходный элемент.
+        /// </param>
         public CruciatusElement(CruciatusElement element)
         {
             if (element == null)
@@ -45,11 +46,20 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("element");
             }
 
-            Instanse = element.Instanse;
-            Parent = element;
-            GetStrategy = element.GetStrategy;
+            this.Instance = element.Instance;
+            this.Parent = element;
+            this.GetStrategy = element.GetStrategy;
         }
 
+        /// <summary>
+        /// Создает экземпляр элемента. Поиск осуществится только при необходимости.
+        /// </summary>
+        /// <param name="parent">
+        /// Родительский элемент.
+        /// </param>
+        /// <param name="getStrategy">
+        /// Стратегия поиска элемента.
+        /// </param>
         public CruciatusElement(CruciatusElement parent, By getStrategy)
         {
             if (parent == null)
@@ -57,90 +67,120 @@ namespace Cruciatus.Elements
                 throw new ArgumentNullException("parent");
             }
 
-            Parent = parent;
-            GetStrategy = getStrategy;
+            this.Parent = parent;
+            this.GetStrategy = getStrategy;
         }
 
-        internal AutomationElement Instanse
+        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By strategy)
+        {
+            this.Parent = parent;
+            this.Instance = element;
+            this.GetStrategy = strategy;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// Стратегия поиска элемента.
+        /// </summary>
+        public By GetStrategy { get; internal set; }
+
+        /// <summary>
+        /// Свойства элемента.
+        /// </summary>
+        public CruciatusElementProperties Properties
         {
             get
             {
-                if (_instance == null)
+                return new CruciatusElementProperties(this.Instance);
+            }
+        }
+
+        #endregion
+
+        #region Properties
+
+        internal AutomationElement Instance
+        {
+            get
+            {
+                if (this.instance == null)
                 {
-                    _instance = CruciatusCommand.FindFirst(Parent.Instanse, GetStrategy);
+                    this.instance = CruciatusCommand.FindFirst(this.Parent.Instance, this.GetStrategy);
                 }
 
-                if (_instance == null)
+                if (this.instance == null)
                 {
                     throw new CruciatusException("ELEMENT NOT FOUND");
                 }
 
-                return _instance;
+                return this.instance;
             }
 
             set
             {
-                _instance = value;
+                this.instance = value;
             }
         }
 
         internal CruciatusElement Parent { get; set; }
 
-        public By GetStrategy { get; internal set; }
+        #endregion
 
-        public CruciatusElementProperties Properties
-        {
-            get
-            {
-                return new CruciatusElementProperties(Instanse);
-            }
-        }
+        #region Public Methods and Operators
 
-        public virtual CruciatusElement GetByUid(string value)
-        {
-            return Get(By.Uid(value));
-        }
-
-        public virtual CruciatusElement GetByName(string value)
-        {
-            return Get(By.Name(value));
-        }
-
-        public virtual CruciatusElement GetByPath(string value)
-        {
-            return Get(By.Path(value));
-        }
-
-        public virtual CruciatusElement Get(By strategy)
-        {
-            return CruciatusCommand.FindFirst(this, strategy);
-        }
-
-        public IEnumerable<CruciatusElement> GetAll(By strategy)
-        {
-            return CruciatusCommand.FindAll(this, strategy);
-        }
-
+        /// <summary>
+        /// Клик по элементу.
+        /// </summary>
         public void Click()
         {
-            Click(CruciatusFactory.Settings.ClickButton);
+            this.Click(CruciatusFactory.Settings.ClickButton);
         }
 
+        /// <summary>
+        /// Клик по элементу.
+        /// </summary>
+        /// <param name="button">
+        /// Используемая кнопка мыши.
+        /// </param>
         public void Click(MouseButton button)
         {
-            Click(button, ClickStrategies.None, false);
+            this.Click(button, ClickStrategies.None, false);
         }
 
+        /// <summary>
+        /// Клик по элементу.
+        /// </summary>
+        /// <param name="button">
+        /// Используемая кнопка мыши.
+        /// </param>
+        /// <param name="strategy">
+        /// Стратегия клика.
+        /// </param>
         public void Click(MouseButton button, ClickStrategies strategy)
         {
-            Click(button, strategy, false);
+            this.Click(button, strategy, false);
         }
 
+        /// <summary>
+        /// Клик по элементу.
+        /// </summary>
+        /// <param name="button">
+        /// Используемая кнопка мыши.
+        /// </param>
+        /// <param name="strategy">
+        /// Стратегия клика.
+        /// </param>
+        /// <param name="doubleClick">
+        /// Флаг двойного клика.
+        /// </param>
         public void Click(MouseButton button, ClickStrategies strategy, bool doubleClick)
         {
-            if (!Instanse.Current.IsEnabled)
+            if (!this.Instance.Current.IsEnabled)
             {
-                Logger.Error("Element '{0}' not enabled. Click failed.", ToString());
+                Logger.Error("Element '{0}' not enabled. Click failed.", this.ToString());
                 CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new ElementNotEnabledException("NOT CLICK");
             }
@@ -174,44 +214,139 @@ namespace Cruciatus.Elements
                 }
             }
 
-            Logger.Error("Click on '{0}' element failed", ToString());
+            Logger.Error("Click on '{0}' element failed", this.ToString());
             throw new CruciatusException("NOT CLICK");
         }
 
+        /// <summary>
+        /// Двойной клик по элементу.
+        /// </summary>
         public void DoubleClick()
         {
-            DoubleClick(CruciatusFactory.Settings.ClickButton);
+            this.DoubleClick(CruciatusFactory.Settings.ClickButton);
         }
 
+        /// <summary>
+        /// Двойной клик по элементу.
+        /// </summary>
+        /// <param name="button">
+        /// Используемая кнопка мыши.
+        /// </param>
         public void DoubleClick(MouseButton button)
         {
-            DoubleClick(button, ClickStrategies.None);
+            this.DoubleClick(button, ClickStrategies.None);
         }
 
+        /// <summary>
+        /// Двойной клик по элементу.
+        /// </summary>
+        /// <param name="button">
+        /// Используемая кнопка мыши.
+        /// </param>
+        /// <param name="strategy">
+        /// Стратегия клика.
+        /// </param>
         public void DoubleClick(MouseButton button, ClickStrategies strategy)
         {
-            Click(button, strategy, true);
+            this.Click(button, strategy, true);
         }
 
+        /// <summary>
+        /// Поиск элемента.
+        /// Возвращает целевой элемент, либо null, если он не найден.
+        /// </summary>
+        /// <param name="strategy">
+        /// Стратегия поиска.
+        /// </param>
+        public virtual CruciatusElement FindElement(By strategy)
+        {
+            return CruciatusCommand.FindFirst(this, strategy);
+        }
+
+        /// <summary>
+        /// Поиск элемента по Name.
+        /// Возвращает целевой элемент, либо null, если он не найден.
+        /// </summary>
+        /// <param name="value">
+        /// Имя элемента.
+        /// </param>
+        public virtual CruciatusElement FindElementByName(string value)
+        {
+            return this.FindElement(By.Name(value));
+        }
+
+        /// <summary>
+        /// Поиск элемента по заданному Path. Например: /#ElementUid//%ElementName, 
+        /// где '/' - в детях, '//' - в глубину; # - по AutomationId, % - по Name.
+        /// </summary>
+        /// <param name="value">
+        /// Строка в требуемом формате.
+        /// </param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming",
+            "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "ByPath", Justification = "Reviewed.")]
+        public virtual CruciatusElement FindElementByPath(string value)
+        {
+            return this.FindElement(By.Path(value));
+        }
+
+        /// <summary>
+        /// Поиск элемента по AutomationId.
+        /// Возвращает целевой элемент, либо null, если он не найден.
+        /// </summary>
+        /// <param name="value">
+        /// Уникальный идентификатор элемента.
+        /// </param>
+        public virtual CruciatusElement FindElementByUid(string value)
+        {
+            return this.FindElement(By.Uid(value));
+        }
+
+        /// <summary>
+        /// Поиск элементов.
+        /// Возвращает целевой элемент, либо null, если он не найден.
+        /// </summary>
+        /// <param name="strategy">
+        /// Стратегия поиска.
+        /// </param>
+        public IEnumerable<CruciatusElement> FindElements(By strategy)
+        {
+            return CruciatusCommand.FindAll(this, strategy);
+        }
+
+        /// <summary>
+        /// Установка текста.
+        /// </summary>
+        /// <param name="text">
+        /// Целевой текст.
+        /// </param>
         public void SetText(string text)
         {
-            if (!Instanse.Current.IsEnabled)
+            if (!this.Instance.Current.IsEnabled)
             {
-                Logger.Error("Element '{0}' not enabled. Set text failed.", ToString());
+                Logger.Error("Element '{0}' not enabled. Set text failed.", this.ToString());
                 CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
                 throw new ElementNotEnabledException("NOT SET TEXT");
             }
 
-            Click(MouseButton.Left, ClickStrategies.ClickablePoint | ClickStrategies.BoundingRectangleCenter);
+            this.Click(MouseButton.Left, ClickStrategies.ClickablePoint | ClickStrategies.BoundingRectangleCenter);
 
             CruciatusFactory.Keyboard.SendCtrlA().SendBackspace().SendText(text);
         }
 
+        /// <summary>
+        /// Возвращает текст элемента.
+        /// </summary>
         public string Text()
         {
-            return Text(GetTextStrategies.None);
+            return this.Text(GetTextStrategies.None);
         }
 
+        /// <summary>
+        /// Возвращает текст элемента.
+        /// </summary>
+        /// <param name="strategy">
+        /// Стратегия получения элемента.
+        /// </param>
         public string Text(GetTextStrategies strategy)
         {
             if (strategy == GetTextStrategies.None)
@@ -236,21 +371,27 @@ namespace Cruciatus.Elements
                 }
             }
 
-            Logger.Error("Get text from '{0}' element failed.", ToString());
+            Logger.Error("Get text from '{0}' element failed.", this.ToString());
             CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
             throw new CruciatusException("NO GET TEXT");
         }
 
+        /// <summary>
+        /// Возвращает строковое представление элемента.
+        /// </summary>
         public override string ToString()
         {
-            var typeName = Instanse.Current.ControlType.ProgrammaticName;
-            var uid = Instanse.Current.AutomationId;
-            var name = Instanse.Current.Name;
-            var str = string.Format("{0}{1}{2}", 
-                                    "type: " + typeName, 
-                                    string.IsNullOrEmpty(uid) ? string.Empty : ", uid: " + uid, 
-                                    string.IsNullOrEmpty(name) ? string.Empty : ", name: " + name);
+            var typeName = this.Instance.Current.ControlType.ProgrammaticName;
+            var uid = this.Instance.Current.AutomationId;
+            var name = this.Instance.Current.Name;
+            var str = string.Format(
+                "{0}{1}{2}", 
+                "type: " + typeName, 
+                string.IsNullOrEmpty(uid) ? string.Empty : ", uid: " + uid, 
+                string.IsNullOrEmpty(name) ? string.Empty : ", name: " + name);
             return str;
         }
+
+        #endregion
     }
 }

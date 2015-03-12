@@ -10,32 +10,22 @@
 
     public class SecondTab : TabItem
     {
+        #region Constructors and Destructors
+
         public SecondTab(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
+        #endregion
+
+        #region Public Properties
+
         public CruciatusElement ChangeEnabledButton
         {
             get
             {
-                return GetByUid("ChangeEnabledButton");
-            }
-        }
-
-        public CruciatusElement TextBox2
-        {
-            get
-            {
-                return GetByUid("TextBox2");
-            }
-        }
-
-        public ComboBox CheckComboBox
-        {
-            get
-            {
-                return GetByUid("CheckComboBox").ToComboBox();
+                return this.FindElementByUid("ChangeEnabledButton");
             }
         }
 
@@ -43,7 +33,15 @@
         {
             get
             {
-                return GetByUid("CheckBox2").ToCheckBox();
+                return this.FindElementByUid("CheckBox2").ToCheckBox();
+            }
+        }
+
+        public ComboBox CheckComboBox
+        {
+            get
+            {
+                return this.FindElementByUid("CheckComboBox").ToComboBox();
             }
         }
 
@@ -51,8 +49,18 @@
         {
             get
             {
-                return GetByUid("CheckListBox").ToListBox();
+                return this.FindElementByUid("CheckListBox").ToListBox();
             }
         }
+
+        public CruciatusElement TextBox2
+        {
+            get
+            {
+                return this.FindElementByUid("TextBox2");
+            }
+        }
+
+        #endregion
     }
 }

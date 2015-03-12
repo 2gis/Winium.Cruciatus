@@ -1,18 +1,11 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CruciatusCommand.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет команды фреймворка Cruciatus.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus
+﻿namespace Cruciatus
 {
     #region using
 
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Automation;
 
     using Cruciatus.Core;
@@ -22,15 +15,122 @@ namespace Cruciatus
 
     using NLog;
 
-    using Point = System.Windows.Point;
-
     #endregion
 
-    public static class CruciatusCommand
+    internal static class CruciatusCommand
     {
+        #region Static Fields
+
         private static readonly Logger Logger = CruciatusFactory.Logger;
 
-        public static bool TryClickOnClickablePoint(MouseButton button, CruciatusElement element, bool doubleClick)
+        #endregion
+
+        #region Methods
+
+        internal static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy)
+        {
+            return FindAll(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
+        }
+
+        internal static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy, int timeout)
+        {
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+
+            var element = parent.Instance;
+            var info = getStrategy.FindInfoList;
+            for (var i = 0; i < info.Count - 1; ++i)
+            {
+                element = AutomationElementHelper.FindFirst(element, info[i].TreeScope, info[i].Condition, timeout);
+                if (element == null)
+                {
+                    Logger.Error("Element '{0}' not found", info);
+                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
+                    throw new CruciatusException("ELEMENT NOT FOUND");
+                }
+            }
+
+            var lastIinfo = getStrategy.FindInfoList.Last();
+            var result = AutomationElementHelper.FindAll(element, lastIinfo.TreeScope, lastIinfo.Condition);
+            return result.Select(e => new CruciatusElement(parent, e, getStrategy));
+        }
+
+        internal static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy)
+        {
+            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
+        }
+
+        internal static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy, int timeout)
+        {
+            if (parent == null)
+            {
+                throw new ArgumentNullException("parent");
+            }
+
+            var element = FindFirst(parent.Instance, getStrategy, timeout);
+            return element == null ? null : new CruciatusElement(parent, element, getStrategy);
+        }
+
+        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy)
+        {
+            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
+        }
+
+        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy, int timeout)
+        {
+            var element = parent;
+            foreach (var info in getStrategy.FindInfoList)
+            {
+                element = AutomationElementHelper.FindFirst(element, info.TreeScope, info.Condition, timeout);
+                if (element == null)
+                {
+                    Logger.Info("Element '{0}' not found", info);
+                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
+                    return null;
+                }
+            }
+
+            return element;
+        }
+
+        internal static bool TryClickOnBoundingRectangleCenter(
+            MouseButton button, 
+            CruciatusElement element, 
+            bool doubleClick)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element");
+            }
+
+            Point point;
+            if (!AutomationElementHelper.TryGetBoundingRectangleCenter(element.Instance, out point))
+            {
+                Logger.Debug("Element '{0}' have empty BoundingRectangle", element);
+                return false;
+            }
+
+            if (doubleClick)
+            {
+                CruciatusFactory.Mouse.DoubleClick(button, point.X, point.Y);
+            }
+            else
+            {
+                CruciatusFactory.Mouse.Click(button, point.X, point.Y);
+            }
+
+            Logger.Info(
+                "{0} on '{1}' element at ({2}, {3}) BoundingRectangle center", 
+                doubleClick ? "DoubleClick" : "Click", 
+                element, 
+                point.X, 
+                point.Y);
+            return true;
+        }
+
+        internal static bool TryClickOnClickablePoint(MouseButton button, CruciatusElement element, bool doubleClick)
         {
             if (element == null)
             {
@@ -55,40 +155,16 @@ namespace Cruciatus
                 CruciatusFactory.Mouse.Click(button, x, y);
             }
 
-            Logger.Info("{0} on '{1}' element at ({2}, {3}) ClickablePoint",
-                        doubleClick ? "DoubleClick" : "Click", element, x, y);
+            Logger.Info(
+                "{0} on '{1}' element at ({2}, {3}) ClickablePoint", 
+                doubleClick ? "DoubleClick" : "Click", 
+                element, 
+                x, 
+                y);
             return true;
         }
 
-        public static bool TryClickOnBoundingRectangleCenter(MouseButton button, CruciatusElement element, bool doubleClick)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            Point point;
-            if (!AutomationElementHelper.TryGetBoundingRectangleCenter(element.Instanse, out point))
-            {
-                Logger.Debug("Element '{0}' have empty BoundingRectangle", element);
-                return false;
-            }
-
-            if (doubleClick)
-            {
-                CruciatusFactory.Mouse.DoubleClick(button, point.X, point.Y);
-            }
-            else
-            {
-                CruciatusFactory.Mouse.Click(button, point.X, point.Y);
-            }
-
-            Logger.Info("{0} on '{1}' element at ({2}, {3}) BoundingRectangle center",
-                        doubleClick ? "DoubleClick" : "Click", element, point.X, point.Y);
-            return true;
-        }
-
-        public static bool TryClickUsingInvokePattern(CruciatusElement element, bool doubleClick)
+        internal static bool TryClickUsingInvokePattern(CruciatusElement element, bool doubleClick)
         {
             if (element == null)
             {
@@ -96,7 +172,7 @@ namespace Cruciatus
             }
 
             object basePattern;
-            if (element.Instanse.TryGetCurrentPattern(InvokePattern.Pattern, out basePattern))
+            if (element.Instance.TryGetCurrentPattern(InvokePattern.Pattern, out basePattern))
             {
                 string cmd;
                 var invokePattern = (InvokePattern)basePattern;
@@ -120,7 +196,7 @@ namespace Cruciatus
             return false;
         }
 
-        public static bool TryGetTextUsingTextPattern(CruciatusElement element, out string text)
+        internal static bool TryGetTextUsingTextPattern(CruciatusElement element, out string text)
         {
             if (element == null)
             {
@@ -128,7 +204,7 @@ namespace Cruciatus
             }
 
             object pattern;
-            if (element.Instanse.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
+            if (element.Instance.TryGetCurrentPattern(TextPattern.Pattern, out pattern))
             {
                 var textPattern = pattern as TextPattern;
                 if (textPattern != null)
@@ -144,7 +220,7 @@ namespace Cruciatus
             return false;
         }
 
-        public static bool TryGetTextUsingValuePattern(CruciatusElement element, out string text)
+        internal static bool TryGetTextUsingValuePattern(CruciatusElement element, out string text)
         {
             if (element == null)
             {
@@ -152,7 +228,7 @@ namespace Cruciatus
             }
 
             object pattern;
-            if (element.Instanse.TryGetCurrentPattern(ValuePattern.Pattern, out pattern))
+            if (element.Instance.TryGetCurrentPattern(ValuePattern.Pattern, out pattern))
             {
                 var valuePattern = pattern as ValuePattern;
                 if (valuePattern != null)
@@ -168,72 +244,6 @@ namespace Cruciatus
             return false;
         }
 
-        public static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy)
-        {
-            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
-        }
-
-        public static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy, int timeout)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            var element = FindFirst(parent.Instanse, getStrategy, timeout);
-            return element == null ? null : new CruciatusElement(parent, element, getStrategy);
-        }
-
-        public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy)
-        {
-            return FindAll(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
-        }
-
-        public static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy, int timeout)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            var element = parent.Instanse;
-            var info = getStrategy.FindInfoList;
-            for (var i = 0; i < info.Count - 1; ++i)
-            {
-                element = AutomationElementHelper.FindFirst(element, info[i].TreeScope, info[i].Condition, timeout);
-                if (element == null)
-                {
-                    Logger.Error("Element '{0}' not found", info);
-                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
-                    throw new CruciatusException("ELEMENT NOT FOUND");
-                }
-            }
-
-            var lastIinfo = getStrategy.FindInfoList.Last();
-            var result = AutomationElementHelper.FindAll(element, lastIinfo.TreeScope, lastIinfo.Condition);
-            return result.Select(e => new CruciatusElement(parent, e, getStrategy));
-        }
-
-        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy)
-        {
-            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
-        }
-
-        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy, int timeout)
-        {
-            var element = parent;
-            foreach (var info in getStrategy.FindInfoList)
-            {
-                element = AutomationElementHelper.FindFirst(element, info.TreeScope, info.Condition, timeout);
-                if (element == null)
-                {
-                    Logger.Info("Element '{0}' not found", info);
-                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
-                    return null;
-                }
-            }
-
-            return element;
-        }
+        #endregion
     }
 }

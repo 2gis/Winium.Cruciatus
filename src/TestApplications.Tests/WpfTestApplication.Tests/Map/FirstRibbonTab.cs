@@ -10,24 +10,22 @@
 
     public class FirstRibbonTab : TabItem
     {
+        #region Constructors and Destructors
+
         public FirstRibbonTab(CruciatusElement parent, By getStrategy)
             : base(parent, getStrategy)
         {
         }
 
+        #endregion
+
+        #region Public Properties
+
         public CruciatusElement RibbonButton
         {
             get
             {
-                return GetByUid("RibbonButton");
-            }
-        }
-
-        public ComboBox RibbonTextComboBox
-        {
-            get
-            {
-                return GetByUid("RibbonTextComboBox").ToComboBox();
+                return this.FindElementByUid("RibbonButton");
             }
         }
 
@@ -35,8 +33,18 @@
         {
             get
             {
-                return GetByUid("RibbonCheckComboBox").ToComboBox();
+                return this.FindElementByUid("RibbonCheckComboBox").ToComboBox();
             }
         }
+
+        public ComboBox RibbonTextComboBox
+        {
+            get
+            {
+                return this.FindElementByUid("RibbonTextComboBox").ToComboBox();
+            }
+        }
+
+        #endregion
     }
 }

@@ -1,17 +1,8 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AutomationElementExtension.cs" company="2GIS">
-//   Cruciatus
-// </copyright>
-// <summary>
-//   Представляет расширения для AutomationElement.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Cruciatus.Extensions
+﻿namespace Cruciatus.Extensions
 {
     #region using
 
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Automation;
 
@@ -20,55 +11,14 @@ namespace Cruciatus.Extensions
 
     #endregion
 
-    public static class AutomationElementExtension
+    /// <summary>
+    /// Набор расширений для объектов AutomationElement.
+    /// </summary>
+    internal static class AutomationElementExtension
     {
-        /// <summary>
-        /// Определяет, включает ли элемент точку клика заданного элемента.
-        /// </summary>
-        /// <param name="externalElement">
-        /// Текущий элемент.
-        /// </param>
-        /// <param name="internalElement">
-        /// Проверяемый элемент.
-        /// </param>
-        /// <returns>
-        /// Значение true если элемент включает точку клика заданного элемента; в противном случае значение - false.
-        /// </returns>
-        /// <exception cref="OperationCanceledException">
-        /// Операция прервана из-за ошибки.
-        /// </exception>
-        public static bool ContainsClickablePoint(this AutomationElement externalElement, 
-                                                  AutomationElement internalElement)
-        {
-            try
-            {
-                Point point;
-                if (!AutomationElementHelper.TryGetClickablePoint(internalElement, out point))
-                {
-                    if (!AutomationElementHelper.TryGetBoundingRectangleCenter(internalElement, out point))
-                    {
-                        throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
-                    }
-                }
+        #region Methods
 
-                var externalRect = externalElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
-                
-                return externalRect.Contains(point);
-            }
-            catch (Exception exc)
-            {
-                throw new OperationCanceledException("Не удалось определить вхождение одного элемента в другой.\n", exc);
-            }
-        }
-
-        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement)
-        {
-            return ClickablePointUnder(currentElement, rectElement, null);
-        }
-
-        public static bool ClickablePointUnder(this AutomationElement currentElement, AutomationElement rectElement, 
-                                               ScrollPattern scrollPattern)
+        internal static bool ClickablePointLeft(this AutomationElement currentElement, AutomationElement rectElement)
         {
             try
             {
@@ -84,21 +34,17 @@ namespace Cruciatus.Extensions
 
                 var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
 
-                if (scrollPattern == null || scrollPattern.Current.HorizontalScrollPercent < 0)
-                {
-                    return point.Y > rect.Bottom;
-                }
-
-                return point.Y > rect.Bottom - CruciatusFactory.Settings.ScrollBarHeight;
+                return point.X < rect.Left;
             }
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", exc);
+                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    exc);
             }
         }
 
-        public static bool ClickablePointOver(this AutomationElement currentElement, AutomationElement rectElement)
+        internal static bool ClickablePointOver(this AutomationElement currentElement, AutomationElement rectElement)
         {
             try
             {
@@ -119,17 +65,15 @@ namespace Cruciatus.Extensions
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", exc);
+                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    exc);
             }
         }
 
-        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement)
-        {
-            return ClickablePointRight(currentElement, rectElement, null);
-        }
-
-        public static bool ClickablePointRight(this AutomationElement currentElement, AutomationElement rectElement, 
-                                               ScrollPattern scrollPattern)
+        internal static bool ClickablePointRight(
+            this AutomationElement currentElement, 
+            AutomationElement rectElement, 
+            ScrollPattern scrollPattern)
         {
             try
             {
@@ -155,11 +99,15 @@ namespace Cruciatus.Extensions
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", exc);
+                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    exc);
             }
         }
 
-        public static bool ClickablePointLeft(this AutomationElement currentElement, AutomationElement rectElement)
+        internal static bool ClickablePointUnder(
+            this AutomationElement currentElement, 
+            AutomationElement rectElement, 
+            ScrollPattern scrollPattern)
         {
             try
             {
@@ -175,72 +123,49 @@ namespace Cruciatus.Extensions
 
                 var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
 
-                return point.X < rect.Left;
+                if (scrollPattern == null || scrollPattern.Current.HorizontalScrollPercent < 0)
+                {
+                    return point.Y > rect.Bottom;
+                }
+
+                return point.Y > rect.Bottom - CruciatusFactory.Settings.ScrollBarHeight;
             }
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", exc);
+                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    exc);
             }
         }
 
-        /// <summary>
-        /// Возвращает значение заданного свойства, приведенное к указанному типу.
-        /// </summary>
-        /// <param name="element">
-        /// Текущий элемент, свойство которого необходимо получить.
-        /// </param>
-        /// <param name="property">
-        /// Свойство, которое необходимо получить.
-        /// </param>
-        /// <typeparam name="TOut">
-        /// Тип значения получаемого свойства.
-        /// </typeparam>
-        /// <returns>
-        /// Значение заданного свойства, приведенное к указанному типу.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// Элемент не поддерживает данное свойство.
-        /// </exception>
-        /// <exception cref="InvalidCastException">
-        /// Нельзя привести значение свойства к указанному типу.
-        /// </exception>
-        [SuppressMessage("Microsoft.Design", 
-            "CA1062:Validate arguments of public methods", 
-            Justification = "First parameter in extension cannot be null.")]
-        public static TOut GetPropertyValue<TOut>(this AutomationElement element, AutomationProperty property)
+        internal static bool ContainsClickablePoint(
+            this AutomationElement externalElement, 
+            AutomationElement internalElement)
         {
-            if (property == null)
+            try
             {
-                throw new ArgumentNullException("property");
-            }
+                Point point;
+                if (!AutomationElementHelper.TryGetClickablePoint(internalElement, out point))
+                {
+                    if (!AutomationElementHelper.TryGetBoundingRectangleCenter(internalElement, out point))
+                    {
+                        throw new OperationCanceledException(
+                            "Не удалось определить расположение элемента относительно точки.\n");
+                    }
+                }
 
-            var obj = element.GetCurrentPropertyValue(property, true);
-            if (obj == AutomationElement.NotSupported)
+                var externalRect = externalElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+
+                return externalRect.Contains(point);
+            }
+            catch (Exception exc)
             {
-                var err = string.Format("Элемент не поддерживает свойство {0}.\n", property.ProgrammaticName);
-                throw new NotSupportedException(err);
+                throw new OperationCanceledException("Не удалось определить вхождение одного элемента в другой.\n", exc);
             }
-
-            if ((obj is TOut) == false)
-            {
-                var err = string.Format("Преобразование {0} к {1} не поддерживается.\n", obj.GetType(), typeof(TOut));
-                throw new InvalidCastException(err);
-            }
-
-            return (TOut)obj;
         }
 
-        [SuppressMessage("Microsoft.Design",
-            "CA1062:Validate arguments of public methods",
-            Justification = "First parameter in extension cannot be null.")]
-        public static T GetPattern<T>(this AutomationElement element, AutomationPattern pattern) where T : class
+        internal static T GetPattern<T>(this AutomationElement element, AutomationPattern pattern) where T : class
         {
-            if (pattern == null)
-            {
-                throw new ArgumentNullException("pattern");
-            }
-
             object foundPattern;
             if (element.TryGetCurrentPattern(pattern, out foundPattern))
             {
@@ -250,5 +175,23 @@ namespace Cruciatus.Extensions
             var msg = string.Format("Element does not support {0}", typeof(T).Name);
             throw new CruciatusException(msg);
         }
+
+        internal static TOut GetPropertyValue<TOut>(this AutomationElement element, AutomationProperty property)
+        {
+            var obj = element.GetCurrentPropertyValue(property, true);
+            if (obj == AutomationElement.NotSupported)
+            {
+                throw new NotSupportedException();
+            }
+
+            if (obj is TOut)
+            {
+                return (TOut)obj;
+            }
+
+            throw new InvalidCastException(obj.GetType().ToString());
+        }
+
+        #endregion
     }
 }

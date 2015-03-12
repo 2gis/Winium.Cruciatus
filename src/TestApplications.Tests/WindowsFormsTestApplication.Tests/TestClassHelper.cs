@@ -5,14 +5,21 @@
     using System;
     using System.Configuration;
 
-    using WindowsFormsTestApplication.Tests.Map;
-
     using NUnit.Framework;
+
+    using WindowsFormsTestApplication.Tests.Map;
 
     #endregion
 
     public static class TestClassHelper
     {
+        #region Public Methods and Operators
+
+        public static void Cleanup(WindowsFormsTestApplicationApp application)
+        {
+            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WindowsFormsTestApplication.");
+        }
+
         public static void Initialize(out WindowsFormsTestApplicationApp application)
         {
             var appsFolderEnvVar = ConfigurationManager.AppSettings.Get("AppsFolderEnvVar");
@@ -22,9 +29,6 @@
             application.Start();
         }
 
-        public static void Cleanup(WindowsFormsTestApplicationApp application)
-        {
-            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WindowsFormsTestApplication.");
-        }
+        #endregion
     }
 }
