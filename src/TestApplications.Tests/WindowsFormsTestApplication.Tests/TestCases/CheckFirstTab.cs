@@ -2,11 +2,11 @@
 {
     #region using
 
-    using Cruciatus.Core;
-
     using NUnit.Framework;
 
     using WindowsFormsTestApplication.Tests.Map;
+
+    using Winium.Cruciatus.Core;
 
     #endregion
 

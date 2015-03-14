@@ -2,10 +2,10 @@
 {
     #region using
 
-    using Cruciatus.Core;
-    using Cruciatus.Elements;
-
     using NUnit.Framework;
+
+    using Winium.Cruciatus.Core;
+    using Winium.Cruciatus.Elements;
 
     using WpfTestApplication.Tests.Map;
 

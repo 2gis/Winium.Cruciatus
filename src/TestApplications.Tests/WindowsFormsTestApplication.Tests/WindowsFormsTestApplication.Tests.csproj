@@ -56,9 +56,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Cruciatus\Cruciatus.csproj">
+    <ProjectReference Include="..\..\Winium.Cruciatus\Winium.Cruciatus.csproj">
       <Project>{45982320-d316-4afb-b350-15eae32f4d4c}</Project>
-      <Name>Cruciatus</Name>
+      <Name>Winium.Cruciatus</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
