@@ -2,8 +2,8 @@
 {
     #region using
 
-    using Cruciatus;
-    using Cruciatus.Core;
+    using Winium.Cruciatus;
+    using Winium.Cruciatus.Core;
 
     #endregion
 

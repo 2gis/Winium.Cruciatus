@@ -2,9 +2,9 @@
 {
     #region using
 
-    using Cruciatus.Core;
-    using Cruciatus.Elements;
-    using Cruciatus.Extensions;
+    using Winium.Cruciatus.Core;
+    using Winium.Cruciatus.Elements;
+    using Winium.Cruciatus.Extensions;
 
     #endregion
 

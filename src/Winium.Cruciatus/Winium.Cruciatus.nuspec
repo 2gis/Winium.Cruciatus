@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>2.0.0</version>
+    <authors>2GIS</authors>
+    <owners>2GIS</owners>
+    <projectUrl>https://github.com/2gis/Winium.Cruciatus</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>
+	</releaseNotes>
+    <copyright>Copyright @ 2015</copyright>
+    <tags></tags>
+  </metadata>
+</package>

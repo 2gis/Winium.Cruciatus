@@ -4,8 +4,8 @@
 
     using System.Windows.Automation;
 
-    using Cruciatus;
-    using Cruciatus.Core;
+    using Winium.Cruciatus;
+    using Winium.Cruciatus.Core;
 
     #endregion
 
