@@ -1,98 +1,89 @@
-# Cruciatus
+# Winium for Desktop
+[![Inner Server NuGet downloads](https://img.shields.io/nuget/dt/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
+[![Inner Server NuGet version](https://img.shields.io/nuget/v/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
 
-Cruciatus is a easy to use framework for UI test automation of WPF based applications. It is using Microsoft UIAutomation technology. 
+<p align="center">
+<img src="https://raw.githubusercontent.com/2gis/Winium.StoreApps/assets/winium.png" alt="Winium.Cruciatus is C# Framework for automated testing of Windows application based on WinFroms and WPF platforms">
+</p>
 
-## Status
+Winium.Cruciatus is an open source C# Framework for automated testing of Windows application based on WinFroms and WPF platforms.
 
-Working prototype.
+Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [System.Windows.Automation](https://msdn.microsoft.com/en-us/library/system.windows.automation(v=vs.110).aspx) namespace.
 
-## Getting Started
+## Why Winium.Cruciatus?
 
-1) Download `Cruciatus.dll` from build folder (in master brunch).
+- Enough Visual Studio Professional offering
+- You can use any testing framework to write tests (example [NUnit](https://www.nuget.org/packages/NUnit/))
 
-2) Open or create CodedUITestProject.
+## Quick Start
 
-3) Add `Cruciatus.dll` to references.
+1. Add reference to `Winium.Cruciatus` in UI test project ([install NuGet package](https://www.nuget.org/packages/Winium.Cruciatus/))
 
-4) Create a map application
+2. Create a map application
 
-5) Use created map in tests
+3. Use created map in tests
+
+4. Run your tests and watch the magic happening
 
 ## Example
-### Example test applications
-[https://github.com/2gis/cruciatus/tree/master/src/TestApplications](https://github.com/2gis/cruciatus/tree/master/src/TestApplications)
+- [Example test applications](src/TestApplications)
+- [Example test projects](src/TestApplications.Tests)
 
-### Example test projects
-[https://github.com/2gis/cruciatus/tree/master/src/TestApplications.Tests](https://github.com/2gis/cruciatus/tree/master/src/TestApplications.Tests)
+## Very Quick Start
 
-### Example maps application
+1. Add reference to `Winium.Cruciatus` in UI test project ([install NuGet package](https://www.nuget.org/packages/Winium.Cruciatus/))
 
-TabItem (contains Button, TextBox).
+2. Create C# Console Application project and use this code:
 
-```cs
-using Cruciatus.Elements;
-public class ViewRibbonTab : TabItem
-{
-    public Button ZoomInButton
+    ```c#
+    namespace ConsoleApplication
     {
-        get
+        using System.Windows.Automation;
+        using Winium.Cruciatus.Core;
+        using Winium.Cruciatus.Extensions;
+
+        public class Program
         {
-            return this.GetElement<Button>("ZoomInButtonUid");
+            private static void Main(string[] args)
+            {
+                var calc = new Winium.Cruciatus.Application("C:/windows/system32/calc.exe");
+                calc.Start();
+
+                var winFinder = By.Name("Calculator").AndType(ControlType.Window);
+                var win = Winium.Cruciatus.CruciatusFactory.Root.FindElement(winFinder);
+                var menu = win.FindElementByUid("MenuBar").ToMenu();
+
+                menu.SelectItem("View$Scientific");
+                menu.SelectItem("View$History");
+
+                win.FindElementByUid("132").Click(); // 2
+                win.FindElementByUid("93").Click(); // +
+                win.FindElementByUid("134").Click(); // 4
+                win.FindElementByUid("97").Click(); // ^
+                win.FindElementByUid("138").Click(); // 8
+                win.FindElementByUid("121").Click(); // =
+
+                calc.Close();
+            }
         }
     }
+    ```
 
-    public TextBox ExtentTextBox
-    {
-        get
-        {
-            return this.GetElement<TextBox>("ExtentTextBoxUid");
-        }
-    }
-}
-```
+3. Run ConsoleApplication and watch the magic happening
 
-Window (contains ViewRibbonTab (...)).
+## Contributing
 
-```cs
-using Cruciatus.Elements;
-public class MainWindow : Window
-{
-    public ViewRibbonTab ViewRibbonTab
-    {
-        get
-        {
-            return this.GetElement<ViewRibbonTab>("ViewRibbonTabUid");
-        }
-    }
-}
-```
+Contributions are welcome!
 
-Application (contains MainWindow (...)).
+1. Check for open issues or open a fresh issue to start a discussion around a feature idea or a bug.
+2. Fork the repository to start making your changes to the master branch (or branch off of it).
+3. We recommend to write a test which shows that the bug was fixed or that the feature works as expected.
+4. Send a pull request and bug the maintainer until it gets merged and published. :smiley:
 
-```cs
-using Cruciatus;
-public class App : Application<MainWindow>
-{
-    public App(string fullPath)
-        : base(fullPath, "MainWindowUid")
-    {
-    }
-}
-```
+## Contact
 
-### Example test
+Have some questions? Found a bug? Create [new issue](https://github.com/2gis/Winium.Cruciatus/issues/new) or contact us at g.golovin@2gis.ru
 
-```cs
-[TestMethod]
-public void CruciatusUITestMethod()
-{
-    var app = new App("D:\\App.exe");
-    Assert.IsTrue(app.Start());
-	
-    string extent = app.MainWindow.ViewRibbonTab.ExtentTextBox.Text;
-    app.MainWindow.ViewRibbonTab.ZoomInButton.Click();
-    Assert.AreNotEqual(extent, app.MainWindow.ViewRibbonTab.ExtentTextBox.Text);
-	
-    Assert.IsTrue(app.Close());
-}
-```
+## License
+
+Winium is released under the MPL 2.0 license. See [LICENSE](LICENSE) for details.
