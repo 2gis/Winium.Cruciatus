@@ -1,3 +1,7 @@
+<p align="right">
+English description | <a href="README_RU.md">Описание на русском</a>
+</p>
+
 # Winium for Desktop
 [![Inner Server NuGet downloads](https://img.shields.io/nuget/dt/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
 [![Inner Server NuGet version](https://img.shields.io/nuget/v/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
