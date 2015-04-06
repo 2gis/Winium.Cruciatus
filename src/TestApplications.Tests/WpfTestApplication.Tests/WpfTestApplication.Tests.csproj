@@ -51,6 +51,7 @@
     <Compile Include="Map\ThirdTab.cs" />
     <Compile Include="Map\WpfTestApplicationApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetUpFixture.cs" />
     <Compile Include="TestCases\CheckFirstTab.cs" />
     <Compile Include="TestCases\CheckRibbon.cs" />
     <Compile Include="TestCases\CheckSecondTab.cs" />

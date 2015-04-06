@@ -17,7 +17,8 @@
 
         public static void Cleanup(WindowsFormsTestApplicationApp application)
         {
-            Assert.IsTrue(application.Close(), "Не удалось завершить приложение WindowsFormsTestApplication.");
+            var isClosed = application.Close() || application.Kill();
+            Assert.IsTrue(isClosed, "Не удалось завершить приложение WindowsFormsTestApplication.");
         }
 
         public static void Initialize(out WindowsFormsTestApplicationApp application)
