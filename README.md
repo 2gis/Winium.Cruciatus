@@ -23,8 +23,6 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
 
 2. Create a map application
 
-3. Use created map in tests
-
 4. Run your tests and watch the magic happening
 
 ## Example
