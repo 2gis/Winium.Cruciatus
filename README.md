@@ -21,8 +21,6 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
 
 1. Add reference to `Winium.Cruciatus` in UI test project ([install NuGet package](https://www.nuget.org/packages/Winium.Cruciatus/))
 
-2. Create a map application
-
 4. Run your tests and watch the magic happening
 
 ## Example
