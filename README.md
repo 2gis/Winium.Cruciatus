@@ -52,8 +52,6 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
                 var win = Winium.Cruciatus.CruciatusFactory.Root.FindElement(winFinder);
                 var menu = win.FindElementByUid("MenuBar").ToMenu();
 
-
-                win.FindElementByUid("93").Click(); // +
                 win.FindElementByUid("134").Click(); // 4
                 win.FindElementByUid("97").Click(); // ^
                 win.FindElementByUid("138").Click(); // 8
