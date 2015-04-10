@@ -3,6 +3,7 @@ English description | <a href="README_RU.md">Описание на русско�
 </p>
 
 # Winium for Desktop
+[![Build Status](https://img.shields.io/jenkins/s/http/opensource-ci.2gis.ru/Winium.Cruciatus.svg?style=flat-square)](http://opensource-ci.2gis.ru/job/Winium.Cruciatus/)
 [![Inner Server NuGet downloads](https://img.shields.io/nuget/dt/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
 [![Inner Server NuGet version](https://img.shields.io/nuget/v/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
 
