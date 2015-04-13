@@ -41,7 +41,6 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
             private static void Main(string[] args)
             {
                 var calc = new Winium.Cruciatus.Application("C:/windows/system32/calc.exe");
-                calc.Start();
 
                 var winFinder = By.Name("Calculator").AndType(ControlType.Window);
                 var win = Winium.Cruciatus.CruciatusFactory.Root.FindElement(winFinder);
