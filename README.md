@@ -45,7 +45,6 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
     {
         using System.Windows.Automation;
         using Winium.Cruciatus.Core;
-        using Winium.Cruciatus.Extensions;
 
         public class Program
         {
