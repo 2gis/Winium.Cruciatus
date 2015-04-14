@@ -41,15 +41,22 @@
             this.CheckComboBox = new System.Windows.Forms.ComboBox();
             this.TextBox2 = new System.Windows.Forms.TextBox();
             this.ChangeEnabledButton = new System.Windows.Forms.Button();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.DataGrid = new System.Windows.Forms.DataGridView();
+            this.IdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1.SuspendLayout();
             this.TabItem1.SuspendLayout();
             this.TabItem2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.TabItem1);
             this.tabControl1.Controls.Add(this.TabItem2);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -180,6 +187,38 @@
             this.ChangeEnabledButton.UseVisualStyleBackColor = true;
             this.ChangeEnabledButton.Click += new System.EventHandler(this.ChangeEnabledButtonClick);
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.DataGrid);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(215, 216);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "TabItem3";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // DataGrid
+            // 
+            this.DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DataGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.IdColumn,
+            this.NameColumn});
+            this.DataGrid.Location = new System.Drawing.Point(6, 6);
+            this.DataGrid.Name = "DataGrid";
+            this.DataGrid.Size = new System.Drawing.Size(203, 204);
+            this.DataGrid.TabIndex = 0;
+            // 
+            // IdColumn
+            // 
+            this.IdColumn.HeaderText = "Id";
+            this.IdColumn.Name = "IdColumn";
+            // 
+            // NameColumn
+            // 
+            this.NameColumn.HeaderText = "Name";
+            this.NameColumn.Name = "NameColumn";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -194,6 +233,8 @@
             this.TabItem1.PerformLayout();
             this.TabItem2.ResumeLayout(false);
             this.TabItem2.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -213,6 +254,10 @@
         private System.Windows.Forms.TextBox TextBox2;
         private System.Windows.Forms.Button ChangeEnabledButton;
         private System.Windows.Forms.CheckedListBox CheckListBox;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.DataGridView DataGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn IdColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NameColumn;
     }
 }
 

@@ -61,6 +61,13 @@
 
             // Fill CheckListBox
             this.CheckListBox.DataSource = this.monthsList;
+
+            // Fill DataGrid
+            this.DataGrid.Rows.Add("1", "one");
+            this.DataGrid.Rows.Add("2", "two");
+            this.DataGrid.Rows.Add("3", "three");
+            this.DataGrid.Rows.Add("4", "four");
+            this.DataGrid.Rows.Add("5", "five");
         }
 
         #endregion

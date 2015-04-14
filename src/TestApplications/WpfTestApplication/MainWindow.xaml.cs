@@ -85,6 +85,13 @@
             {
                 this.CheckRibbonGalleryCategory.Items.Add(new CheckBox { Content = size });
             }
+
+            // Fill DataGrid
+            DataGrid.Items.Add(new { Id = "1", Name = "one" });
+            DataGrid.Items.Add(new { Id = "2", Name = "two" });
+            DataGrid.Items.Add(new { Id = "3", Name = "three" });
+            DataGrid.Items.Add(new { Id = "4", Name = "four" });
+            DataGrid.Items.Add(new { Id = "5", Name = "five" });
         }
 
         #endregion

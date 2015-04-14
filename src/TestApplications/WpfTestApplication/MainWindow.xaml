@@ -150,6 +150,15 @@
 						Grid.Row="1" HorizontalAlignment="Center" Margin="2" Width="200"/>
                 </Grid>
             </TabItem>
+
+            <TabItem Header="TabItem4" Uid="TabItem4">
+                <DataGrid Name="DataGrid" Uid="DataGrid">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
         </TabControl>
     </Grid>
 </RibbonWindow>
