@@ -32,6 +32,25 @@
         #region Public Methods and Operators
 
         /// <summary>
+        /// Эмулирует клик в текущем положении курсора.
+        /// </summary>
+        /// <param name="button">
+        /// Целевая кнопка.
+        /// </param>
+        public void Click(MouseButton button)
+        {
+            switch (button)
+            {
+                case MouseButton.Left:
+                    this.LeftButtonClick();
+                    break;
+                case MouseButton.Right:
+                    this.RightButtonClick();
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Эмулирует клик в заданные координаты.
         /// </summary>
         /// <param name="button">
@@ -46,13 +65,24 @@
         public void Click(MouseButton button, double x, double y)
         {
             this.SetCursorPos(x, y);
+            this.Click(button);
+        }
+
+        /// <summary>
+        /// Эмулирует двойной клик в текущем положении курсора.
+        /// </summary>
+        /// <param name="button">
+        /// Целевая кнопка.
+        /// </param>
+        public void DoubleClick(MouseButton button)
+        {
             switch (button)
             {
                 case MouseButton.Left:
-                    this.LeftButtonClick();
+                    this.LeftButtonDoubleClick();
                     break;
                 case MouseButton.Right:
-                    this.RightButtonClick();
+                    this.RightButtonDoubleClick();
                     break;
             }
         }
@@ -72,15 +102,7 @@
         public void DoubleClick(MouseButton button, double x, double y)
         {
             this.SetCursorPos(x, y);
-            switch (button)
-            {
-                case MouseButton.Left:
-                    this.LeftButtonDoubleClick();
-                    break;
-                case MouseButton.Right:
-                    this.RightButtonDoubleClick();
-                    break;
-            }
+            this.DoubleClick(button);
         }
 
         /// <summary>
@@ -98,6 +120,21 @@
         public void LeftButtonDoubleClick()
         {
             this.mouseSimulator.LeftButtonDoubleClick();
+            Thread.Sleep(250);
+        }
+
+        /// <summary>
+        /// Перемещает курсор на заданное смещение по каждой координате.
+        /// </summary>
+        /// <param name="x">
+        /// Смещение по оси X (в пикселях).
+        /// </param>
+        /// <param name="y">
+        /// Смещение по оси Y (в пикселях).
+        /// </param>
+        public void MoveCursorPos(int x, int y)
+        {
+            this.mouseSimulator.MoveMouseBy(x, y);
             Thread.Sleep(250);
         }
 

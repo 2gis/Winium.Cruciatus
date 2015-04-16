@@ -61,7 +61,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(223, 242);
+            this.tabControl1.Size = new System.Drawing.Size(336, 242);
             this.tabControl1.TabIndex = 0;
             // 
             // TabItem1
@@ -74,7 +74,7 @@
             this.TabItem1.Location = new System.Drawing.Point(4, 22);
             this.TabItem1.Name = "TabItem1";
             this.TabItem1.Padding = new System.Windows.Forms.Padding(3);
-            this.TabItem1.Size = new System.Drawing.Size(215, 216);
+            this.TabItem1.Size = new System.Drawing.Size(328, 216);
             this.TabItem1.TabIndex = 0;
             this.TabItem1.Text = "TabItem1";
             this.TabItem1.UseVisualStyleBackColor = true;
@@ -82,7 +82,7 @@
             // TextListBox
             // 
             this.TextListBox.FormattingEnabled = true;
-            this.TextListBox.Location = new System.Drawing.Point(8, 111);
+            this.TextListBox.Location = new System.Drawing.Point(68, 111);
             this.TextListBox.Name = "TextListBox";
             this.TextListBox.Size = new System.Drawing.Size(200, 95);
             this.TextListBox.TabIndex = 4;
@@ -90,7 +90,7 @@
             // CheckBox1
             // 
             this.CheckBox1.AutoSize = true;
-            this.CheckBox1.Location = new System.Drawing.Point(8, 88);
+            this.CheckBox1.Location = new System.Drawing.Point(104, 88);
             this.CheckBox1.Name = "CheckBox1";
             this.CheckBox1.Size = new System.Drawing.Size(128, 17);
             this.CheckBox1.TabIndex = 3;
@@ -102,14 +102,14 @@
             // 
             this.TextComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.TextComboBox.FormattingEnabled = true;
-            this.TextComboBox.Location = new System.Drawing.Point(8, 61);
+            this.TextComboBox.Location = new System.Drawing.Point(68, 61);
             this.TextComboBox.Name = "TextComboBox";
             this.TextComboBox.Size = new System.Drawing.Size(200, 21);
             this.TextComboBox.TabIndex = 2;
             // 
             // TextBox1
             // 
-            this.TextBox1.Location = new System.Drawing.Point(8, 35);
+            this.TextBox1.Location = new System.Drawing.Point(68, 35);
             this.TextBox1.Name = "TextBox1";
             this.TextBox1.Size = new System.Drawing.Size(200, 20);
             this.TextBox1.TabIndex = 1;
@@ -117,7 +117,7 @@
             // 
             // SetTextButton
             // 
-            this.SetTextButton.Location = new System.Drawing.Point(8, 6);
+            this.SetTextButton.Location = new System.Drawing.Point(68, 6);
             this.SetTextButton.Name = "SetTextButton";
             this.SetTextButton.Size = new System.Drawing.Size(200, 23);
             this.SetTextButton.TabIndex = 0;
@@ -223,7 +223,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(223, 242);
+            this.ClientSize = new System.Drawing.Size(336, 242);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
