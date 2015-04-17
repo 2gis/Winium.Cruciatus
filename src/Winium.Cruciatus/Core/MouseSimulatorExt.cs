@@ -2,8 +2,10 @@
 {
     #region using
 
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Windows;
+    using System.Windows.Forms;
 
     using WindowsInput;
 
@@ -25,6 +27,23 @@
         internal MouseSimulatorExt(IMouseSimulator mouseSimulator)
         {
             this.mouseSimulator = mouseSimulator;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// Текущее положение курсора.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Reviewed.")]
+        public Point CurrentCursorPos
+        {
+            get
+            {
+                var currentPoint = Cursor.Position;
+                return new Point(currentPoint.X, currentPoint.Y);
+            }
         }
 
         #endregion
@@ -132,10 +151,10 @@
         /// <param name="y">
         /// Смещение по оси Y (в пикселях).
         /// </param>
-        public void MoveCursorPos(int x, int y)
+        public void MoveCursorPos(double x, double y)
         {
-            this.mouseSimulator.MoveMouseBy(x, y);
-            Thread.Sleep(250);
+            var currentPoint = this.CurrentCursorPos;
+            this.SetCursorPos(currentPoint.X + x, currentPoint.Y + y);
         }
 
         /// <summary>
