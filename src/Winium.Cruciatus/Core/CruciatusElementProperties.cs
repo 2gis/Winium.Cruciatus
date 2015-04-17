@@ -30,6 +30,17 @@
         #region Public Properties
 
         /// <summary>
+        /// Свойство BoundingRectangle.
+        /// </summary>
+        public Rect BoundingRectangle
+        {
+            get
+            {
+                return this.element.Current.BoundingRectangle;
+            }
+        }
+
+        /// <summary>
         /// Свойство ClickablePoint. Внимание, значение может отсутствовать.
         /// </summary>
         public Point? ClickablePoint
