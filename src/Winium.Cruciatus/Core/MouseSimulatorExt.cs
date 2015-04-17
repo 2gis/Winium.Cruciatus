@@ -2,8 +2,10 @@
 {
     #region using
 
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading;
     using System.Windows;
+    using System.Windows.Forms;
 
     using WindowsInput;
 
@@ -29,7 +31,43 @@
 
         #endregion
 
+        #region Public Properties
+
+        /// <summary>
+        /// Текущее положение курсора.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Reviewed.")]
+        public Point CurrentCursorPos
+        {
+            get
+            {
+                var currentPoint = Cursor.Position;
+                return new Point(currentPoint.X, currentPoint.Y);
+            }
+        }
+
+        #endregion
+
         #region Public Methods and Operators
+
+        /// <summary>
+        /// Эмулирует клик в текущем положении курсора.
+        /// </summary>
+        /// <param name="button">
+        /// Целевая кнопка.
+        /// </param>
+        public void Click(MouseButton button)
+        {
+            switch (button)
+            {
+                case MouseButton.Left:
+                    this.LeftButtonClick();
+                    break;
+                case MouseButton.Right:
+                    this.RightButtonClick();
+                    break;
+            }
+        }
 
         /// <summary>
         /// Эмулирует клик в заданные координаты.
@@ -46,13 +84,24 @@
         public void Click(MouseButton button, double x, double y)
         {
             this.SetCursorPos(x, y);
+            this.Click(button);
+        }
+
+        /// <summary>
+        /// Эмулирует двойной клик в текущем положении курсора.
+        /// </summary>
+        /// <param name="button">
+        /// Целевая кнопка.
+        /// </param>
+        public void DoubleClick(MouseButton button)
+        {
             switch (button)
             {
                 case MouseButton.Left:
-                    this.LeftButtonClick();
+                    this.LeftButtonDoubleClick();
                     break;
                 case MouseButton.Right:
-                    this.RightButtonClick();
+                    this.RightButtonDoubleClick();
                     break;
             }
         }
@@ -72,15 +121,7 @@
         public void DoubleClick(MouseButton button, double x, double y)
         {
             this.SetCursorPos(x, y);
-            switch (button)
-            {
-                case MouseButton.Left:
-                    this.LeftButtonDoubleClick();
-                    break;
-                case MouseButton.Right:
-                    this.RightButtonDoubleClick();
-                    break;
-            }
+            this.DoubleClick(button);
         }
 
         /// <summary>
@@ -99,6 +140,21 @@
         {
             this.mouseSimulator.LeftButtonDoubleClick();
             Thread.Sleep(250);
+        }
+
+        /// <summary>
+        /// Перемещает курсор на заданное смещение по каждой координате.
+        /// </summary>
+        /// <param name="x">
+        /// Смещение по оси X (в пикселях).
+        /// </param>
+        /// <param name="y">
+        /// Смещение по оси Y (в пикселях).
+        /// </param>
+        public void MoveCursorPos(double x, double y)
+        {
+            var currentPoint = this.CurrentCursorPos;
+            this.SetCursorPos(currentPoint.X + x, currentPoint.Y + y);
         }
 
         /// <summary>
