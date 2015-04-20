@@ -86,6 +86,17 @@
             }
         }
 
+        /// <summary>
+        /// Строковое представление RuntimeId элемента.
+        /// </summary>
+        public string RuntimeId
+        {
+            get
+            {
+                return string.Join(" ", this.element.GetRuntimeId());
+            }
+        }
+
         #endregion
     }
 }
