@@ -48,6 +48,17 @@
         #region Public Properties
 
         /// <summary>
+        /// Возвращает элемент находящийся в фокусе.
+        /// </summary>
+        public static CruciatusElement FocusedElement
+        {
+            get
+            {
+                return new CruciatusElement(null, AutomationElement.FocusedElement, null);
+            }
+        }
+
+        /// <summary>
         /// Возвращает текущий симулятор клавиатуры.
         /// </summary>
         public static IKeyboard Keyboard
