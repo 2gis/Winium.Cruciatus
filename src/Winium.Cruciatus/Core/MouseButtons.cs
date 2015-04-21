@@ -8,11 +8,11 @@
         /// <summary>
         /// Левая кнопка мыши.
         /// </summary>
-        Left, 
+        Left = 0, 
 
         /// <summary>
         /// Правая кнопка мыши.
         /// </summary>
-        Right
+        Right = 2
     }
 }
