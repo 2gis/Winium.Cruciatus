@@ -2,21 +2,21 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>2.2.1</version>
+    <version>2.3.0</version>
     <authors>2GIS</authors>
     <owners>2GIS</owners>
     <projectUrl>https://github.com/2gis/Winium.Cruciatus</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
+		Version 2.3.0
+			+ Add FocusedElement property to CruciatusFactory
+			+ Implement IEquatable&lt;CruciatusElement&gt;.Equals method
+			+ Override Object.Equals and Object.GetHashCode implementations
 		Version 2.2.1
 			* Inner minor changes in Core.MouseButtons enum
 		Version 2.2.0
 			+ Add RuntimeId property to CruciatusElement.Properties
-		Version 2.1.1
-			+ Add BoundingRectangle property to CruciatusElement.Properties
-			+ Add CurrentCursorPos property in mouse simulator
-			+ Add MoveCursorPos method
 	</releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags></tags>

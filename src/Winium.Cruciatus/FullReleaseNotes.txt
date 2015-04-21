@@ -1,0 +1,12 @@
+Version 2.3.0
+	+ Add FocusedElement property to CruciatusFactory
+	+ Implement IEquatable&lt;CruciatusElement&gt;.Equals method
+	+ Override Object.Equals and Object.GetHashCode implementations
+Version 2.2.1
+	* Inner minor changes in Core.MouseButtons enum
+Version 2.2.0
+	+ Add RuntimeId property to CruciatusElement.Properties
+Version 2.1.1
+	+ Add BoundingRectangle property to CruciatusElement.Properties
+	+ Add CurrentCursorPos property in mouse simulator
+	+ Add MoveCursorPos method
