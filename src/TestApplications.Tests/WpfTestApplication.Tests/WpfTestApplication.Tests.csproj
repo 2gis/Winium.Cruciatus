@@ -43,6 +43,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckFocusedElement.cs" />
     <Compile Include="Map\ElementExtension.cs" />
     <Compile Include="Map\FirstRibbonTab.cs" />
     <Compile Include="Map\FirstTab.cs" />
