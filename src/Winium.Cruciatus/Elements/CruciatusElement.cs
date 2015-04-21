@@ -17,7 +17,7 @@
     /// <summary>
     /// Базовый элемент управления.
     /// </summary>
-    public class CruciatusElement
+    public class CruciatusElement : IEquatable<CruciatusElement>
     {
         #region Static Fields
 
@@ -251,6 +251,17 @@
             this.Click(button, strategy, true);
         }
 
+        public bool Equals(CruciatusElement other)
+        {
+            return other != null && this.Instance.Equals(other.Instance);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var cruciatusElement = obj as CruciatusElement;
+            return cruciatusElement != null && this.Equals(cruciatusElement);
+        }
+
         /// <summary>
         /// Поиск элемента.
         /// Возвращает целевой элемент, либо null, если он не найден.
@@ -311,6 +322,11 @@
         public IEnumerable<CruciatusElement> FindElements(By strategy)
         {
             return CruciatusCommand.FindAll(this, strategy);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Instance.GetHashCode();
         }
 
         /// <summary>
