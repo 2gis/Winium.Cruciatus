@@ -84,7 +84,7 @@
         {
             if (!File.Exists(this.executableFilePath))
             {
-                throw new CruciatusException("Неверно задан путь до исполняемого файла приложения.");
+                throw new CruciatusException(string.Format(@"Path ""{0}"" doesn't exists", this.executableFilePath));
             }
 
             var directory = Path.GetDirectoryName(this.executableFilePath);
