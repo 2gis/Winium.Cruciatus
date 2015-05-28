@@ -38,7 +38,15 @@
                 throw new ArgumentNullException("executableFilePath");
             }
 
-            this.executableFilePath = executableFilePath;
+            if (Path.IsPathRooted(executableFilePath))
+            {
+                this.executableFilePath = executableFilePath;
+            }
+            else
+            {
+                var absolutePath = Path.Combine(Environment.CurrentDirectory, executableFilePath);
+                this.executableFilePath = Path.GetFullPath((new Uri(absolutePath)).LocalPath);
+            }
         }
 
         #endregion
