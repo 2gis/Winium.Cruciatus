@@ -176,7 +176,7 @@
             var scrollPattern = this.Instance.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern == null)
             {
-                Logger.Error("{0} is not supported ScrollPattern.", this);
+                Logger.Error("{0} does not support ScrollPattern.", this);
                 throw new CruciatusException("NOT SCROLL");
             }
 
@@ -212,7 +212,7 @@
             // Если прокрутив до конца элемент не найден, то его нет (кэп)
             if (element == null)
             {
-                Logger.Debug("In {0} no element '{1}'.", this, getStrategy);
+                Logger.Debug("No elements matching {1} were found in {0}.", this, getStrategy);
                 return null;
             }
 
@@ -222,7 +222,7 @@
             var popupWindow = CruciatusFactory.Root.FindElement(strategy);
             if (popupWindow == null)
             {
-                Logger.Error("Not found popup drop-down list box.");
+                Logger.Error("Popup window of drop-down list was not found.");
                 throw new CruciatusException("NOT SCROLL");
             }
 
