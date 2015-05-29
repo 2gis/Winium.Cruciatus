@@ -64,7 +64,7 @@
             var scrollPattern = this.Instance.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern == null)
             {
-                Logger.Debug("{0} не поддерживает шаблон прокрутки.", this);
+                Logger.Debug("{0} not support the scroll pattern.", this);
                 throw new ElementNotEnabledException("NOT SCROLL");
             }
 
@@ -99,7 +99,7 @@
 
             if (element == null)
             {
-                Logger.Debug("В {0} нет элемента '{1}'.", this, getStrategy);
+                Logger.Debug("In the {0} is not found '{1}' element.", this, getStrategy);
                 return null;
             }
 

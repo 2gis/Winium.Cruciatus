@@ -28,7 +28,7 @@
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
                         throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                            "Unable to determine location of item relative to point\n");
                     }
                 }
 
@@ -39,7 +39,7 @@
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    "Unable to determine location of item relative to point\n", 
                     exc);
             }
         }
@@ -54,7 +54,7 @@
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
                         throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                            "Unable to determine location of item relative to point\n");
                     }
                 }
 
@@ -65,7 +65,7 @@
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    "НUnable to determine location of item relative to point\n", 
                     exc);
             }
         }
@@ -83,7 +83,7 @@
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
                         throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                            "Unable to determine location of item relative to point\n");
                     }
                 }
 
@@ -99,7 +99,7 @@
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    "Unable to determine location of item relative to point\n", 
                     exc);
             }
         }
@@ -117,7 +117,7 @@
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
                         throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                            "Unable to determine location of item relative to point\n");
                     }
                 }
 
@@ -133,7 +133,7 @@
             catch (Exception exc)
             {
                 throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
+                    "Unable to determine location of item relative to point\n", 
                     exc);
             }
         }
@@ -150,7 +150,7 @@
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(internalElement, out point))
                     {
                         throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                            "Unable to determine location of item relative to point\n");
                     }
                 }
 
@@ -160,7 +160,7 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException("Не удалось определить вхождение одного элемента в другой.\n", exc);
+                throw new OperationCanceledException("Unable to determine nesting of one element into another\n", exc);
             }
         }
 
