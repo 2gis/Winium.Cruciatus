@@ -16,6 +16,12 @@
     /// </summary>
     internal static class AutomationElementExtension
     {
+        #region Constants
+
+        private const string OperationCanceledExceptionText = "Could not determine location of item relative to point\n";
+
+        #endregion
+
         #region Methods
 
         internal static bool ClickablePointLeft(this AutomationElement currentElement, AutomationElement rectElement)
@@ -27,8 +33,7 @@
                 {
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
-                        throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                        throw new OperationCanceledException(OperationCanceledExceptionText);
                     }
                 }
 
@@ -38,9 +43,7 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
-                    exc);
+                throw new OperationCanceledException(OperationCanceledExceptionText, exc);
             }
         }
 
@@ -53,8 +56,7 @@
                 {
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
-                        throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                        throw new OperationCanceledException(OperationCanceledExceptionText);
                     }
                 }
 
@@ -64,15 +66,13 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
-                    exc);
+                throw new OperationCanceledException(OperationCanceledExceptionText, exc);
             }
         }
 
         internal static bool ClickablePointRight(
-            this AutomationElement currentElement, 
-            AutomationElement rectElement, 
+            this AutomationElement currentElement,
+            AutomationElement rectElement,
             ScrollPattern scrollPattern)
         {
             try
@@ -82,8 +82,7 @@
                 {
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
-                        throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                        throw new OperationCanceledException(OperationCanceledExceptionText);
                     }
                 }
 
@@ -98,15 +97,13 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
-                    exc);
+                throw new OperationCanceledException(OperationCanceledExceptionText, exc);
             }
         }
 
         internal static bool ClickablePointUnder(
-            this AutomationElement currentElement, 
-            AutomationElement rectElement, 
+            this AutomationElement currentElement,
+            AutomationElement rectElement,
             ScrollPattern scrollPattern)
         {
             try
@@ -116,8 +113,7 @@
                 {
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(currentElement, out point))
                     {
-                        throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                        throw new OperationCanceledException(OperationCanceledExceptionText);
                     }
                 }
 
@@ -132,14 +128,12 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException(
-                    "Не удалось определить расположение элемента относительно точки.\n", 
-                    exc);
+                throw new OperationCanceledException(OperationCanceledExceptionText, exc);
             }
         }
 
         internal static bool ContainsClickablePoint(
-            this AutomationElement externalElement, 
+            this AutomationElement externalElement,
             AutomationElement internalElement)
         {
             try
@@ -149,8 +143,7 @@
                 {
                     if (!AutomationElementHelper.TryGetBoundingRectangleCenter(internalElement, out point))
                     {
-                        throw new OperationCanceledException(
-                            "Не удалось определить расположение элемента относительно точки.\n");
+                        throw new OperationCanceledException(OperationCanceledExceptionText);
                     }
                 }
 
@@ -160,7 +153,7 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException("Не удалось определить вхождение одного элемента в другой.\n", exc);
+                throw new OperationCanceledException("Could not determine if element is contained by another element\n", exc);
             }
         }
 

@@ -169,14 +169,14 @@
             // Проверка, что выпадающий список раскрыт
             if (this.ExpandCollapseState != ExpandCollapseState.Expanded)
             {
-                Logger.Error("Элемент {0} не развернут.", this);
+                Logger.Error("Element {0} is not opened.", this);
                 throw new CruciatusException("NOT SCROLL");
             }
 
             var scrollPattern = this.Instance.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern == null)
             {
-                Logger.Error("{0} не поддерживает ScrollPattern.", this);
+                Logger.Error("{0} does not support ScrollPattern.", this);
                 throw new CruciatusException("NOT SCROLL");
             }
 
@@ -212,7 +212,7 @@
             // Если прокрутив до конца элемент не найден, то его нет (кэп)
             if (element == null)
             {
-                Logger.Debug("В {0} нет элемента '{1}'.", this, getStrategy);
+                Logger.Debug("No elements matching {1} were found in {0}.", this, getStrategy);
                 return null;
             }
 
@@ -222,7 +222,7 @@
             var popupWindow = CruciatusFactory.Root.FindElement(strategy);
             if (popupWindow == null)
             {
-                Logger.Error("Не найдено popup окно выпадающего списка.");
+                Logger.Error("Popup window of drop-down list was not found.");
                 throw new CruciatusException("NOT SCROLL");
             }
 

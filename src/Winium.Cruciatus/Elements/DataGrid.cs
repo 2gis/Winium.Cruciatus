@@ -83,8 +83,8 @@
             if (row < 0 || column < 0)
             {
                 Logger.Error(
-                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.", 
-                    this, 
+                    "Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", 
+                    this,
                     row, 
                     column);
                 throw new CruciatusException("NOT GET ITEM");
@@ -101,7 +101,7 @@
             // Проверка, что ячейку видно
             if (cell == null || !this.Instance.ContainsClickablePoint(cell))
             {
-                Logger.Error("В {0} ячейка [{1}, {2}] вне видимости или не существует.", this, row, column);
+                Logger.Error("Cell [{1}, {2}] is not visible in DataGrid {0}.", this, row, column);
                 throw new CruciatusException("NOT GET ITEM");
             }
 
@@ -109,7 +109,7 @@
             var elem = cell.FindFirst(TreeScope.Subtree, Condition.TrueCondition);
             if (elem == null)
             {
-                Logger.Error("В {0}, ячейка [{1}, {2}], нет элемента желаемого типа.", this, row, column);
+                Logger.Error("Item not found in cell [{1}, {2}] for DataGrid {0}.", this, row, column);
                 throw new CruciatusException("NOT GET ITEM");
             }
 
@@ -138,7 +138,7 @@
             if (row < 0 || column < 0)
             {
                 var msg = string.Format(
-                    "В {0} ячейка [{1}, {2}] не существует, т.к. задан отрицательный номер.", 
+                    "Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", 
                     this, 
                     row, 
                     column);
@@ -149,7 +149,7 @@
             var scrollPattern = this.Instance.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
             if (scrollPattern == null)
             {
-                Logger.Error("{0} не поддерживает шаблон прокрутки.", this.ToString());
+                Logger.Error("{0} does not support ScrollPattern.", this.ToString());
                 throw new CruciatusException("NOT SCROLL");
             }
 
@@ -191,7 +191,7 @@
             // Если прокрутив до конца ячейка не найдена, то номер строки не действительный
             if (cell == null)
             {
-                Logger.Error("В {0} нет строки с номером {1}.", this, row);
+                Logger.Error("Row index {1} is out of bounds for {0}.", this, row);
                 throw new CruciatusException("NOT SCROLL");
             }
 
@@ -230,7 +230,7 @@
             // Если прокрутив до конца ячейка не найдена, то номер колонки не действительный
             if (cell == null)
             {
-                Logger.Error("В {0} нет колонки с номером {1}.", this, column);
+                Logger.Error("Column index {1} is out of bounds for DataGrid {0}.", this, column);
                 throw new CruciatusException("NOT SCROLL");
             }
 
@@ -261,7 +261,7 @@
             var cell = this.Item(row, column);
             if (cell == null)
             {
-                Logger.Error("В {0} нет ячейки с номером {1}, {2}.", this, row, column);
+                Logger.Error("Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", this, row, column);
                 throw new CruciatusException("NOT SELECT CELL");
             }
 
