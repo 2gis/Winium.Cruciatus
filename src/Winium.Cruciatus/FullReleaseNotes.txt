@@ -1,3 +1,8 @@
+Version 2.4.0
+	+ Support relative path for tested app
+	+ Support arguments for start tested app
+	+ Add path of unfound tested app file to exception text
+	+ All error have english language
 Version 2.3.0
 	+ Add FocusedElement property to CruciatusFactory
 	+ Implement IEquatable&lt;CruciatusElement&gt;.Equals method
