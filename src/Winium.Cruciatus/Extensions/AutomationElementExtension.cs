@@ -153,7 +153,7 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException(OperationCanceledExceptionText, exc);
+                throw new OperationCanceledException("Could not determine if element is contained by another element\n", exc);
             }
         }
 

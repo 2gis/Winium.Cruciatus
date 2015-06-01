@@ -191,7 +191,7 @@
             // Если прокрутив до конца ячейка не найдена, то номер строки не действительный
             if (cell == null)
             {
-                Logger.Error("Column index {1} is out of bounds for {0}.", this, row);
+                Logger.Error("Row index {1} is out of bounds for {0}.", this, row);
                 throw new CruciatusException("NOT SCROLL");
             }
 
