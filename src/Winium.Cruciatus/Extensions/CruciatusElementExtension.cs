@@ -3,6 +3,7 @@
     #region using
 
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Windows.Automation;
 
@@ -38,6 +39,27 @@
             keyboardSimulatorExt.KeyDown(VirtualKeyCode.CONTROL);
             element.Click();
             keyboardSimulatorExt.KeyUp(VirtualKeyCode.CONTROL);
+        }
+
+        /// <summary>
+        /// Клик по элементу с нажатыми кнопками (Ctrl, Shift, etc)
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="keys">Клавиши для "зажатия"</param>
+        public static void ClickWithPressedKeys(this CruciatusElement element, List<VirtualKeyCode> keys)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException("element");
+            }
+
+            var keyboardSimulatorExt =
+                (KeyboardSimulatorExt)
+                CruciatusFactory.GetSpecificKeyboard(KeyboardSimulatorType.BasedOnInputSimulatorLib);
+
+            keys.ForEach(key => keyboardSimulatorExt.KeyDown(key));
+            element.Click();
+            keys.ForEach(key => keyboardSimulatorExt.KeyUp(key));
         }
 
         /// <summary>
