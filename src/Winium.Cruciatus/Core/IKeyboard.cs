@@ -1,5 +1,7 @@
 ﻿namespace Winium.Cruciatus.Core
 {
+    using WindowsInput.Native;
+
     /// <summary>
     /// Интерфейс симулятора клавиатуры.
     /// </summary>
@@ -44,6 +46,22 @@
         /// Текст.
         /// </param>
         IKeyboard SendText(string text);
+
+        /// <summary>
+        /// Эмулирует действие 'нажать и держать' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        IKeyboard KeyDown(VirtualKeyCode keyCode);
+
+        /// <summary>
+        /// Эмулирует действие 'отпустить' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        IKeyboard KeyUp(VirtualKeyCode keyCode);
 
         #endregion
     }

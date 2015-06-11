@@ -5,6 +5,8 @@
     using System.Threading;
     using System.Windows.Forms;
 
+    using WindowsInput.Native;
+
     using NLog;
 
     #endregion
@@ -123,6 +125,28 @@
         {
             this.logger.Info("Send text '{0}'", text);
             return this.SendWaitPrivate(text);
+        }
+
+        /// <summary>
+        /// Эмулирует действие 'нажать и держать' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        public IKeyboard KeyDown(VirtualKeyCode keyCode)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Эмулирует действие 'отпустить' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        public IKeyboard KeyUp(VirtualKeyCode keyCode)
+        {
+            throw new System.NotImplementedException();
         }
 
         #endregion

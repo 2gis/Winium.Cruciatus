@@ -42,11 +42,12 @@
         /// <param name="keyCode">
         /// Ключ целевой кнопки.
         /// </param>
-        public void KeyDown(VirtualKeyCode keyCode)
+        public IKeyboard KeyDown(VirtualKeyCode keyCode)
         {
             this.logger.Info("Key down '{0}'", keyCode.ToString());
             this.keyboardSimulator.KeyDown(keyCode);
             Thread.Sleep(250);
+            return this;
         }
 
         /// <summary>
@@ -103,11 +104,12 @@
         /// <param name="keyCode">
         /// Ключ целевой кнопки.
         /// </param>
-        public void KeyUp(VirtualKeyCode keyCode)
+        public IKeyboard KeyUp(VirtualKeyCode keyCode)
         {
             this.logger.Info("Key up '{0}'", keyCode.ToString());
             this.keyboardSimulator.KeyUp(keyCode);
             Thread.Sleep(250);
+            return this;
         }
 
         /// <summary>

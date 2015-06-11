@@ -26,6 +26,7 @@
         /// <summary>
         /// Кликнуть по элементу с зажатой кнопкой Control
         /// </summary>
+        [Obsolete]
         public static void ClickWithPressedCtrl(this CruciatusElement element)
         {
             if (element == null)
@@ -46,6 +47,7 @@
         /// </summary>
         /// <param name="element"></param>
         /// <param name="keys">Клавиши для "зажатия"</param>
+        [Obsolete]
         public static void ClickWithPressedKeys(this CruciatusElement element, List<VirtualKeyCode> keys)
         {
             if (element == null)
