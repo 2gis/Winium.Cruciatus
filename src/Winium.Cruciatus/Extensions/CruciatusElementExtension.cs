@@ -9,10 +9,8 @@
 
     using WindowsInput.Native;
 
-    using Winium.Cruciatus.Core;
     using Winium.Cruciatus.Elements;
     using Winium.Cruciatus.Exceptions;
-    using Winium.Cruciatus.Settings;
 
     #endregion
 
@@ -26,42 +24,27 @@
         /// <summary>
         /// Кликнуть по элементу с зажатой кнопкой Control
         /// </summary>
-        [Obsolete]
         public static void ClickWithPressedCtrl(this CruciatusElement element)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            var keyboardSimulatorExt =
-                (KeyboardSimulatorExt)
-                CruciatusFactory.GetSpecificKeyboard(KeyboardSimulatorType.BasedOnInputSimulatorLib);
-            keyboardSimulatorExt.KeyDown(VirtualKeyCode.CONTROL);
-            element.Click();
-            keyboardSimulatorExt.KeyUp(VirtualKeyCode.CONTROL);
+            ClickWithPressedKeys(element, new List<VirtualKeyCode> { VirtualKeyCode.CONTROL });
         }
 
         /// <summary>
         /// Клик по элементу с нажатыми кнопками (Ctrl, Shift, etc)
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="keys">Клавиши для "зажатия"</param>
-        [Obsolete]
+        /// <param name="element">
+        /// Экземпляр элемента.
+        /// </param>
+        /// <param name="keys">
+        /// Клавиши для "зажатия"
+        /// </param>
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", 
+            Justification = "First parameter in extension cannot be null.")]
         public static void ClickWithPressedKeys(this CruciatusElement element, List<VirtualKeyCode> keys)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException("element");
-            }
-
-            var keyboardSimulatorExt =
-                (KeyboardSimulatorExt)
-                CruciatusFactory.GetSpecificKeyboard(KeyboardSimulatorType.BasedOnInputSimulatorLib);
-
-            keys.ForEach(key => keyboardSimulatorExt.KeyDown(key));
+            keys.ForEach(key => CruciatusFactory.Keyboard.KeyDown(key));
             element.Click();
-            keys.ForEach(key => keyboardSimulatorExt.KeyUp(key));
+            keys.ForEach(key => CruciatusFactory.Keyboard.KeyUp(key));
         }
 
         /// <summary>
@@ -72,7 +55,7 @@
         /// </param>
         /// <param name="property">
         /// Целевое свойство.
-        /// </param> 
+        /// </param>
         [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", 
             Justification = "First parameter in extension cannot be null.")]
         public static TOut GetAutomationPropertyValue<TOut>(
