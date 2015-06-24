@@ -2,12 +2,13 @@
 {
     #region using
 
+    using System;
     using System.Threading;
     using System.Windows.Forms;
 
-    using WindowsInput.Native;
-
     using NLog;
+
+    using WindowsInput.Native;
 
     #endregion
 
@@ -68,6 +69,28 @@
         #region Public Methods and Operators
 
         /// <summary>
+        /// Эмулирует действие 'нажать и держать' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        public IKeyboard KeyDown(VirtualKeyCode keyCode)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Эмулирует действие 'отпустить' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        public IKeyboard KeyUp(VirtualKeyCode keyCode)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Эмулирует нажатие кнопки Backspace.
         /// </summary>
         public IKeyboard SendBackspace()
@@ -125,28 +148,6 @@
         {
             this.logger.Info("Send text '{0}'", text);
             return this.SendWaitPrivate(text);
-        }
-
-        /// <summary>
-        /// Эмулирует действие 'нажать и держать' над кнопкой.
-        /// </summary>
-        /// <param name="keyCode">
-        /// Ключ целевой кнопки.
-        /// </param>
-        public IKeyboard KeyDown(VirtualKeyCode keyCode)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        /// <summary>
-        /// Эмулирует действие 'отпустить' над кнопкой.
-        /// </summary>
-        /// <param name="keyCode">
-        /// Ключ целевой кнопки.
-        /// </param>
-        public IKeyboard KeyUp(VirtualKeyCode keyCode)
-        {
-            throw new System.NotImplementedException();
         }
 
         #endregion
