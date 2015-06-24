@@ -2,10 +2,13 @@
 {
     #region using
 
+    using System;
     using System.Threading;
     using System.Windows.Forms;
 
     using NLog;
+
+    using WindowsInput.Native;
 
     #endregion
 
@@ -64,6 +67,28 @@
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        /// Эмулирует действие 'нажать и держать' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        public IKeyboard KeyDown(VirtualKeyCode keyCode)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Эмулирует действие 'отпустить' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        public IKeyboard KeyUp(VirtualKeyCode keyCode)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Эмулирует нажатие кнопки Backspace.

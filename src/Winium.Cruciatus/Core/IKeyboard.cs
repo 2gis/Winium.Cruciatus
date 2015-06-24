@@ -1,11 +1,33 @@
 ﻿namespace Winium.Cruciatus.Core
 {
+    #region using
+
+    using WindowsInput.Native;
+
+    #endregion
+
     /// <summary>
     /// Интерфейс симулятора клавиатуры.
     /// </summary>
     public interface IKeyboard
     {
         #region Public Methods and Operators
+
+        /// <summary>
+        /// Эмулирует действие 'нажать и держать' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        IKeyboard KeyDown(VirtualKeyCode keyCode);
+
+        /// <summary>
+        /// Эмулирует действие 'отпустить' над кнопкой.
+        /// </summary>
+        /// <param name="keyCode">
+        /// Ключ целевой кнопки.
+        /// </param>
+        IKeyboard KeyUp(VirtualKeyCode keyCode);
 
         /// <summary>
         /// Эмулирует нажатие кнопки Backspace.
