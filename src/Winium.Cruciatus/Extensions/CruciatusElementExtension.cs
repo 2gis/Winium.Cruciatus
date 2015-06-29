@@ -83,6 +83,24 @@
         }
 
         /// <summary>
+        /// Возвращает требуемый шаблон автоматизации.
+        /// </summary>
+        /// <param name="element">
+        /// Экземпляр элемента.
+        /// </param>
+        /// <param name="pattern">
+        /// Требуемый шаблон (например ExpandCollapsePattern.Pattern).
+        /// </param>
+        /// <typeparam name="T">
+        /// Тип требуемого шаблона.
+        /// </typeparam>
+        /// <returns></returns>
+        public static T GetPattern<T>(this CruciatusElement element, AutomationPattern pattern) where T : class
+        {
+            return element.Instance.GetPattern<T>(pattern);
+        }
+
+        /// <summary>
         /// Преобразовать элемент в CheckBox.
         /// </summary>
         public static CheckBox ToCheckBox(this CruciatusElement element)
