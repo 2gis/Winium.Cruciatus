@@ -1,3 +1,5 @@
+Version 2.6.0
+	+ Add extension (to CruciatusElement) for getting UI automation patterns
 Version 2.5.0
 	+ Add KeyUp and KeyDown methods for CruciatusFactory.Keyboard (only works with InputSimulator keyboard type)
 	+ Add CruciatusElement extension for click with any pressed keys
