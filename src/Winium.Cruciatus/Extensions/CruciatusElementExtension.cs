@@ -109,11 +109,19 @@
         }
 
         /// <summary>
-        /// Преобразовать элемент в CheckBox.
+        /// Преобразовать элемент в ComboBox.
         /// </summary>
         public static ComboBox ToComboBox(this CruciatusElement element)
         {
             return new ComboBox(element);
+        }
+
+        /// <summary>
+        /// Преобразовать элемент в DataGrid.
+        /// </summary>
+        public static DataGrid ToDataGrid(this CruciatusElement element)
+        {
+            return new DataGrid(element);
         }
 
         /// <summary>

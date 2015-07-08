@@ -31,6 +31,17 @@
         {
         }
 
+        /// <summary>
+        /// Создает экземпляр таблицы.
+        /// </summary>
+        /// <param name="element">
+        /// Исходный элемент.
+        /// </param>
+        public DataGrid(CruciatusElement element)
+            : base(element)
+        {
+        }
+
         #endregion
 
         #region Public Properties
@@ -82,11 +93,7 @@
             // Проверка на дурака
             if (row < 0 || column < 0)
             {
-                Logger.Error(
-                    "Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", 
-                    this,
-                    row, 
-                    column);
+                Logger.Error("Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", this, row, column);
                 throw new CruciatusException("NOT GET ITEM");
             }
 
@@ -137,11 +144,7 @@
             // Проверка на дурака
             if (row < 0 || column < 0)
             {
-                var msg = string.Format(
-                    "Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", 
-                    this, 
-                    row, 
-                    column);
+                var msg = string.Format("Cell index [{1}, {2}] is out of bounds for DataGrid {0}.", this, row, column);
                 Logger.Error(msg);
                 throw new CruciatusException("NOT SCROLL");
             }
