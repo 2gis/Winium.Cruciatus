@@ -2,23 +2,20 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>2.6.0</version>
+    <version>2.6.1</version>
     <authors>2GIS</authors>
     <owners>2GIS</owners>
     <projectUrl>https://github.com/2gis/Winium.Cruciatus</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
+		Version 2.6.1
+			* More simple creation DataGrid
 		Version 2.6.0
 			+ Add extension (to CruciatusElement) for getting UI automation patterns
 		Version 2.5.0
 			+ Add KeyUp and KeyDown methods for CruciatusFactory.Keyboard (only works with InputSimulator keyboard type)
 			+ Add CruciatusElement extension for click with any pressed keys
-		Version 2.4.0
-			+ Support relative path for tested app
-			+ Support arguments for start tested app
-			+ Add path of unfound tested app file to exception text
-			+ All error have english language
 	</releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags></tags>
