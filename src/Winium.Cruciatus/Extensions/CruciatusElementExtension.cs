@@ -117,6 +117,14 @@
         }
 
         /// <summary>
+        /// Преобразовать элемент в DataGrid.
+        /// </summary>
+        public static DataGrid ToDataGrid(this CruciatusElement element)
+        {
+            return new DataGrid(element);
+        }
+
+        /// <summary>
         /// Преобразовать элемент в ListBox.
         /// </summary>
         public static ListBox ToListBox(this CruciatusElement element)
@@ -130,14 +138,6 @@
         public static Menu ToMenu(this CruciatusElement element)
         {
             return new Menu(element);
-        }
-
-        /// <summary>
-        /// Преобразовать элемент в DataGrid.
-        /// </summary>
-        public static DataGrid ToDataGrid(this CruciatusElement element)
-        {
-            return new DataGrid(element);
         }
 
         #endregion
