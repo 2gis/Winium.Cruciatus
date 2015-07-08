@@ -31,6 +31,17 @@
         {
         }
 
+        /// <summary>
+        /// Создает экземпляр таблицы.
+        /// </summary>
+        /// <param name="element">
+        /// Исходный элемент.
+        /// </param>
+        public DataGrid(CruciatusElement element)
+            : base(element)
+        {
+        }
+
         #endregion
 
         #region Public Properties
