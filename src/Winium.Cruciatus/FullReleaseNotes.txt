@@ -1,3 +1,5 @@
+Version 2.7.0
+	* Default search timeout is 10 seconds
 Version 2.6.1
 	* More simple creation DataGrid
 Version 2.6.0
