@@ -20,7 +20,7 @@
 
         private const int DefaultScrollBarWidth = 18;
 
-        private const int DefaultSearchTimeout = 60000;
+        private const int DefaultSearchTimeout = 10000;
 
         private const int DefaultWaitForExitTimeout = 10000;
 
