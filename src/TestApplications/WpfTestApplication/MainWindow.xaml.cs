@@ -92,6 +92,16 @@
             DataGrid.Items.Add(new { Id = "3", Name = "three" });
             DataGrid.Items.Add(new { Id = "4", Name = "four" });
             DataGrid.Items.Add(new { Id = "5", Name = "five" });
+            DataGrid.Items.Add(new { Id = "6", Name = "six" });
+            DataGrid.Items.Add(new { Id = "7", Name = "seven" });
+            DataGrid.Items.Add(new { Id = "8", Name = "eight" });
+            DataGrid.Items.Add(new { Id = "9", Name = "nine" });
+            DataGrid.Items.Add(new { Id = "10", Name = "ten" });
+            DataGrid.Items.Add(new { Id = "11", Name = "eleven" });
+            DataGrid.Items.Add(new { Id = "12", Name = "twelve" });
+            DataGrid.Items.Add(new { Id = "13", Name = "thirteen" });
+            DataGrid.Items.Add(new { Id = "14", Name = "fourteen" });
+            DataGrid.Items.Add(new { Id = "15", Name = "fifteen" });
         }
 
         #endregion
