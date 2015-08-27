@@ -10,6 +10,8 @@ $configuration = 'Release'
 $solution = Join-Path $PSScriptRoot '..\src\Winium.sln'
 $testFiles = ,"..\src\TestApplications.Tests\WindowsFormsTestApplication.Tests\bin\$configuration\WindowsFormsTestApplication.Tests.dll"
 $testFiles += "..\src\TestApplications.Tests\WpfTestApplication.Tests\bin\$configuration\WpfTestApplication.Tests.dll"
+$releaseDir = Join-Path $PSScriptRoot '../Release'
+$project = Join-Path $PSScriptRoot '..\src\Winium.Cruciatus\Winium.Cruciatus.csproj'
 
 $msbuildProperties = @{
     'Configuration' = $configuration
