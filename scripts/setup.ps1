@@ -12,6 +12,10 @@ $testFiles = ,"..\src\TestApplications.Tests\WindowsFormsTestApplication.Tests\b
 $testFiles += "..\src\TestApplications.Tests\WpfTestApplication.Tests\bin\$configuration\WpfTestApplication.Tests.dll"
 $releaseDir = Join-Path $PSScriptRoot '../Release'
 $project = Join-Path $PSScriptRoot '..\src\Winium.Cruciatus\Winium.Cruciatus.csproj'
+$assemblyInfoPath = Join-Path $PSScriptRoot '..\src\Winium.Cruciatus\Properties\AssemblyInfo.cs'
+$changelogPath = Join-Path $PSScriptRoot '..\CHANGELOG.md'
+$nuspecPath = Join-Path $PSScriptRoot '..\src\Winium.Cruciatus\Winium.Cruciatus.nuspec'
+$githubProjectName = 'Winium.Cruciatus'
 
 $msbuildProperties = @{
     'Configuration' = $configuration

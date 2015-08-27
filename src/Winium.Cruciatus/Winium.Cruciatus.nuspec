@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>2.7.0</version>
+    <version>$version$</version>
     <authors>2GIS</authors>
     <owners>2GIS</owners>
     <projectUrl>https://github.com/2gis/Winium.Cruciatus</projectUrl>
@@ -17,6 +17,6 @@
             + Add extension (to CruciatusElement) for getting UI automation patterns
     </releaseNotes>
     <copyright>Copyright @ 2015</copyright>
-    <tags></tags>
+    <tags>Automation Desktop C#</tags>
   </metadata>
 </package>
