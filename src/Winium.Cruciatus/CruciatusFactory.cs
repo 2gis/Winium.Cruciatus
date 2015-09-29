@@ -162,6 +162,12 @@
 
         private static void LoggerInit()
         {
+            // Step 0. Not override if there is some configuration
+            if (LogManager.Configuration != null)
+            {
+                return;
+            }
+
             // Step 1. Create configuration object 
             var config = new LoggingConfiguration();
 
