@@ -48,7 +48,7 @@
 
             this.Instance = element.Instance;
             this.Parent = element;
-            this.GetStrategy = element.GetStrategy;
+            this.FindStrategy = element.FindStrategy;
         }
 
         /// <summary>
@@ -57,10 +57,10 @@
         /// <param name="parent">
         /// Родительский элемент.
         /// </param>
-        /// <param name="getStrategy">
+        /// <param name="findStrategy">
         /// Стратегия поиска элемента.
         /// </param>
-        public CruciatusElement(CruciatusElement parent, By getStrategy)
+        public CruciatusElement(CruciatusElement parent, By findStrategy)
         {
             if (parent == null)
             {
@@ -68,14 +68,14 @@
             }
 
             this.Parent = parent;
-            this.GetStrategy = getStrategy;
+            this.FindStrategy = findStrategy;
         }
 
-        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By strategy)
+        internal CruciatusElement(CruciatusElement parent, AutomationElement element, By findStrategy)
         {
             this.Parent = parent;
             this.Instance = element;
-            this.GetStrategy = strategy;
+            this.FindStrategy = findStrategy;
         }
 
         #endregion
@@ -85,7 +85,7 @@
         /// <summary>
         /// Стратегия поиска элемента.
         /// </summary>
-        public By GetStrategy { get; internal set; }
+        public By FindStrategy { get; internal set; }
 
         /// <summary>
         /// Свойства элемента.
@@ -108,7 +108,7 @@
             {
                 if (this.instance == null)
                 {
-                    this.instance = CruciatusCommand.FindFirst(this.Parent.Instance, this.GetStrategy);
+                    this.instance = this.Parent.FindElement(this.FindStrategy).Instance;
                 }
 
                 if (this.instance == null)
@@ -284,20 +284,6 @@
         public virtual CruciatusElement FindElementByName(string value)
         {
             return this.FindElement(By.Name(value));
-        }
-
-        /// <summary>
-        /// Поиск элемента по заданному Path. Например: /#ElementUid//%ElementName, 
-        /// где '/' - в детях, '//' - в глубину; # - по AutomationId, % - по Name.
-        /// </summary>
-        /// <param name="value">
-        /// Строка в требуемом формате.
-        /// </param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", 
-            "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "ByPath", Justification = "Reviewed.")]
-        public virtual CruciatusElement FindElementByPath(string value)
-        {
-            return this.FindElement(By.Path(value));
         }
 
         /// <summary>

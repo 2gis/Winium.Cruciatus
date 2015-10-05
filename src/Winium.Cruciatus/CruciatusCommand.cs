@@ -12,8 +12,8 @@
 
     using Winium.Cruciatus.Core;
     using Winium.Cruciatus.Elements;
-    using Winium.Cruciatus.Exceptions;
     using Winium.Cruciatus.Extensions;
+    using Winium.Cruciatus.Helpers;
 
     #endregion
 
@@ -27,72 +27,38 @@
 
         #region Methods
 
-        internal static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy)
+        internal static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By strategy)
         {
-            return FindAll(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
+            return FindAll(parent, strategy, CruciatusFactory.Settings.SearchTimeout);
         }
 
-        internal static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By getStrategy, int timeout)
+        internal static IEnumerable<CruciatusElement> FindAll(CruciatusElement parent, By strategy, int timeout)
         {
             if (parent == null)
             {
                 throw new ArgumentNullException("parent");
             }
 
-            var element = parent.Instance;
-            var info = getStrategy.FindInfoList;
-            for (var i = 0; i < info.Count - 1; ++i)
+            var result = strategy.FindAll(parent.Instance, timeout);
+            return result.Select(e => new CruciatusElement(parent, e, strategy));
+        }
+
+        internal static CruciatusElement FindFirst(CruciatusElement parent, By strategy)
+        {
+            return FindFirst(parent, strategy, CruciatusFactory.Settings.SearchTimeout);
+        }
+
+        internal static CruciatusElement FindFirst(CruciatusElement parent, By strategy, int timeout)
+        {
+            var element = strategy.FindFirst(parent.Instance, timeout);
+            if (element == null)
             {
-                element = AutomationElementHelper.FindFirst(element, info[i].TreeScope, info[i].Condition, timeout);
-                if (element == null)
-                {
-                    Logger.Error("Element '{0}' not found", info);
-                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
-                    throw new CruciatusException("ELEMENT NOT FOUND");
-                }
+                Logger.Info("Element '{0}' not found", strategy);
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
+                return null;
             }
 
-            var lastIinfo = getStrategy.FindInfoList.Last();
-            var result = AutomationElementHelper.FindAll(element, lastIinfo.TreeScope, lastIinfo.Condition);
-            return result.Select(e => new CruciatusElement(parent, e, getStrategy));
-        }
-
-        internal static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy)
-        {
-            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
-        }
-
-        internal static CruciatusElement FindFirst(CruciatusElement parent, By getStrategy, int timeout)
-        {
-            if (parent == null)
-            {
-                throw new ArgumentNullException("parent");
-            }
-
-            var element = FindFirst(parent.Instance, getStrategy, timeout);
-            return element == null ? null : new CruciatusElement(parent, element, getStrategy);
-        }
-
-        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy)
-        {
-            return FindFirst(parent, getStrategy, CruciatusFactory.Settings.SearchTimeout);
-        }
-
-        internal static AutomationElement FindFirst(AutomationElement parent, By getStrategy, int timeout)
-        {
-            var element = parent;
-            foreach (var info in getStrategy.FindInfoList)
-            {
-                element = AutomationElementHelper.FindFirst(element, info.TreeScope, info.Condition, timeout);
-                if (element == null)
-                {
-                    Logger.Info("Element '{0}' not found", info);
-                    CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
-                    return null;
-                }
-            }
-
-            return element;
+            return new CruciatusElement(parent, element, strategy);
         }
 
         internal static bool TryClickOnBoundingRectangleCenter(

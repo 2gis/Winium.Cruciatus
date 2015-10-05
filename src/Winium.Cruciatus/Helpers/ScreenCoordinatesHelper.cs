@@ -1,4 +1,4 @@
-﻿namespace Winium.Cruciatus.Core
+﻿namespace Winium.Cruciatus.Helpers
 {
     #region using
 

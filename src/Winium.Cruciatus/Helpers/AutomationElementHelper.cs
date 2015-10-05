@@ -1,4 +1,4 @@
-namespace Winium.Cruciatus.Core
+namespace Winium.Cruciatus.Helpers
 {
     #region using
 
@@ -7,6 +7,9 @@ namespace Winium.Cruciatus.Core
     using System.Linq;
     using System.Windows;
     using System.Windows.Automation;
+    using System.Xml.XPath;
+
+    using Winium.Cruciatus.Helpers.XPath;
 
     using Condition = System.Windows.Automation.Condition;
 
@@ -14,21 +17,7 @@ namespace Winium.Cruciatus.Core
 
     internal static class AutomationElementHelper
     {
-        #region Constants
-
-        private const int FindTimeout = 500;
-
-        #endregion
-
         #region Methods
-
-        internal static IEnumerable<AutomationElement> FindAll(
-            AutomationElement parent, 
-            TreeScope scope, 
-            Condition condition)
-        {
-            return FindAll(parent, scope, condition, FindTimeout);
-        }
 
         internal static IEnumerable<AutomationElement> FindAll(
             AutomationElement parent, 
@@ -51,9 +40,36 @@ namespace Winium.Cruciatus.Core
             return Enumerable.Empty<AutomationElement>();
         }
 
+        internal static IEnumerable<AutomationElement> FindAll(AutomationElement parent, string xpath, int timeout)
+        {
+            var navigator = new DesktopTreeXPathNavigator(parent);
+            var dtn = DateTime.Now.AddMilliseconds(timeout);
+
+            // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+            while (DateTime.Now <= dtn)
+            {
+                var obj = navigator.Evaluate(xpath);
+                var nodeIterator = obj as XPathNodeIterator;
+                if (nodeIterator == null)
+                {
+                    CruciatusFactory.Logger.Warn("XPath expression '{0}' not searching nodes", xpath);
+                    break;
+                }
+
+                var nodes = nodeIterator.Cast<DesktopTreeXPathNavigator>();
+                var elementNodes = nodes.Where(item => item.NodeType == XPathNodeType.Element).ToList();
+                if (elementNodes.Any())
+                {
+                    return elementNodes.Select(item => (AutomationElement)item.TypedValue);
+                }
+            }
+
+            return Enumerable.Empty<AutomationElement>();
+        }
+
         internal static AutomationElement FindFirst(AutomationElement parent, TreeScope scope, Condition condition)
         {
-            return FindFirst(parent, scope, condition, FindTimeout);
+            return FindFirst(parent, scope, condition, CruciatusFactory.Settings.SearchTimeout);
         }
 
         internal static AutomationElement FindFirst(
