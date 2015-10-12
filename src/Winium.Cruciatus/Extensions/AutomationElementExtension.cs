@@ -6,8 +6,8 @@
     using System.Windows;
     using System.Windows.Automation;
 
-    using Winium.Cruciatus.Core;
     using Winium.Cruciatus.Exceptions;
+    using Winium.Cruciatus.Helpers;
 
     #endregion
 
@@ -71,8 +71,8 @@
         }
 
         internal static bool ClickablePointRight(
-            this AutomationElement currentElement,
-            AutomationElement rectElement,
+            this AutomationElement currentElement, 
+            AutomationElement rectElement, 
             ScrollPattern scrollPattern)
         {
             try
@@ -102,8 +102,8 @@
         }
 
         internal static bool ClickablePointUnder(
-            this AutomationElement currentElement,
-            AutomationElement rectElement,
+            this AutomationElement currentElement, 
+            AutomationElement rectElement, 
             ScrollPattern scrollPattern)
         {
             try
@@ -133,7 +133,7 @@
         }
 
         internal static bool ContainsClickablePoint(
-            this AutomationElement externalElement,
+            this AutomationElement externalElement, 
             AutomationElement internalElement)
         {
             try
@@ -153,7 +153,9 @@
             }
             catch (Exception exc)
             {
-                throw new OperationCanceledException("Could not determine if element is contained by another element\n", exc);
+                throw new OperationCanceledException(
+                    "Could not determine if element is contained by another element\n", 
+                    exc);
             }
         }
 

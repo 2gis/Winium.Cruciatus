@@ -9,6 +9,8 @@
 
     using WindowsInput;
 
+    using Winium.Cruciatus.Helpers;
+
     #endregion
 
     /// <summary>

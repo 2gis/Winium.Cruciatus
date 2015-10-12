@@ -7,6 +7,7 @@
     using Winium.Cruciatus.Core;
     using Winium.Cruciatus.Exceptions;
     using Winium.Cruciatus.Extensions;
+    using Winium.Cruciatus.Helpers;
 
     #endregion
 

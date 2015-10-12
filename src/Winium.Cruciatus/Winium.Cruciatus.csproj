@@ -47,6 +47,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
@@ -56,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="Core\AutomationElementHelper.cs" />
+    <Compile Include="Core\ByProperty.cs" />
+    <Compile Include="Core\ByXPath.cs" />
+    <Compile Include="Helpers\AutomationElementHelper.cs" />
     <Compile Include="Core\By.cs" />
     <Compile Include="Core\ClickStrategies.cs" />
     <Compile Include="Core\CruciatusElementProperties.cs" />
@@ -70,13 +73,19 @@
     <Compile Include="Core\KeyboardSimulatorExt.cs" />
     <Compile Include="Core\MouseSimulatorExt.cs" />
     <Compile Include="Core\MouseButtons.cs" />
-    <Compile Include="Core\ScreenCoordinatesHelper.cs" />
+    <Compile Include="Helpers\AutomationPropertyHelper.cs" />
+    <Compile Include="Helpers\ScreenCoordinatesHelper.cs" />
     <Compile Include="CruciatusCommand.cs" />
     <Compile Include="CruciatusFactory.cs" />
     <Compile Include="Elements\Menu.cs" />
     <Compile Include="Elements\SaveFileDialog.cs" />
     <Compile Include="Elements\OpenFileDialog.cs" />
     <Compile Include="Extensions\IScreenshoterExtension.cs" />
+    <Compile Include="Helpers\XPath\PropertyItem.cs" />
+    <Compile Include="Helpers\XPath\DesktopTreeXPathNavigator.cs" />
+    <Compile Include="Helpers\XPath\ElementItem.cs" />
+    <Compile Include="Helpers\XPath\RootItem.cs" />
+    <Compile Include="Helpers\XPath\XPathItem.cs" />
     <Compile Include="Settings\KeyboardSimulatorType.cs" />
     <Compile Include="Settings\CruciatusSettings.cs" />
     <Compile Include="Elements\CheckBox.cs" />
