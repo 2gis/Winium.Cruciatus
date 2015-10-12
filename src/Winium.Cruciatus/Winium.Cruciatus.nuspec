@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
@@ -9,13 +9,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-        Version 2.7.0
-            * Default search timeout is 10 seconds
-        Version 2.6.1
-            * More simple creation DataGrid
-        Version 2.6.0
-            + Add extension (to CruciatusElement) for getting UI automation patterns
-    </releaseNotes>
+v2.8.0
+- Add `XPath` strategy for locating elements
+</releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags>Automation Desktop C#</tags>
   </metadata>
