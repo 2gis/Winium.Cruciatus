@@ -54,6 +54,17 @@
         #region Public Methods and Operators
 
         /// <summary>
+        /// Возвращает идентификатор процесса приложения
+        /// </summary>
+        public int ProcessId
+        {
+            get
+            {
+                return process.Id;
+            }
+        }
+
+        /// <summary>
         /// Посылает сообщение о закрытии главному окну приложения.
         /// </summary>
         /// <returns>
