@@ -379,6 +379,37 @@
         }
 
         /// <summary>
+        /// Устанавливает фокус на элементе
+        /// Если элемент - окно и оно было свёрнуто, то разворачивает его
+        /// </summary>
+        public void SetFocus()
+        {
+            if (!this.Instance.Current.IsEnabled)
+            {
+                Logger.Error("Element '{0}' not enabled. Set focus failed.", this.ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
+                throw new ElementNotEnabledException("NOT SET FOCUS");
+            }
+
+            if (this.Instance.Current.ControlType.Equals(ControlType.Window))
+            {
+                object windowPatternObject;
+
+                if (this.Instance.TryGetCurrentPattern(WindowPattern.Pattern, out windowPatternObject))
+                {
+                    var windowPattern = windowPatternObject as WindowPattern;
+
+                    if (windowPattern.Current.WindowVisualState == WindowVisualState.Minimized)
+                    {
+                        windowPattern.SetWindowVisualState(WindowVisualState.Normal);
+                    }
+                }
+            }
+
+            this.Instance.SetFocus();
+        }
+
+        /// <summary>
         /// Возвращает строковое представление элемента.
         /// </summary>
         public override string ToString()
