@@ -9,8 +9,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-v2.8.0
-- Add `XPath` strategy for locating elements
+v2.9.0
+- Add 'SetFocus' method to 'CruciatusElement'
 </releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags>Automation Desktop C#</tags>

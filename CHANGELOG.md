@@ -2,7 +2,12 @@
 
 <!--## Unreleased-->
 
-## v2.8.0
+## v2.9.0
+
+- Add 'SetFocus' method to 'CruciatusElement'
+
+
+## v2.8.0
 
 - Add `XPath` strategy for locating elements
 
@@ -11,4 +16,5 @@
 
 - Set default search timeout to 10 seconds
 - Simplify DataGrid element instantiation
+
 
