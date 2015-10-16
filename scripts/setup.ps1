@@ -24,7 +24,7 @@ $msbuildProperties = @{
 
 $env:UITestApps=(Join-Path $PSScriptRoot 'UITestApps')
 
-$modulesUrl = 'https://raw.githubusercontent.com/skyline-gleb/dev-help/v0.2.0/psm'
+$modulesUrl = 'https://raw.githubusercontent.com/skyline-gleb/dev-help/v0.2.1/psm'
 
 if (!(Get-Module -ListAvailable -Name PsGet))
 {
