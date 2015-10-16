@@ -316,6 +316,41 @@
         }
 
         /// <summary>
+        /// Устанавливает фокус на элементе.
+        /// Если элемент - окно и оно было свёрнуто, то разворачивает его.
+        /// </summary>
+        public void SetFocus()
+        {
+            if (!this.Instance.Current.IsEnabled)
+            {
+                Logger.Error("Element '{0}' not enabled. Set focus failed.", this.ToString());
+                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
+                throw new ElementNotEnabledException("NOT SET FOCUS");
+            }
+
+            if (this.Instance.Current.ControlType.Equals(ControlType.Window))
+            {
+                object windowPatternObject;
+                if (this.Instance.TryGetCurrentPattern(WindowPattern.Pattern, out windowPatternObject))
+                {
+                    ((WindowPattern)windowPatternObject).SetWindowVisualState(WindowVisualState.Normal);
+                    return;
+                }
+            }
+
+            try
+            {
+                this.Instance.SetFocus();
+            }
+            catch (InvalidOperationException exception)
+            {
+                Logger.Error("Set focus on element '{0}' failed.", this.ToString());
+                Logger.Debug(exception);
+                throw new CruciatusException("NOT SET FOCUS");
+            }
+        }
+
+        /// <summary>
         /// Установка текста.
         /// </summary>
         /// <param name="text">
@@ -376,37 +411,6 @@
             Logger.Error("Get text from '{0}' element failed.", this.ToString());
             CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
             throw new CruciatusException("NO GET TEXT");
-        }
-
-        /// <summary>
-        /// Устанавливает фокус на элементе
-        /// Если элемент - окно и оно было свёрнуто, то разворачивает его
-        /// </summary>
-        public void SetFocus()
-        {
-            if (!this.Instance.Current.IsEnabled)
-            {
-                Logger.Error("Element '{0}' not enabled. Set focus failed.", this.ToString());
-                CruciatusFactory.Screenshoter.AutomaticScreenshotCaptureIfNeeded();
-                throw new ElementNotEnabledException("NOT SET FOCUS");
-            }
-
-            if (this.Instance.Current.ControlType.Equals(ControlType.Window))
-            {
-                object windowPatternObject;
-
-                if (this.Instance.TryGetCurrentPattern(WindowPattern.Pattern, out windowPatternObject))
-                {
-                    var windowPattern = windowPatternObject as WindowPattern;
-
-                    if (windowPattern.Current.WindowVisualState == WindowVisualState.Minimized)
-                    {
-                        windowPattern.SetWindowVisualState(WindowVisualState.Normal);
-                    }
-                }
-            }
-
-            this.Instance.SetFocus();
         }
 
         /// <summary>
