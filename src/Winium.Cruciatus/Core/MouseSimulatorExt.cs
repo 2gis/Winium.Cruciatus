@@ -3,8 +3,8 @@
     #region using
 
     using System.Diagnostics.CodeAnalysis;
+    using System.Drawing;
     using System.Threading;
-    using System.Windows;
     using System.Windows.Forms;
 
     using WindowsInput;
@@ -83,7 +83,7 @@
         /// <param name="y">
         /// Координата точки по оси Y.
         /// </param>
-        public void Click(MouseButton button, double x, double y)
+        public void Click(MouseButton button, int x, int y)
         {
             this.SetCursorPos(x, y);
             this.Click(button);
@@ -120,7 +120,7 @@
         /// <param name="y">
         /// Координата точки по оси Y.
         /// </param>
-        public void DoubleClick(MouseButton button, double x, double y)
+        public void DoubleClick(MouseButton button, int x, int y)
         {
             this.SetCursorPos(x, y);
             this.DoubleClick(button);
@@ -153,7 +153,7 @@
         /// <param name="y">
         /// Смещение по оси Y (в пикселях).
         /// </param>
-        public void MoveCursorPos(double x, double y)
+        public void MoveCursorPos(int x, int y)
         {
             var currentPoint = this.CurrentCursorPos;
             this.SetCursorPos(currentPoint.X + x, currentPoint.Y + y);
@@ -186,7 +186,7 @@
         /// <param name="y">
         /// Координата точки по оси Y.
         /// </param>
-        public void SetCursorPos(double x, double y)
+        public void SetCursorPos(int x, int y)
         {
             var virtualScreenPoint = ScreenCoordinatesHelper.ScreenPointToVirtualScreenPoint(new Point(x, y));
             this.mouseSimulator.MoveMouseToPositionOnVirtualDesktop(virtualScreenPoint.X, virtualScreenPoint.Y);

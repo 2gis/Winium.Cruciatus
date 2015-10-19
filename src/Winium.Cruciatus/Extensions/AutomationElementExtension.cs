@@ -3,7 +3,7 @@
     #region using
 
     using System;
-    using System.Windows;
+    using System.Drawing;
     using System.Windows.Automation;
 
     using Winium.Cruciatus.Exceptions;
@@ -37,7 +37,7 @@
                     }
                 }
 
-                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+                var rect = rectElement.GetPropertyValue<Rectangle>(AutomationElement.BoundingRectangleProperty);
 
                 return point.X < rect.Left;
             }
@@ -60,7 +60,7 @@
                     }
                 }
 
-                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+                var rect = rectElement.GetPropertyValue<Rectangle>(AutomationElement.BoundingRectangleProperty);
 
                 return point.Y < rect.Top;
             }
@@ -86,7 +86,7 @@
                     }
                 }
 
-                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+                var rect = rectElement.GetPropertyValue<Rectangle>(AutomationElement.BoundingRectangleProperty);
 
                 if (scrollPattern == null || scrollPattern.Current.HorizontalScrollPercent < 0)
                 {
@@ -117,7 +117,7 @@
                     }
                 }
 
-                var rect = rectElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+                var rect = rectElement.GetPropertyValue<Rectangle>(AutomationElement.BoundingRectangleProperty);
 
                 if (scrollPattern == null || scrollPattern.Current.HorizontalScrollPercent < 0)
                 {
@@ -147,7 +147,7 @@
                     }
                 }
 
-                var externalRect = externalElement.GetPropertyValue<Rect>(AutomationElement.BoundingRectangleProperty);
+                var externalRect = externalElement.GetPropertyValue<Rectangle>(AutomationElement.BoundingRectangleProperty);
 
                 return externalRect.Contains(point);
             }
