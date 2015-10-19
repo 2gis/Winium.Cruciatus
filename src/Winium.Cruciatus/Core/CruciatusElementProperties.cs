@@ -2,7 +2,7 @@
 {
     #region using
 
-    using System.Windows;
+    using System.Drawing;
     using System.Windows.Automation;
 
     #endregion
@@ -32,7 +32,7 @@
         /// <summary>
         /// Свойство BoundingRectangle.
         /// </summary>
-        public Rect BoundingRectangle
+        public Rectangle BoundingRectangle
         {
             get
             {

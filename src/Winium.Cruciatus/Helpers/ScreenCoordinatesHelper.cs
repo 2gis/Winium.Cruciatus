@@ -2,6 +2,7 @@
 {
     #region using
 
+    using System.Drawing;
     using System.Windows;
 
     #endregion
@@ -18,8 +19,8 @@
 
         internal static Point ScreenPointToVirtualScreenPoint(Point point)
         {
-            var sX = point.X;
-            var sY = point.Y;
+            double sX = point.X;
+            double sY = point.Y;
 
             var virtualScreenLeft = SystemParameters.VirtualScreenLeft;
             if (virtualScreenLeft < 0)
@@ -30,7 +31,7 @@
             var vsX = sX * (VirtualScreenLowerRightCorner.X / SystemParameters.VirtualScreenWidth);
             var vsY = sY * (VirtualScreenLowerRightCorner.Y / SystemParameters.VirtualScreenHeight);
 
-            return new Point(vsX, vsY);
+            return new Point((int)vsX, (int)vsY);
         }
 
         #endregion
