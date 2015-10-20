@@ -9,8 +9,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-v2.9.0
-- Add 'SetFocus' method to 'CruciatusElement'
+v2.9.1
+- Fix XPath attribute value if this ControlType
 </releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags>Automation Desktop C#</tags>
