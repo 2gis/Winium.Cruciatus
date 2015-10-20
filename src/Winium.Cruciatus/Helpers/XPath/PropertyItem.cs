@@ -57,7 +57,9 @@
         {
             get
             {
-                return this.TypedValue().ToString();
+                var value = this.TypedValue();
+                var type = value as ControlType;
+                return type != null ? type.ProgrammaticName : value.ToString();
             }
         }
 
