@@ -158,6 +158,18 @@
         public static extern bool Tap(int x, int y);
 
         /// <summary>
+        /// Finger down on the screen.
+        /// </summary>
+        /// <param name="element">The element to touch</param>
+        /// <param name="xOffset">The X coordinate relative to the element</param>
+        /// <param name="yOffset">The Y coordinate relative to the element</param>
+        /// <returns></returns>
+        public static bool TouchDown(CruciatusElement element, int xOffset, int yOffset)
+        {
+            return ElementLocationAction(element, xOffset, yOffset, TouchDown);
+        }
+
+        /// <summary>
         /// Finger down on the screen
         /// </summary>
         /// <param name="x">The X coordinate on the screen</param>
@@ -167,6 +179,18 @@
         public static extern bool TouchDown(int x, int y);
 
         /// <summary>
+        /// Finger up on the screen.
+        /// </summary>
+        /// <param name="element">The element to touch</param>
+        /// <param name="xOffset">The X coordinate relative to the element</param>
+        /// <param name="yOffset">The Y coordinate relative to the element</param>
+        /// <returns></returns>
+        public static bool TouchUp(CruciatusElement element, int xOffset, int yOffset)
+        {
+            return ElementLocationAction(element, xOffset, yOffset, TouchUp);
+        }
+
+        /// <summary>
         /// Finger up on the screen
         /// </summary>
         /// <param name="x">The X coordinate on the screen</param>
@@ -174,6 +198,18 @@
         /// <returns></returns>
         [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool TouchUp(int x, int y);
+
+        /// <summary>
+        /// Finger move on the screen.
+        /// </summary>
+        /// <param name="element">The element to touch</param>
+        /// <param name="xOffset">The X coordinate relative to the element</param>
+        /// <param name="yOffset">The Y coordinate relative to the element</param>
+        /// <returns></returns>
+        public static bool TouchUpdate(CruciatusElement element, int xOffset, int yOffset)
+        {
+            return ElementLocationAction(element, xOffset, yOffset, TouchUpdate);
+        }
 
         /// <summary>
         /// Finger move on the screen
@@ -294,6 +330,17 @@
 
             x = (int)(rect.Left + (rect.Width / 2));
             y = (int)(rect.Left + (rect.Height / 2));
+        }
+
+        private static bool ElementLocationAction(
+            CruciatusElement element,
+            int xOffset,
+            int yOffset,
+            Func<int, int, bool> action)
+        {
+            var rect = element.Properties.BoundingRectangle;
+
+            return action((int)(rect.Left + xOffset), (int)(rect.Top + yOffset));
         }
 
         #endregion
