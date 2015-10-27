@@ -172,4 +172,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(TargetDir)Winium.Cruciatus.TouchSimulator.dll" DestinationFiles="$(TargetDir)Winium.Cruciatus.TouchSimulator.dl_" ContinueOnError="false" />
+  </Target>
 </Project>

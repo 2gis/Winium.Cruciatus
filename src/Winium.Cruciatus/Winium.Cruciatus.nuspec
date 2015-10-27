@@ -15,4 +15,8 @@ v2.9.1
     <copyright>Copyright @ 2015</copyright>
     <tags>Automation Desktop C#</tags>
   </metadata>
+  <files>
+    <file src="..\Release\Winium.Cruciatus.TouchSimulator.dl_" target="nativelib" /> 
+	<file src="build\Winium.Cruciatus.targets" target="build\" />
+  </files>
 </package>
