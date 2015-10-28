@@ -7,6 +7,8 @@
     using System.Threading;
     using System.Windows;
 
+    using TCD.System.TouchInjection;
+
     using Winium.Cruciatus.Elements;
 
     #endregion
@@ -17,6 +19,8 @@
 
         private static int _pauseBeforeUp = 300; // after drag, delay 'up' this long to avoid inertia
 
+        private static PointerTouchInfo _contact;
+
         #endregion
 
         #region Public Methods and Operators
@@ -25,7 +29,7 @@
         /// Double tap on the touch screen using finger motion events.
         /// </summary>
         /// <param name="element">The element to double tap on</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool DoubleTap(CruciatusElement element)
         {
             return ElementCenterAction(element, DoubleTap);
@@ -36,9 +40,18 @@
         /// </summary>
         /// <param name="x">The X coordinate of the point to be tapped</param>
         /// <param name="y">The Y coordinate of the point to be tapped</param>
-        /// <returns></returns>
-        [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool DoubleTap(int x, int y);
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool DoubleTap(int x, int y)
+        {
+            if (!Tap(x, y))
+            {
+                return false;
+            }
+
+            Thread.Sleep(200);
+
+            return Tap(x, y);
+        }
 
         public static bool Flick(int xStart, int yStart, int xEnd, int yEnd, int gestureTime)
         {
@@ -73,7 +86,7 @@
         /// </summary>
         /// <param name="xSpeed">The X speed in pixels per second</param>
         /// <param name="ySpeed">The Y speed in pixels per second</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool Flick(int xSpeed, int ySpeed)
         {
             var gestureMs = 250;
@@ -127,7 +140,7 @@
         /// <param name="xOffset">The X offset in pixels to flick by</param>
         /// <param name="yOffset">The Y offset in pixels to flixk by</param>
         /// <param name="pixelsPerSecond">The speed in pixels per second</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool FlickElement(CruciatusElement element, int xOffset, int yOffset, int pixelsPerSecond)
         {
             var rect = element.Properties.BoundingRectangle;
@@ -176,7 +189,7 @@
         /// Single tap on the touch enabled device.
         /// </summary>
         /// <param name="element">The element to single tap on</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool Tap(CruciatusElement element)
         {
             return ElementCenterAction(element, Tap);
@@ -187,9 +200,16 @@
         /// </summary>
         /// <param name="x">The X coordinate of the point to tap</param>
         /// <param name="y">The Y coordinate of the point to tap</param>
-        /// <returns></returns>
-        [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Tap(int x, int y);
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool Tap(int x, int y)
+        {
+            if (!TouchDown(x, y))
+            {
+                return false;
+            }
+
+            return TouchUp(x, y);
+        }
 
         /// <summary>
         /// Finger down on the screen.
@@ -197,7 +217,7 @@
         /// <param name="element">The element to touch</param>
         /// <param name="xOffset">The X coordinate relative to the element</param>
         /// <param name="yOffset">The Y coordinate relative to the element</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool TouchDown(CruciatusElement element, int xOffset, int yOffset)
         {
             return ElementLocationAction(element, xOffset, yOffset, TouchDown);
@@ -208,9 +228,31 @@
         /// </summary>
         /// <param name="x">The X coordinate on the screen</param>
         /// <param name="y">The Y coordinate on the screen</param>
-        /// <returns></returns>
-        [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool TouchDown(int x, int y);
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool TouchDown(int x, int y)
+        {
+            TouchInjector.InitializeTouchInjection();
+
+            _contact = new PointerTouchInfo();
+            _contact.PointerInfo.pointerType = PointerInputType.TOUCH;
+            _contact.PointerInfo.PointerId = 0;
+            _contact.PointerInfo.PtPixelLocation.X = x;
+            _contact.PointerInfo.PtPixelLocation.Y = y;
+
+            _contact.TouchFlags = TouchFlags.NONE;
+            _contact.TouchMasks = TouchMask.CONTACTAREA | TouchMask.ORIENTATION | TouchMask.PRESSURE;
+            _contact.Orientation = 90;
+            _contact.Pressure = 32000;
+
+            _contact.ContactArea.top = _contact.PointerInfo.PtPixelLocation.Y - 2;
+            _contact.ContactArea.bottom = _contact.PointerInfo.PtPixelLocation.Y + 2;
+            _contact.ContactArea.left = _contact.PointerInfo.PtPixelLocation.X - 2;
+            _contact.ContactArea.right = _contact.PointerInfo.PtPixelLocation.X + 2;
+
+            _contact.PointerInfo.PointerFlags = PointerFlags.DOWN | PointerFlags.INRANGE | PointerFlags.INCONTACT;
+
+            return TouchInjector.InjectTouchInput(1, new [] { _contact });
+        }
 
         /// <summary>
         /// Finger up on the screen.
@@ -218,7 +260,7 @@
         /// <param name="element">The element to touch</param>
         /// <param name="xOffset">The X coordinate relative to the element</param>
         /// <param name="yOffset">The Y coordinate relative to the element</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool TouchUp(CruciatusElement element, int xOffset, int yOffset)
         {
             return ElementLocationAction(element, xOffset, yOffset, TouchUp);
@@ -229,9 +271,15 @@
         /// </summary>
         /// <param name="x">The X coordinate on the screen</param>
         /// <param name="y">The Y coordinate on the screen</param>
-        /// <returns></returns>
-        [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool TouchUp(int x, int y);
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool TouchUp(int x, int y)
+        {
+            _contact.PointerInfo.PtPixelLocation.X = x;
+            _contact.PointerInfo.PtPixelLocation.Y = y;
+
+            _contact.PointerInfo.PointerFlags = PointerFlags.UP;
+            return TouchInjector.InjectTouchInput(1, new[] { _contact });
+        }
 
         /// <summary>
         /// Finger move on the screen.
@@ -239,7 +287,7 @@
         /// <param name="element">The element to touch</param>
         /// <param name="xOffset">The X coordinate relative to the element</param>
         /// <param name="yOffset">The Y coordinate relative to the element</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool TouchUpdate(CruciatusElement element, int xOffset, int yOffset)
         {
             return ElementLocationAction(element, xOffset, yOffset, TouchUpdate);
@@ -250,16 +298,23 @@
         /// </summary>
         /// <param name="x">The X coordinate on the screen</param>
         /// <param name="y">The Y coordinate on the screen</param>
-        /// <returns></returns>
-        [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool TouchUpdate(int x, int y);
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool TouchUpdate(int x, int y)
+        {
+            _contact.PointerInfo.PtPixelLocation.X = x;
+            _contact.PointerInfo.PtPixelLocation.Y = y;
+
+            _contact.PointerInfo.PointerFlags = PointerFlags.UPDATE | PointerFlags.INRANGE | PointerFlags.INCONTACT;
+
+            return TouchInjector.InjectTouchInput(1, new[] { _contact });
+        }
 
         /// <summary>
         /// Long press on the touch screen using finger motion events.
         /// </summary>
         /// <param name="element">The element to long press on</param>
         /// <param name="duration">The duration of the press</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool LongTap(CruciatusElement element, int duration)
         {
             int x, y;
@@ -275,7 +330,7 @@
         /// <param name="xOffset">The X offset of the element being touched</param>
         /// <param name="yOffset">The Y offset of the element being touched</param>
         /// <param name="duration">The duration of the press</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool LongTap(CruciatusElement element, int xOffset, int yOffset, int duration)
         {
             var rect = element.Properties.BoundingRectangle;
@@ -289,9 +344,27 @@
         /// <param name="x">The X coordinate on the screen</param>
         /// <param name="y">The Y coordinate on the screen</param>
         /// <param name="duration">The duration of the press</param>
-        /// <returns></returns>
-        [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool LongTap(int x, int y, int duration);
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool LongTap(int x, int y, int duration)
+        {
+            if (!TouchDown(x, y))
+            {
+                return false;
+            }
+
+            var start = DateTime.UtcNow;
+
+            while (DateTime.UtcNow < start + TimeSpan.FromMilliseconds(duration))
+            {
+                if (!TouchUpdate(x, y))
+                {
+                    return false;
+                }
+                Thread.Sleep(16);
+            }
+
+            return TouchUp(x, y);
+        }
 
         /// <summary>
         /// Scroll on the touch screen using finger based motion events.
@@ -302,7 +375,7 @@
         /// <param name="yEnd">The Y coordinate to end the scroll</param>
         /// <param name="dragTime">The time taken to perform the drag.  Defaults to the time required for 6 pixels per 8 ms.</param>
         /// <param name="pauseBeforeUp">The time to wait after scrolling before the 'up' gesture.  300 ms is sufficient to avoid inertia.</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool Scroll(int xStart, int yStart, int xEnd, int yEnd, int? dragTime = null, int pauseBeforeUp = 300)
         {
             var xDistance = xEnd - xStart;
@@ -361,7 +434,7 @@
         /// <param name="element">The element to scroll</param>
         /// <param name="xOffset">The X pixels to scroll</param>
         /// <param name="yOffset">The Y pixels to scroll</param>
-        /// <returns></returns>
+        /// <returns>true if successful, otherwise false</returns>
         public static bool Scroll(CruciatusElement element, int xOffset, int yOffset)
         {
             var rect = element.Properties.BoundingRectangle;
