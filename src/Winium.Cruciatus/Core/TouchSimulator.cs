@@ -13,6 +13,12 @@
 
     public static class TouchSimulator
     {
+        #region Fields
+
+        private static int _pauseBeforeUp = 300; // after drag, delay 'up' this long to avoid inertia
+
+        #endregion
+
         #region Public Methods and Operators
 
         /// <summary>
@@ -33,6 +39,34 @@
         /// <returns></returns>
         [DllImport(@"Winium.Cruciatus.TouchSimulator.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool DoubleTap(int x, int y);
+
+        public static bool Flick(int xStart, int yStart, int xEnd, int yEnd, int gestureTime)
+        {
+            if (!TouchDown(xStart, yStart))
+            {
+                return false;
+            }
+
+            var startTime = DateTime.Now;
+
+            while (DateTime.Now < startTime + TimeSpan.FromMilliseconds(gestureTime))
+            {
+                var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                var elapsedFraction = elapsed / gestureTime;
+
+                var xAdjustment = (xEnd - xStart) * elapsedFraction;
+                var yAdjustment = (yEnd - yStart) * elapsedFraction;
+
+                if (!TouchUpdate((int)(xStart + xAdjustment), (int)(yStart + yAdjustment)))
+                {
+                    return false;
+                }
+
+                Thread.Sleep(16);
+            }
+
+            return TouchUpdate(xEnd, yEnd) && TouchUp(xEnd, yEnd);
+        }
 
         /// <summary>
         /// Flick on the touch screen using finger motion events. The flick begins in the center of the screen.
@@ -262,6 +296,68 @@
         /// <summary>
         /// Scroll on the touch screen using finger based motion events.
         /// </summary>
+        /// <param name="xStart">The X coordinate to start the scroll</param>
+        /// <param name="yStart">The Y coordinate to start the scroll</param>
+        /// <param name="xEnd">The X coordinate to end the scroll</param>
+        /// <param name="yEnd">The Y coordinate to end the scroll</param>
+        /// <param name="dragTime">The time taken to perform the drag.  Defaults to the time required for 6 pixels per 8 ms.</param>
+        /// <param name="pauseBeforeUp">The time to wait after scrolling before the 'up' gesture.  300 ms is sufficient to avoid inertia.</param>
+        /// <returns></returns>
+        public static bool Scroll(int xStart, int yStart, int xEnd, int yEnd, int? dragTime = null, int pauseBeforeUp = 300)
+        {
+            var xDistance = xEnd - xStart;
+            var yDistance = yEnd - yStart;
+
+            var distance = Math.Sqrt(Math.Pow(xStart - xEnd, 2) + Math.Pow(yStart - yEnd, 2));
+
+            var stepTime = 8;
+
+            if (!dragTime.HasValue)
+            {
+                dragTime = (int)((distance / 6) * stepTime);  // default to 6 pixels per step
+            }
+
+            var steps = dragTime / stepTime;
+
+            var distancePerStep = distance / steps;
+
+            if (!TouchDown(xStart, yStart))
+            {
+                return false;
+            }
+
+            for (var soFar = distancePerStep; soFar < distance; soFar += distancePerStep)
+            {
+                var soFarFraction = soFar / distance;
+
+                var x = (int)(xStart + (xDistance * soFarFraction));
+                var y = (int)(yStart + (yDistance * soFarFraction));
+
+                if (!TouchUpdate(x, y))
+                {
+                    return false;
+                }
+
+                Thread.Sleep(stepTime);
+            }
+
+            var startTime = DateTime.Now;
+
+            while (DateTime.Now < (startTime + TimeSpan.FromMilliseconds(pauseBeforeUp)))
+            {
+                if (!TouchUpdate(xEnd, yEnd))
+                {
+                    return false;
+                }
+                Thread.Sleep(16);
+            }
+
+            return TouchUp(xEnd, yEnd);
+        }
+
+        /// <summary>
+        /// Scroll on the touch screen using finger based motion events.
+        /// </summary>
         /// <param name="element">The element to scroll</param>
         /// <param name="xOffset">The X pixels to scroll</param>
         /// <param name="yOffset">The Y pixels to scroll</param>
@@ -270,46 +366,13 @@
         {
             var rect = element.Properties.BoundingRectangle;
 
-            var startPoint = new Point(
-                rect.Left + (rect.Width / 2),
-                rect.Top + (rect.Height / 2));
+            var xStart = (int)(rect.Left + (rect.Width / 2));
+            var yStart = (int)(rect.Top + (rect.Height / 2));
 
-            var endPoint = new Point(
-                startPoint.X + xOffset,
-                startPoint.Y + yOffset);
+            var xEnd = xStart + xOffset;
+            var yEnd = yStart + yOffset;
 
-            if (!TouchDown((int)startPoint.X, (int)startPoint.Y))
-            {
-                return false;
-            }
-
-            var distance = Math.Sqrt(Math.Pow(startPoint.X - endPoint.X, 2) + Math.Pow(startPoint.Y - endPoint.Y, 2));
-
-            for (var soFar = 6; soFar < distance; soFar += 6)
-            {
-                var soFarFraction = soFar / distance;
-
-                var x = (int)(startPoint.X + (xOffset * soFarFraction));
-                var y = (int)(startPoint.Y + (yOffset * soFarFraction));
-                if (!TouchUpdate(x, y))
-                {
-                    return false;
-                }
-
-                Thread.Sleep(8);
-            }
-
-            var startTime = DateTime.Now;
-            while (DateTime.Now < (startTime + TimeSpan.FromMilliseconds(500)))
-            {
-                if (!TouchUpdate((int)endPoint.X, (int)endPoint.Y))
-                {
-                    return false;
-                }
-                Thread.Sleep(16);
-            }
-
-            return TouchUp((int)endPoint.X, (int)endPoint.Y);
+            return Scroll(xStart, yStart, xEnd, yEnd);
         }
 
         #endregion
