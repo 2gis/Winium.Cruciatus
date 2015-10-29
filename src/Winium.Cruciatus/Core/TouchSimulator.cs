@@ -378,6 +378,45 @@
         /// <returns>true if successful, otherwise false</returns>
         public static bool Scroll(int xStart, int yStart, int xEnd, int yEnd, int? dragTime = null, int pauseBeforeUp = 300)
         {
+
+            if (!TouchDown(xStart, yStart))
+            {
+                return false;
+            }
+
+            if (!MoveTo(xStart, yStart, xEnd, yEnd, dragTime))
+            {
+                return false;
+            }
+
+            var startTime = DateTime.Now;
+
+            if (pauseBeforeUp > 0)
+            {
+                while (DateTime.Now < (startTime + TimeSpan.FromMilliseconds(pauseBeforeUp)))
+                {
+                    if (!TouchUpdate(xEnd, yEnd))
+                    {
+                        return false;
+                    }
+                    Thread.Sleep(16);
+                }
+            }
+
+            return TouchUp(xEnd, yEnd);
+        }
+
+        /// <summary>
+        /// Drags a previously touched finger using finger based motion events.
+        /// </summary>
+        /// <param name="xStart">The X coordinate to start the gesture</param>
+        /// <param name="yStart">The Y coordinate to start the gesture</param>
+        /// <param name="xEnd">The X coordinate to end the gesture</param>
+        /// <param name="yEnd">The Y coordinate to end the gesture</param>
+        /// <param name="dragTime">The time taken to perform the drag.  Defaults to the time required for 6 pixels per 8 ms.</param>
+        /// <returns>true if successful, otherwise false</returns>
+        public static bool MoveTo(int xStart, int yStart, int xEnd, int yEnd, int? dragTime = null)
+        {
             var xDistance = xEnd - xStart;
             var yDistance = yEnd - yStart;
 
@@ -389,15 +428,9 @@
             {
                 dragTime = (int)((distance / 6) * stepTime);  // default to 6 pixels per step
             }
-
             var steps = dragTime / stepTime;
 
             var distancePerStep = distance / steps;
-
-            if (!TouchDown(xStart, yStart))
-            {
-                return false;
-            }
 
             for (var soFar = distancePerStep; soFar < distance; soFar += distancePerStep)
             {
@@ -414,18 +447,7 @@
                 Thread.Sleep(stepTime);
             }
 
-            var startTime = DateTime.Now;
-
-            while (DateTime.Now < (startTime + TimeSpan.FromMilliseconds(pauseBeforeUp)))
-            {
-                if (!TouchUpdate(xEnd, yEnd))
-                {
-                    return false;
-                }
-                Thread.Sleep(16);
-            }
-
-            return TouchUp(xEnd, yEnd);
+            return TouchUpdate(xEnd, yEnd);
         }
 
         /// <summary>
