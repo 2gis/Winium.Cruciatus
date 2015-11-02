@@ -3,7 +3,6 @@
     #region using
 
     using System;
-    using System.Runtime.InteropServices;
     using System.Threading;
     using System.Windows;
 
@@ -62,11 +61,15 @@
                 return false;
             }
 
-            var startTime = DateTime.Now;
+            var startTime = DateTime.UtcNow;
 
-            while (DateTime.Now < startTime + TimeSpan.FromMilliseconds(gestureTime))
+            var iterations = 0;
+
+            while (DateTime.UtcNow < startTime + TimeSpan.FromMilliseconds(gestureTime))
             {
-                var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                iterations++;
+
+                var elapsed = (DateTime.UtcNow - startTime).TotalMilliseconds;
                 var elapsedFraction = elapsed / gestureTime;
 
                 var xAdjustment = (xEnd - xStart) * elapsedFraction;
@@ -77,7 +80,10 @@
                     return false;
                 }
 
-                Thread.Sleep(16);
+                while ((DateTime.UtcNow - startTime).TotalMilliseconds < (iterations * 16))
+                {
+                    Thread.Sleep(4);
+                }
             }
 
             return TouchUpdate(xEnd, yEnd) && TouchUp(xEnd, yEnd);
@@ -113,11 +119,15 @@
                 return false;
             }
 
-            var startTime = DateTime.Now;
+            var startTime = DateTime.UtcNow;
 
-            while (DateTime.Now < startTime + TimeSpan.FromMilliseconds(gestureMs))
+            var iterations = 0;
+
+            while (DateTime.UtcNow < startTime + TimeSpan.FromMilliseconds(gestureMs))
             {
-                var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                iterations++;
+
+                var elapsed = (DateTime.UtcNow - startTime).TotalMilliseconds;
                 var elapsedFraction = elapsed / gestureMs;
 
                 var xAdjustment = xPixels == 0 ? 0 : xPixels * elapsedFraction;
@@ -128,7 +138,10 @@
                     return false;
                 }
 
-                Thread.Sleep(16);
+                while ((DateTime.UtcNow - startTime).TotalMilliseconds < (iterations * 16))
+                {
+                    Thread.Sleep(4);
+                }
             }
 
             return TouchUpdate((int)endPoint.X, (int)endPoint.Y)
@@ -164,11 +177,13 @@
 
             var gestureMilliseconds = distance / pixelsPerSecond * 1000;
 
-            var startTime = DateTime.Now;
+            var startTime = DateTime.UtcNow;
 
-            while (DateTime.Now < (startTime + TimeSpan.FromMilliseconds(gestureMilliseconds)))
+            var iterations = 0;
+
+            while (DateTime.UtcNow < (startTime + TimeSpan.FromMilliseconds(gestureMilliseconds)))
             {
-                var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
+                var elapsed = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
                 var elapsedFraction = elapsed / gestureMilliseconds;
 
@@ -179,7 +194,10 @@
                     return false;
                 }
 
-                Thread.Sleep(16);
+                while ((DateTime.UtcNow - startTime).TotalMilliseconds < (iterations * 16))
+                {
+                    Thread.Sleep(4);
+                }
             }
 
             return TouchUpdate((int)endPoint.X, (int)endPoint.Y)
@@ -391,11 +409,11 @@
                 return false;
             }
 
-            var startTime = DateTime.Now;
+            var startTime = DateTime.UtcNow;
 
             if (pauseBeforeUp > 0)
             {
-                while (DateTime.Now < (startTime + TimeSpan.FromMilliseconds(pauseBeforeUp)))
+                while (DateTime.UtcNow < (startTime + TimeSpan.FromMilliseconds(pauseBeforeUp)))
                 {
                     if (!TouchUpdate(xEnd, yEnd))
                     {
@@ -424,7 +442,7 @@
 
             var distance = Math.Sqrt(Math.Pow(xStart - xEnd, 2) + Math.Pow(yStart - yEnd, 2));
 
-            var stepTime = 8;
+            var stepTime = 16;
 
             if (!dragTime.HasValue)
             {
@@ -433,6 +451,8 @@
             var steps = dragTime / stepTime;
 
             var distancePerStep = distance / steps;
+
+            var startTime = DateTime.UtcNow;
 
             for (var soFar = distancePerStep; soFar < distance; soFar += distancePerStep)
             {
@@ -446,7 +466,10 @@
                     return false;
                 }
 
-                Thread.Sleep(stepTime);
+                while ((DateTime.UtcNow - startTime).TotalMilliseconds < dragTime * soFarFraction)
+                {
+                    Thread.Sleep(4);
+                }
             }
 
             return TouchUpdate(xEnd, yEnd);
