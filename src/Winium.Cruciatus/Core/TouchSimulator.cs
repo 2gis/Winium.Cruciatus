@@ -17,6 +17,8 @@
     {
         #region Fields
 
+        private static bool _touchInjectionInitialized;
+
         private static int _pauseBeforeUp = 300; // after drag, delay 'up' this long to avoid inertia
 
         private static PointerTouchInfo _contact;
@@ -231,7 +233,7 @@
         /// <returns>true if successful, otherwise false</returns>
         public static bool TouchDown(int x, int y)
         {
-            TouchInjector.InitializeTouchInjection();
+            InitializeTouchInjection();
 
             _contact = new PointerTouchInfo();
             _contact.PointerInfo.pointerType = PointerInputType.TOUCH;
@@ -473,6 +475,16 @@
         #endregion
 
         #region Methods
+
+        private static bool InitializeTouchInjection()
+        {
+            if (!_touchInjectionInitialized)
+            {
+                _touchInjectionInitialized = TouchInjector.InitializeTouchInjection();
+            }
+
+            return _touchInjectionInitialized;
+        }
 
         private static bool ElementCenterAction(CruciatusElement element, Func<int, int, bool> action)
         {
