@@ -48,6 +48,10 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="TCD.System.TouchInjection, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TCD.System.TouchInjection.1.0.0\lib\net45\TCD.System.TouchInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="UIAutomationClient" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
@@ -59,6 +63,7 @@
     <Compile Include="Application.cs" />
     <Compile Include="Core\ByProperty.cs" />
     <Compile Include="Core\ByXPath.cs" />
+    <Compile Include="Core\TouchSimulator.cs" />
     <Compile Include="Helpers\AutomationElementHelper.cs" />
     <Compile Include="Core\By.cs" />
     <Compile Include="Core\ClickStrategies.cs" />
@@ -111,7 +116,6 @@
     <None Include="CruciatusRuleSet.ruleset" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
