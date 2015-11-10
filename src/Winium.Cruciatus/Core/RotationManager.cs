@@ -145,9 +145,9 @@ namespace Winium.Cruciatus.Core
 
 
         /// <summary>
-        /// Gets the current orientation of the screen
+        /// Gets the current orientation of the primary screen
         /// </summary>
-        /// <returns>The orientation of the screen</returns>
+        /// <returns>The orientation of the primary screen</returns>
         public static DisplayOrientation GetCurrentOrientation()
         {
             var currentSettings = new DEVMODE();
@@ -159,7 +159,7 @@ namespace Winium.Cruciatus.Core
         }
 
         /// <summary>
-        /// Sets the orientation of the screen
+        /// Sets the orientation of the primary screen
         /// </summary>
         /// <param name="orientation">The desired orientation</param>
         /// <returns>
