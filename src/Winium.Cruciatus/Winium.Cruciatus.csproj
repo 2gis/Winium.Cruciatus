@@ -59,6 +59,8 @@
     <Compile Include="Application.cs" />
     <Compile Include="Core\ByProperty.cs" />
     <Compile Include="Core\ByXPath.cs" />
+    <Compile Include="Core\DisplayOrientation.cs" />
+    <Compile Include="Core\RotationManager.cs" />
     <Compile Include="Helpers\AutomationElementHelper.cs" />
     <Compile Include="Core\By.cs" />
     <Compile Include="Core\ClickStrategies.cs" />
