@@ -9,8 +9,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-v2.9.1
-- Fix XPath attribute value if this ControlType
+v2.10.0
+- Add `RotationManager` for get and set display orientation (thanks to @jonstoneman)
 </releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags>Automation Desktop C#</tags>

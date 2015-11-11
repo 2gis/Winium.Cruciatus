@@ -2,7 +2,12 @@
 
 <!--## Unreleased-->
 
-## v2.9.1
+## v2.10.0
+
+- Add `RotationManager` for get and set display orientation (thanks to @jonstoneman)
+
+
+## v2.9.1
 
 - Fix XPath attribute value if this ControlType
 
@@ -21,6 +26,7 @@
 
 - Set default search timeout to 10 seconds
 - Simplify DataGrid element instantiation
+
 
 
 
