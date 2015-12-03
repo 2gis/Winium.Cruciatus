@@ -108,7 +108,8 @@
             {
                 if (this.instance == null)
                 {
-                    this.instance = this.Parent.FindElement(this.FindStrategy).Instance;
+                    var element = this.Parent.FindElement(this.FindStrategy);
+                    this.instance = element != null ? element.Instance : null;
                 }
 
                 if (this.instance == null)
