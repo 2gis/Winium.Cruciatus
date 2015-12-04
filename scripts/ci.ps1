@@ -8,4 +8,5 @@ Import-Module '.\setup.ps1' -Args (,('msbuild', 'nunit'))
 Invoke-MSBuild $solution $msbuildProperties -Verbose
 
 # Test
+(New-Object -ComObject "Shell.Application").minimizeall()
 Invoke-NUnit $testFiles -Verbose

@@ -23,6 +23,7 @@ Update-Nuspec $nuspecPath $version $description -Verbose
 Invoke-MSBuild $solution $msbuildProperties -Verbose
 
 # Test
+(New-Object -ComObject "Shell.Application").minimizeall()
 Invoke-NUnit $testFiles -Verbose
 
 # Create nuget-package
