@@ -88,6 +88,29 @@
         public By FindStrategy { get; internal set; }
 
         /// <summary>
+        /// Возвращает true, если элемент существует, иначе false (например, родительское окно было закрыто).
+        /// </summary>
+        public bool IsStale
+        {
+            get
+            {
+                try
+                {
+                    this.Instance.GetCurrentPropertyValue(AutomationElement.AutomationIdProperty);
+                    return false;
+                }
+                catch (NoSuchElementException)
+                {
+                    return true;
+                }
+                catch (ElementNotAvailableException)
+                {
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>
         /// Свойства элемента.
         /// </summary>
         public CruciatusElementProperties Properties
@@ -114,7 +137,7 @@
 
                 if (this.instance == null)
                 {
-                    throw new CruciatusException("ELEMENT NOT FOUND");
+                    throw new NoSuchElementException("ELEMENT NOT FOUND");
                 }
 
                 return this.instance;
