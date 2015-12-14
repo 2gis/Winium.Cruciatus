@@ -20,9 +20,9 @@ namespace Winium.Cruciatus.Helpers
         #region Methods
 
         internal static IEnumerable<AutomationElement> FindAll(
-            AutomationElement parent, 
-            TreeScope scope, 
-            Condition condition, 
+            AutomationElement parent,
+            TreeScope scope,
+            Condition condition,
             int timeout)
         {
             var dtn = DateTime.Now.AddMilliseconds(timeout);
@@ -73,9 +73,9 @@ namespace Winium.Cruciatus.Helpers
         }
 
         internal static AutomationElement FindFirst(
-            AutomationElement parent, 
-            TreeScope scope, 
-            Condition condition, 
+            AutomationElement parent,
+            TreeScope scope,
+            Condition condition,
             int timeout)
         {
             var dtn = DateTime.Now.AddMilliseconds(timeout);
@@ -83,7 +83,16 @@ namespace Winium.Cruciatus.Helpers
             // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
             while (DateTime.Now <= dtn)
             {
-                var element = parent.FindFirst(scope, condition);
+                AutomationElement element;
+                try
+                {
+                    element = parent.FindFirst(scope, condition);
+                }
+                catch (ElementNotAvailableException)
+                {
+                    element = null;
+                }
+
                 if (element != null)
                 {
                     return element;
