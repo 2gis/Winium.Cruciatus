@@ -62,8 +62,8 @@
         }
 
         internal static bool TryClickOnBoundingRectangleCenter(
-            MouseButton button, 
-            CruciatusElement element, 
+            MouseButton button,
+            CruciatusElement element,
             bool doubleClick)
         {
             if (element == null)
@@ -88,10 +88,10 @@
             }
 
             Logger.Info(
-                "{0} on '{1}' element at ({2}, {3}) BoundingRectangle center", 
-                doubleClick ? "DoubleClick" : "Click", 
-                element, 
-                point.X, 
+                "{0} on '{1}' element at ({2}, {3}) BoundingRectangle center",
+                doubleClick ? "DoubleClick" : "Click",
+                element,
+                point.X,
                 point.Y);
             return true;
         }
@@ -112,6 +112,7 @@
 
             var x = point.Value.X;
             var y = point.Value.Y;
+            var elementString = Logger.IsInfoEnabled ? element.ToString() : null;
             if (doubleClick)
             {
                 CruciatusFactory.Mouse.DoubleClick(button, x, y);
@@ -122,10 +123,10 @@
             }
 
             Logger.Info(
-                "{0} on '{1}' element at ({2}, {3}) ClickablePoint", 
-                doubleClick ? "DoubleClick" : "Click", 
-                element, 
-                x, 
+                "{0} on '{1}' element at ({2}, {3}) ClickablePoint",
+                doubleClick ? "DoubleClick" : "Click",
+                elementString,
+                x,
                 y);
             return true;
         }
