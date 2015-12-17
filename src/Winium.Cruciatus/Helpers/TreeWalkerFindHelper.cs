@@ -2,9 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Windows.Automation;
+    using Winium.Cruciatus.Extensions;
 
     /// <summary>
     /// A static class to find <see cref="AutomationElement"/> objects using a <see cref="TreeWalker"/>.
@@ -64,11 +66,10 @@
             }
 
             Func<AutomationElement, bool> conditionFunction = ConvertToFunction(condition);
-            DateTime utcNow = DateTime.UtcNow;
-            DateTime maximumUtc = utcNow.AddMilliseconds(timeout);
+            Stopwatch timer = Stopwatch.StartNew();
 
             // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-            while (utcNow <= maximumUtc)
+            while (timer.ElapsedMilliseconds <= timeout)
             {
                 if (scope.HasFlag(TreeScope.Element) && conditionFunction(element))
                 {
@@ -78,7 +79,7 @@
                 bool hasFlagDescendants = scope.HasFlag(TreeScope.Descendants);
                 if (scope.HasFlag(TreeScope.Children) || hasFlagDescendants)
                 {
-                    IEnumerable<AutomationElement> matchingDescendants = GetChildren(walker, element, conditionFunction, hasFlagDescendants, true);
+                    IEnumerable<AutomationElement> matchingDescendants = FindChildMatches(walker, element, conditionFunction, timeout, timer, hasFlagDescendants, true);
                     if (matchingDescendants.Any())
                     {
                         return matchingDescendants.First();
@@ -100,7 +101,7 @@
                             parent = null;
                         }
 
-                        while (parent != null)
+                        while (parent != null && timer.ElapsedMilliseconds <= timeout)
                         {
                             if (conditionFunction(parent))
                             {
@@ -181,12 +182,11 @@
             }
 
             Func<AutomationElement, bool> conditionFunction = ConvertToFunction(condition);
-            DateTime utcNow = DateTime.UtcNow;
-            DateTime maximumUtc = utcNow.AddMilliseconds(timeout);
+            Stopwatch timer = Stopwatch.StartNew();
             List<AutomationElement> matches = new List<AutomationElement>();
 
             // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-            while (utcNow <= maximumUtc)
+            while (timer.ElapsedMilliseconds <= timeout)
             {
                 if (scope.HasFlag(TreeScope.Element) && conditionFunction(element))
                 {
@@ -196,7 +196,7 @@
                 bool hasFlagDescendants = scope.HasFlag(TreeScope.Descendants);
                 if (scope.HasFlag(TreeScope.Children) || hasFlagDescendants)
                 {
-                    matches.AddRange(GetChildren(walker, element, conditionFunction, hasFlagDescendants, false));
+                    matches.AddRange(FindChildMatches(walker, element, conditionFunction, timeout, timer, hasFlagDescendants, false));
                 }
 
                 bool hasFlagAncestors = scope.HasFlag(TreeScope.Ancestors);
@@ -214,7 +214,7 @@
                             parent = null;
                         }
 
-                        while (parent != null)
+                        while (parent != null && timer.ElapsedMilliseconds <= timeout)
                         {
                             if (conditionFunction(parent))
                             {
@@ -251,61 +251,96 @@
         /// <param name="walker">An instance of <see cref="TreeWalker"/> to walk the control tree.</param>
         /// <param name="element">The <see cref="AutomationElement"/> from which to search.</param>
         /// <param name="conditionFunction">The condition function used to determine if a particular child <see cref="AutomationElement"/> is a match.</param>
+        /// <param name="timeout">The maximum amount of milliseconds to search.</param>
+        /// <param name="timer">A running <see cref="Stopwatch"/> that is used to check timeout.</param>
         /// <param name="isIncludeDescendants">Whether to return the descendants of the child nodes.</param>
         /// <param name="isReturnFirstMatchOnly">Whether to return immediately upon finding a match.</param>
         /// <returns>A collection of the <see cref="AutomationElement"/> objects that are children of the specified <paramref name="element"/> matching the specified <paramref name="conditionFunction"/>.</returns>
-        private static IEnumerable<AutomationElement> GetChildren(TreeWalker walker, AutomationElement element, Func<AutomationElement, bool> conditionFunction, bool isIncludeDescendants, bool isReturnFirstMatchOnly)
+        private static IEnumerable<AutomationElement> FindChildMatches(TreeWalker walker, AutomationElement element, Func<AutomationElement, bool> conditionFunction, int timeout, Stopwatch timer, bool isIncludeDescendants, bool isReturnFirstMatchOnly)
+        {
+            List<AutomationElement> matches = new List<AutomationElement>();
+            IEnumerable<AutomationElement> currentLayer = element.AsSingletonEnumerable();
+            do
+            {
+                currentLayer = GetChildLayer(walker, currentLayer, timeout, timer);
+                for (int i = 0; i < currentLayer.Count() && timer.ElapsedMilliseconds <= timeout; i++)
+                {
+                    AutomationElement child = currentLayer.ElementAt(i);
+                    if (conditionFunction(child))
+                    {
+                        matches.Add(child);
+
+                        if (isReturnFirstMatchOnly)
+                        {
+                            return matches;
+                        }
+                    }
+                }
+            }
+            while (isIncludeDescendants && timer.ElapsedMilliseconds <= timeout && currentLayer.Any());
+
+            return matches;
+        }
+
+        /// <summary>
+        /// Gets all <see cref="AutomationElement"/> objects that are children of the specified collection <paramref name="parentLayer"/>
+        /// that represents a level in a tree using the <paramref name=" walker"/>.  Breaks and returns if the <paramref name="timer"/>
+        /// indicates the <paramref name="timeout"/> has elasped.
+        /// </summary>
+        /// <param name="walker">An instance of <see cref="TreeWalker"/> to walk the control tree.</param>
+        /// <param name="parentLayer">The collection of <see cref="AutomationElement"/> objects representing the parent nodes for which to retrieve child nodes.</param>
+        /// <param name="timeout">The maximum amount of milliseconds to search.</param>
+        /// <param name="timer">A running <see cref="Stopwatch"/> that is used to check timeout.</param>
+        /// <returns>A collection containing <see cref="AutomationElement"/> objects that are the immediate children of <paramref name="parentLayer"/> in the control tree.</returns>
+        private static IEnumerable<AutomationElement> GetChildLayer(TreeWalker walker, IEnumerable<AutomationElement> parentLayer, int timeout, Stopwatch timer)
+        {
+            List<AutomationElement> childLayer = new List<AutomationElement>();
+            for (int i = 0; i < parentLayer.Count() && timer.ElapsedMilliseconds <= timeout; i++)
+            {
+                childLayer.AddRange(GetChildren(walker, parentLayer.ElementAt(i), timeout, timer));
+            }
+
+            return childLayer;
+        }
+
+        /// <summary>
+        /// Gets all <see cref="AutomationElement"/> objects that are children of the specified <paramref name="parent"/> element using
+        /// the <paramref name=" walker"/>.  Breaks and returns if the <paramref name="timer"/> indicates the <paramref name="timeout"/>
+        /// has elasped.
+        /// </summary>
+        /// <param name="walker">An instance of <see cref="TreeWalker"/> to walk the control tree.</param>
+        /// <param name="parent">The <see cref="AutomationElement"/> object from which to retrieve child nodes.</param>
+        /// <param name="timeout">The maximum amount of milliseconds to search.</param>
+        /// <param name="timer">A running <see cref="Stopwatch"/> that is used to check timeout.</param>
+        /// <returns>A collection containing <see cref="AutomationElement"/> objects that are the immediate children of <paramref name="parentLayer"/> in the control tree.</returns>
+        private static IEnumerable<AutomationElement> GetChildren(TreeWalker walker, AutomationElement parent, int timeout, Stopwatch timer)
         {
             List<AutomationElement> children = new List<AutomationElement>();
-            List<AutomationElement> matches = new List<AutomationElement>();
-            AutomationElement immediateChild;
+            AutomationElement child;
             try
             {
-                immediateChild = walker.GetFirstChild(element);
+                child = walker.GetFirstChild(parent);
             }
             catch (ElementNotAvailableException)
             {
-                immediateChild = null;
+                child = null;
             }
 
-            while (immediateChild != null)
+            while (child != null && timer.ElapsedMilliseconds <= timeout)
             {
-                children.Add(immediateChild);
-
-                if (conditionFunction(immediateChild))
-                {
-                    matches.Add(immediateChild);
-
-                    if (isReturnFirstMatchOnly)
-                    {
-                        break;
-                    }
-                }
+                children.Add(child);
 
                 try
                 {
-                    immediateChild = walker.GetNextSibling(immediateChild);
+                    child = walker.GetNextSibling(child);
                 }
                 catch (ElementNotAvailableException)
                 {
-                    immediateChild = null;
+                    child = null;
                 }
             }
 
-            if (isIncludeDescendants && !(isReturnFirstMatchOnly && matches.Any()))
-            {
-                foreach (AutomationElement child in children)
-                {
-                    matches.AddRange(GetChildren(walker, child, conditionFunction, isIncludeDescendants, isReturnFirstMatchOnly));
-
-                    if (isReturnFirstMatchOnly && matches.Any())
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return matches;
+            return children;
         }
 
         /// <summary>
