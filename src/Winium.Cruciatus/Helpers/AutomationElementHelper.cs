@@ -25,19 +25,7 @@ namespace Winium.Cruciatus.Helpers
             Condition condition,
             int timeout)
         {
-            var dtn = DateTime.Now.AddMilliseconds(timeout);
-
-            // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-            while (DateTime.Now <= dtn)
-            {
-                var elements = parent.FindAll(scope, condition);
-                if (elements.Count > 0)
-                {
-                    return elements.Cast<AutomationElement>();
-                }
-            }
-
-            return Enumerable.Empty<AutomationElement>();
+            return TreeWalkerFindHelper.FindAll(parent, scope, condition, timeout);
         }
 
         internal static IEnumerable<AutomationElement> FindAll(AutomationElement parent, string xpath, int timeout)
@@ -78,28 +66,7 @@ namespace Winium.Cruciatus.Helpers
             Condition condition,
             int timeout)
         {
-            var dtn = DateTime.Now.AddMilliseconds(timeout);
-
-            // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-            while (DateTime.Now <= dtn)
-            {
-                AutomationElement element;
-                try
-                {
-                    element = parent.FindFirst(scope, condition);
-                }
-                catch (ElementNotAvailableException)
-                {
-                    element = null;
-                }
-
-                if (element != null)
-                {
-                    return element;
-                }
-            }
-
-            return null;
+            return TreeWalkerFindHelper.FindFirst(parent, scope, condition, timeout);
         }
 
         internal static bool TryGetBoundingRectangleCenter(AutomationElement element, out Point point)

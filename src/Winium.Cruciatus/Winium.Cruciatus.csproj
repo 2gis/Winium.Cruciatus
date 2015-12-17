@@ -84,6 +84,7 @@
     <Compile Include="Elements\SaveFileDialog.cs" />
     <Compile Include="Elements\OpenFileDialog.cs" />
     <Compile Include="Extensions\IScreenshoterExtension.cs" />
+    <Compile Include="Helpers\TreeWalkerFindHelper.cs" />
     <Compile Include="Helpers\XPath\PropertyItem.cs" />
     <Compile Include="Helpers\XPath\DesktopTreeXPathNavigator.cs" />
     <Compile Include="Helpers\XPath\ElementItem.cs" />
