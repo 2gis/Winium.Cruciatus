@@ -185,20 +185,22 @@
             Stopwatch timer = Stopwatch.StartNew();
             List<AutomationElement> matches = new List<AutomationElement>();
 
-            // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-            while (timer.ElapsedMilliseconds <= timeout)
+            if (scope.HasFlag(TreeScope.Element) && conditionFunction(element))
             {
-                if (scope.HasFlag(TreeScope.Element) && conditionFunction(element))
-                {
-                    matches.Add(element);
-                }
+                matches.Add(element);
+            }
 
+            if (timer.ElapsedMilliseconds <= timeout)
+            {
                 bool hasFlagDescendants = scope.HasFlag(TreeScope.Descendants);
                 if (scope.HasFlag(TreeScope.Children) || hasFlagDescendants)
                 {
                     matches.AddRange(FindChildMatches(walker, element, conditionFunction, timeout, timer, hasFlagDescendants, false));
                 }
+            }
 
+            if (timer.ElapsedMilliseconds <= timeout)
+            {
                 bool hasFlagAncestors = scope.HasFlag(TreeScope.Ancestors);
                 if (scope.HasFlag(TreeScope.Parent) || hasFlagAncestors)
                 {
