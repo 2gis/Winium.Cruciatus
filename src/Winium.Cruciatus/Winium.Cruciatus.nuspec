@@ -9,8 +9,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-v2.9.0
-- Add 'SetFocus' method to 'CruciatusElement'
+v2.10.0
+- Add `RotationManager` for get and set display orientation (thanks to @jonstoneman)
 </releaseNotes>
     <copyright>Copyright @ 2015</copyright>
     <tags>Automation Desktop C#</tags>

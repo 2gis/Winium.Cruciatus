@@ -60,6 +60,9 @@
     <Compile Include="Application.cs" />
     <Compile Include="Core\ByProperty.cs" />
     <Compile Include="Core\ByXPath.cs" />
+    <Compile Include="Core\DisplayOrientation.cs" />
+    <Compile Include="Core\RotationManager.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Helpers\AutomationElementHelper.cs" />
     <Compile Include="Core\By.cs" />
     <Compile Include="Core\ClickStrategies.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="Elements\SaveFileDialog.cs" />
     <Compile Include="Elements\OpenFileDialog.cs" />
     <Compile Include="Extensions\IScreenshoterExtension.cs" />
+    <Compile Include="Helpers\TreeWalkerFindHelper.cs" />
     <Compile Include="Helpers\XPath\PropertyItem.cs" />
     <Compile Include="Helpers\XPath\DesktopTreeXPathNavigator.cs" />
     <Compile Include="Helpers\XPath\ElementItem.cs" />

@@ -62,8 +62,8 @@
         }
 
         internal static bool TryClickOnBoundingRectangleCenter(
-            MouseButton button, 
-            CruciatusElement element, 
+            MouseButton button,
+            CruciatusElement element,
             bool doubleClick)
         {
             if (element == null)
@@ -71,10 +71,11 @@
                 throw new ArgumentNullException("element");
             }
 
+            var elementString = Logger.IsDebugEnabled || Logger.IsInfoEnabled ? element.ToString() : null;
             Point point;
             if (!AutomationElementHelper.TryGetBoundingRectangleCenter(element.Instance, out point))
             {
-                Logger.Debug("Element '{0}' have empty BoundingRectangle", element);
+                Logger.Debug("Element '{0}' have empty BoundingRectangle", elementString);
                 return false;
             }
 
@@ -88,10 +89,10 @@
             }
 
             Logger.Info(
-                "{0} on '{1}' element at ({2}, {3}) BoundingRectangle center", 
-                doubleClick ? "DoubleClick" : "Click", 
-                element, 
-                point.X, 
+                "{0} on '{1}' element at ({2}, {3}) BoundingRectangle center",
+                doubleClick ? "DoubleClick" : "Click",
+                elementString,
+                point.X,
                 point.Y);
             return true;
         }
@@ -103,10 +104,11 @@
                 throw new ArgumentNullException("element");
             }
 
+            var elementString = Logger.IsDebugEnabled || Logger.IsInfoEnabled ? element.ToString() : null;
             var point = element.Properties.ClickablePoint;
             if (!point.HasValue)
             {
-                Logger.Debug("Element '{0}' not have ClickablePoint", element);
+                Logger.Debug("Element '{0}' not have ClickablePoint", elementString);
                 return false;
             }
 
@@ -122,10 +124,10 @@
             }
 
             Logger.Info(
-                "{0} on '{1}' element at ({2}, {3}) ClickablePoint", 
-                doubleClick ? "DoubleClick" : "Click", 
-                element, 
-                x, 
+                "{0} on '{1}' element at ({2}, {3}) ClickablePoint",
+                doubleClick ? "DoubleClick" : "Click",
+                elementString,
+                x,
                 y);
             return true;
         }
@@ -138,6 +140,7 @@
             }
 
             object basePattern;
+            var elementString = Logger.IsDebugEnabled || Logger.IsInfoEnabled ? element.ToString() : null;
             if (element.Instance.TryGetCurrentPattern(InvokePattern.Pattern, out basePattern))
             {
                 string cmd;
@@ -154,11 +157,11 @@
                     cmd = "Click";
                 }
 
-                Logger.Info("{0} emulation on '{1}' element with use invoke pattern", cmd, element);
+                Logger.Info("{0} emulation on '{1}' element with use invoke pattern", cmd, elementString);
                 return true;
             }
 
-            Logger.Debug("Element '{0}' not support InvokePattern", element);
+            Logger.Debug("Element '{0}' not support InvokePattern", elementString);
             return false;
         }
 
