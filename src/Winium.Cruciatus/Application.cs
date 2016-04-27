@@ -5,6 +5,8 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Collections.Generic;
+    using System.Linq;
 
     using Winium.Cruciatus.Exceptions;
 
@@ -66,6 +68,17 @@
         }
 
         /// <summary>
+        /// Get exit state of launched application
+        /// </summary>
+        /// <returns>
+        /// true if it's already exit, false if it's still running
+        /// </returns>
+        public bool HasExited()
+        {
+            return this.process.HasExited;
+        }
+        
+        /// <summary>
         /// Убивает приложение.
         /// </summary>
         /// <returns>
@@ -109,9 +122,37 @@
                                Arguments = arguments
                            };
 
-            this.process = Process.Start(info);
+            this.process = Process.Start(info);           
         }
 
+        /// <summary>
+        /// Update process property by process name
+        /// </summary>
+        /// <param name="launchedAppProcessName">Launched application process name</param>
+        /// <returns>true if launched process is successfully update. false if there is error occurs</returns>
+        public void UpdateRunApplicationProcessBy(string launchedAppProcessName)
+        {
+            if (launchedAppProcessName == String.Empty)
+            {
+                return;
+            }
+
+            var processList = Process.GetProcessesByName(launchedAppProcessName);
+            if (processList.Length >= 1)
+            {
+                // Get running process base on StartTime          
+                var processSortedList = processList.OrderBy(p => p.StartTime);
+                if ((launchedAppProcessName.ToLower().Equals("iexplore")) || (launchedAppProcessName.ToLower().Equals("firefox")) || (launchedAppProcessName.ToLower().Equals("chrome")))
+                {
+                    this.process = processSortedList.First();
+                }
+                else
+                {
+                    this.process = processSortedList.Last();
+                }
+            }
+            return;
+        }
         #endregion
     }
 }
