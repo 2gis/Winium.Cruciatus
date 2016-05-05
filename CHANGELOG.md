@@ -1,6 +1,9 @@
 ﻿# Change Log
 
 <!--## Unreleased-->
+## v2.10.1
+
+- Fix throws exception Process Not Found issue in close/quit function
 
 ## v2.10.0
 

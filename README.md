@@ -85,10 +85,6 @@ Contributions are welcome!
 3. We recommend to write a test which shows that the bug was fixed or that the feature works as expected.
 4. Send a pull request and bug the maintainer until it gets merged and published. :smiley:
 
-## Fix issue there're some applications that launched process exists immediately(Ex: microsoft calculator, firefox, chrome, iexplorer), so in close/quit function it throws exception Process Not Found.
-Add UpdateRunApplicationProcessBy(string name) in Winium.Cruciatus/Application.cs file to attach Application's process property to running process.
-Add HasExited() method to get running state of launched application.
-
 ## Contact
 
 Have some questions? Found a bug? Create [new issue](https://github.com/2gis/Winium.Cruciatus/issues/new) or contact us at g.golovin@2gis.ru
