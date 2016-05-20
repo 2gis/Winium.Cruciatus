@@ -204,7 +204,23 @@
             this.mouseSimulator.VerticalScroll(amountOfClicks);
             Thread.Sleep(250);
         }
+        /// <summary>
+        /// Implementing mouseDown event at current mouse location for drag and drop
+        /// </summary>
+        public void MouseDown()
+        {
+            this.mouseSimulator.LeftButtonDown();
+            Thread.Sleep(250);
+        }
 
+        /// <summary>
+        /// Implementing mouseUp event at current mouse location for drag and drop
+        /// </summary>
+        public void MouseUp()
+        {
+            this.mouseSimulator.LeftButtonUp();
+            Thread.Sleep(250);
+        }
         #endregion
     }
 }
