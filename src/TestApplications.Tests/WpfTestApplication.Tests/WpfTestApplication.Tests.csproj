@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckFindByXPath.cs" />
+    <Compile Include="CheckElementIsStaleProperty.cs" />
     <Compile Include="CheckFocusedElement.cs" />
     <Compile Include="Map\ElementExtension.cs" />
     <Compile Include="Map\FirstRibbonTab.cs" />
