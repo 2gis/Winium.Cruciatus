@@ -13,6 +13,8 @@ English description | <a href="README_RU.md">Описание на русско�
 
 Winium.Cruciatus is an open source C# Framework for automated testing of Windows application based on WinFroms and WPF platforms.
 
+
+
 Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [System.Windows.Automation](https://msdn.microsoft.com/en-us/library/system.windows.automation(v=vs.110).aspx) namespace.
 
 ## Why Winium.Cruciatus?
