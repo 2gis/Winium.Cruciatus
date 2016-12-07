@@ -11,22 +11,15 @@ English description | <a href="README_RU.md">Описание на русско�
 <img src="https://raw.githubusercontent.com/2gis/Winium.StoreApps/assets/winium.png" alt="Winium.Cruciatus is C# Framework for automated testing of Windows application based on WinFroms and WPF platforms">
 </p>
 
-Winium.Cruciatus is an open source C# Framework for automated testing of Windows application based on WinFroms and WPF platforms.
-
 Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [System.Windows.Automation](https://msdn.microsoft.com/en-us/library/system.windows.automation(v=vs.110).aspx) namespace.
 
 ## Why Winium.Cruciatus?
 
-- Enough Visual Studio Professional offering
 - You can use any testing framework to write tests (example [NUnit](https://www.nuget.org/packages/NUnit/))
 
 ## Quick Start
 
 1. Add reference to `Winium.Cruciatus` in UI test project ([install NuGet package](https://www.nuget.org/packages/Winium.Cruciatus/))
-
-2. Create a map application
-
-3. Use created map in tests
 
 4. Run your tests and watch the magic happening
 
@@ -43,27 +36,16 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
     ```c#
     namespace ConsoleApplication
     {
-        using System.Windows.Automation;
-        using Winium.Cruciatus.Core;
-        using Winium.Cruciatus.Extensions;
-
         public class Program
         {
             private static void Main(string[] args)
             {
                 var calc = new Winium.Cruciatus.Application("C:/windows/system32/calc.exe");
-                calc.Start();
 
                 var winFinder = By.Name("Calculator").AndType(ControlType.Window);
                 var win = Winium.Cruciatus.CruciatusFactory.Root.FindElement(winFinder);
                 var menu = win.FindElementByUid("MenuBar").ToMenu();
 
-                menu.SelectItem("View$Scientific");
-                menu.SelectItem("View$History");
-
-                win.FindElementByUid("132").Click(); // 2
-                win.FindElementByUid("93").Click(); // +
-                win.FindElementByUid("134").Click(); // 4
                 win.FindElementByUid("97").Click(); // ^
                 win.FindElementByUid("138").Click(); // 8
                 win.FindElementByUid("121").Click(); // =
