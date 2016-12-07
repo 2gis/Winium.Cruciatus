@@ -3,6 +3,7 @@
     #region using
 
     using System;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
 
@@ -52,6 +53,17 @@
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        /// Возвращает идентификатор процесса приложения
+        /// </summary>
+        public int ProcessId
+        {
+            get
+            {
+                return this.process.Id;
+            }
+        }
 
         /// <summary>
         /// Посылает сообщение о закрытии главному окну приложения.
@@ -110,6 +122,30 @@
                            };
 
             this.process = Process.Start(info);
+        }
+
+        /// <summary>
+        /// Подключается к уже запущенному приложению
+        /// Если запущенно несколько экземпляров, то подключаемся к первому найденому
+        /// Если нет запущенных приложений, то ничего не делает
+        /// </summary>
+        public void ConnectToRunningProcess()
+        {
+            // Цикл и перехват исключения необходимы для случая когда 32-х битное приложение будет пытаться подключится к 64-х битному
+            foreach (Process process in Process.GetProcesses())
+            {
+                try
+                {
+                    if (string.Equals(process.MainModule.FileName, this.executableFilePath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.process = process;
+                        break;
+                    }
+                }
+                catch (Win32Exception)
+                {
+                }
+            }
         }
 
         #endregion
