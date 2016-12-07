@@ -18,7 +18,7 @@ Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [Syste
 ## Why Winium.Cruciatus?
 
 - Enough Visual Studio Professional offering
-- You can use any testing framework to write tests (example [NUnit](https://www.nuget.org/packages/NUnit/))
+- You can use any testing framewobv,krk to write tests (example [NUnit](https://www.nuget.org/packages/NUnit/))
 
 ## Quick Start
 
