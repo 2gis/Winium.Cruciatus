@@ -8,10 +8,10 @@ English description | <a href="README_RU.md">Описание на русско�
 [![Inner Server NuGet version](https://img.shields.io/nuget/v/Winium.Cruciatus.svg?style=flat-square)](https://www.nuget.org/packages/Winium.Cruciatus/)
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/2gis/Winium.StoreApps/assets/winium.png" alt="Winium.Cruciatus is C# Framework for automated testing of Windows application based on WinFroms and WPF platforms">
+<img src="https://raw.githubusercontent.com/2gis/Winium.StoreApps/assets/winium.png" alt="Winium.Cruciatus is C# Framework for automated testing of Windows application based on WinForms and WPF platforms">
 </p>
 
-Winium.Cruciatus is an open source C# Framework for automated testing of Windows application based on WinFroms and WPF platforms.
+Winium.Cruciatus is an open source C# Framework for automated testing of Windows application based on WinForms and WPF platforms.
 
 Winium.Cruciatus is a wrapper over Microsoft UI Automation library in the [System.Windows.Automation](https://msdn.microsoft.com/en-us/library/system.windows.automation(v=vs.110).aspx) namespace.
 
