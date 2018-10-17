@@ -8,6 +8,7 @@ namespace Winium.Cruciatus.Helpers
     using System.Windows;
     using System.Windows.Automation;
     using System.Xml.XPath;
+    //using NLog;
 
     using Winium.Cruciatus.Helpers.XPath;
 
@@ -17,12 +18,28 @@ namespace Winium.Cruciatus.Helpers
 
     internal static class AutomationElementHelper
     {
+        public struct CursorPoint
+        {
+            public int X;
+            public int Y;
+        }
+        public enum DeviceCap
+        {
+            LOGPIXELSX = 88,
+            LOGPIXELSY = 90
+        }
         #region Methods
+        //static readonly Logger Logger = CruciatusFactory.Logger;
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        internal static extern bool GetPhysicalCursorPos(ref CursorPoint lpPoint);
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        static readonly int DEFAULTDPI = 96;
 
         internal static IEnumerable<AutomationElement> FindAll(
-            AutomationElement parent, 
-            TreeScope scope, 
-            Condition condition, 
+            AutomationElement parent,
+            TreeScope scope,
+            Condition condition,
             int timeout)
         {
             var dtn = DateTime.Now.AddMilliseconds(timeout);
@@ -73,9 +90,9 @@ namespace Winium.Cruciatus.Helpers
         }
 
         internal static AutomationElement FindFirst(
-            AutomationElement parent, 
-            TreeScope scope, 
-            Condition condition, 
+            AutomationElement parent,
+            TreeScope scope,
+            Condition condition,
             int timeout)
         {
             var dtn = DateTime.Now.AddMilliseconds(timeout);
@@ -93,6 +110,17 @@ namespace Winium.Cruciatus.Helpers
             return null;
         }
 
+        static void getScreenScalingFactor(ref float ScreenScalingFactorX, ref float ScreenScalingFactorY)
+        {
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero);
+            IntPtr desktop = g.GetHdc();
+            int Xdpi = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSX);
+            int Ydpi = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSY);
+            ScreenScalingFactorX = (float)Xdpi / (float)DEFAULTDPI;
+            ScreenScalingFactorY = (float)Ydpi / (float)DEFAULTDPI;
+        }
+
+
         internal static bool TryGetBoundingRectangleCenter(AutomationElement element, out Point point)
         {
             var rect = element.Current.BoundingRectangle;
@@ -103,7 +131,16 @@ namespace Winium.Cruciatus.Helpers
             }
 
             point = rect.Location;
-            point.Offset(rect.Width / 2, rect.Height / 2);
+            float ScreenScalingFactorX = 1;
+            float ScreenScalingFactorY = 1;
+            getScreenScalingFactor(ref ScreenScalingFactorX, ref ScreenScalingFactorY);
+            point.X = rect.X / ScreenScalingFactorX;
+            point.Y = rect.Y / ScreenScalingFactorY;
+            CruciatusFactory.Logger.Debug("BoundingRectangle location before scaling X co-ordinate:" + rect.X + "Y co-ordinate: " + rect.Y);
+            CruciatusFactory.Logger.Debug("BoundingRectangle Points after scaling X co-ordinate:" + point.X + "Y co-ordinate: " + point.Y);
+            CruciatusFactory.Logger.Debug("BoundingRectangle width :" + rect.Width);
+            CruciatusFactory.Logger.Debug("BoundingRectangle Height :" + rect.Height);
+            point.Offset((rect.Width / ScreenScalingFactorX) / 2, (rect.Height / ScreenScalingFactorY) / 2);
             return true;
         }
 
