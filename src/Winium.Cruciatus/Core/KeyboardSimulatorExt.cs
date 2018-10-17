@@ -46,7 +46,7 @@
         {
             this.logger.Info("Key down '{0}'", keyCode.ToString());
             this.keyboardSimulator.KeyDown(keyCode);
-            Thread.Sleep(250);
+            // Thread.Sleep(50);
             return this;
         }
 
@@ -60,7 +60,7 @@
         {
             this.logger.Info("Key press '{0}'", keyCode.ToString());
             this.keyboardSimulator.KeyPress(keyCode);
-            Thread.Sleep(250);
+            //    Thread.Sleep(50);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@
         {
             this.logger.Info("Key up '{0}'", keyCode.ToString());
             this.keyboardSimulator.KeyUp(keyCode);
-            Thread.Sleep(250);
+            //   Thread.Sleep(250);
             return this;
         }
 
